@@ -66,7 +66,7 @@ The heart of the system. One row per request, whether it came from a resident or
 | Column | Type | Meaning |
 |---|---|---|
 | reservation_id | bigint, primary key | |
-| reference_no | text, unique | Code given when the reservation is approved, for example `RB-000042`. Empty until then |
+| reference_no | text, unique | Code given when the reservation is approved, for example `RB-0013`. Empty until then |
 | amenity_id | foreign key | The amenity reserved |
 | user_id | foreign key, may be empty | The resident who asked. Empty only for a walk-in guest with no sponsor |
 | guest_name | text, may be empty | Filled when the user is a non-resident guest (sponsored or walk-in). Filled means the non-resident rate applies |
@@ -224,7 +224,7 @@ Both buckets are private. Files are opened only through signed links that expire
 
 ## 6. Other small decisions already made in this draft
 
-- **Reference number:** `RB-` plus a 6-digit sequence number (`RB-000042`), created by the database when status becomes `approved`. Short enough for a guard to read out and type in under a minute.
+- **Reference number:** `RB-` plus a sequence number of at least 4 digits (`RB-0013`, the format shown in Figure 8), created by the database when status becomes `approved`. Pending requests have no reference number yet; screens show the request by its own id until approval. Short enough for a guard to read out and type in under a minute.
 - **Time zone:** all comparisons for operating hours use Asia/Manila.
 - **Sign-up:** a trigger creates the `users` row when Supabase Auth creates the login, reading name, contact, address, and consent from the sign-up form data. A sign-up without consent is refused.
 - **Rates are copied, not linked:** `total_fee` and `deposit` are saved on the reservation, so changing a rate later does not change old reports.
@@ -233,7 +233,7 @@ Both buckets are private. Files are opened only through signed links that expire
 
 Each has a default already used in this draft. Change the draft if you decide otherwise.
 
-1. **Blocked dates: separate table or stored as reservations?** The paper contradicts itself. Database Rules say blocked dates are "stored as reservations that belong to the HOA", but Figure 6, the data dictionary, and tests T17, T18, and T24 all use a separate `blocked_dates` table. *Default: separate table with trigger checks.* The alternative is stronger against simultaneous clicks (one constraint covers everything) but then adding a block over a pending request is refused outright instead of leaving it to be rejected (T24 would change). Whichever you pick, the paper sentence or the dictionary has to be corrected.
+1. **Blocked dates: separate table or stored as reservations?** DECIDED (Jenny, Nov 8): separate `blocked_dates` table with trigger checks. The paper's Database Rules said blocked dates are "stored as reservations that belong to the HOA", but Figure 6, the data dictionary, and tests T17, T18, and T24 all use a separate table, so that sentence in the paper is the one to correct.
 2. **"Household" in Row Level Security.** No household table exists. *Default: a resident sees only their own rows.* A real household (several accounts sharing records) would need one more table.
 3. **Block over an existing booking.** *Default:* adding a block over an `approved` reservation is refused; over a `pending` one it is allowed and the request can then only be rejected.
 4. **Payment statuses and deposit.** The paper lists "payment status" without values. *Default:* `submitted`, `recorded`, `void`, plus a `kind` column (`fee` or `deposit`). Only fee payments create income ledger entries. Deposit refunds are not modelled, to keep the scope small.
