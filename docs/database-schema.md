@@ -233,6 +233,7 @@ Both buckets are private. Files are opened only through signed links that expire
 - **The database computes the fee (changed while writing the migrations):** `total_fee` is hours times the hourly rate (non-resident rate when `guest_name` is filled), plus equipment if that add-on exists. A resident cannot type their own price, because the trigger overwrites whatever the screen sends. Part hours are charged in proportion.
 - **A saved reservation is not edited:** after it is created only `status` and `reject_reason` change. To change the time, cancel and make a new request. This keeps the overlap, hours, and fee checks simple, because they only run when the row is created and when it is approved.
 - **Status moves:** `pending` can become `approved`, `rejected`, or `cancelled`; `approved` can become `cancelled`; `rejected` and `cancelled` are final. A resident can only cancel their own `pending` request.
+- **Table privileges are granted on purpose:** a new Supabase project gives the signed-in role no read or write privilege on new tables, so the migrations grant each table only what its screens need (no one gets TRUNCATE, anonymous visitors get nothing, and payments, reservations, and the audit log have no delete privilege). Row Level Security then decides which rows.
 - **Sign-up form data:** the database reads `full_name`, `contact_no`, `address`, and `consent` (must be `true`) from the sign-up user data.
 
 ## 7. Open decisions for Jenny
