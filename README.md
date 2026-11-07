@@ -23,7 +23,7 @@ This repository is part of our Software Engineering group project.
 - Jenny Joy F. Latagan (project leader, main developer)
 - Ezekiel V. Dellosa (developer)
 - Padme Gwyneth P. Bonus (design and documentation)
-- Carl Laurence M. Alcedo (research and testing)
+- Carl Laurence M. Alcedo (design and documentation)
 
 ## Group rules
 
