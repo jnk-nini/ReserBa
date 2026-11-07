@@ -42,10 +42,12 @@ One row per person with an account (resident, administrator, or guard). Non-resi
 | residency_status | text | `pending` (new), `verified`, or `rejected`. Defaults to `pending` |
 | consent_at | timestamptz | When the privacy notice was accepted. Sign-up fails if empty (RA 10173) |
 | proof_of_residency_url | text | Path of the proof file in the private bucket (not a public link) |
+| residency_note | text **(added)** | Why the administrator rejected the resident. The resident can read it |
 
 Notes:
 - A new sign-up always becomes `resident` + `pending`. A person can never choose or change their own role or status; only an administrator can. The first administrator is set by hand in the Supabase dashboard.
 - Only a `verified` resident can submit a reservation request.
+- Rejecting a resident: the administrator sets `residency_status` to `rejected` and writes the reason in `residency_note` in the same update. The audit log then records the reason too, and the resident sees it and can upload a better proof.
 
 ### amenities
 Things that can be reserved (court, clubhouse, pool, gazebo). Every rule an association may want to change lives here as a setting, not in the code.
