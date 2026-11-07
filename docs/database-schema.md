@@ -228,21 +228,25 @@ Both buckets are private. Files are opened only through signed links that expire
 - **Time zone:** all comparisons for operating hours use Asia/Manila.
 - **Sign-up:** a trigger creates the `users` row when Supabase Auth creates the login, reading name, contact, address, and consent from the sign-up form data. A sign-up without consent is refused.
 - **Rates are copied, not linked:** `total_fee` and `deposit` are saved on the reservation, so changing a rate later does not change old reports.
+- **The database computes the fee (changed while writing the migrations):** `total_fee` is hours times the hourly rate (non-resident rate when `guest_name` is filled), plus equipment if that add-on exists. A resident cannot type their own price, because the trigger overwrites whatever the screen sends. Part hours are charged in proportion.
+- **A saved reservation is not edited:** after it is created only `status` and `reject_reason` change. To change the time, cancel and make a new request. This keeps the overlap, hours, and fee checks simple, because they only run when the row is created and when it is approved.
+- **Status moves:** `pending` can become `approved`, `rejected`, or `cancelled`; `approved` can become `cancelled`; `rejected` and `cancelled` are final. A resident can only cancel their own `pending` request.
+- **Sign-up form data:** the database reads `full_name`, `contact_no`, `address`, and `consent` (must be `true`) from the sign-up user data.
 
 ## 7. Open decisions for Jenny
 
-Each has a default already used in this draft. Change the draft if you decide otherwise.
+All seven are settled (Jenny, Nov 8). The migrations in `supabase/migrations` follow them.
 
-1. **Blocked dates: separate table or stored as reservations?** DECIDED (Jenny, Nov 8): separate `blocked_dates` table with trigger checks. The paper's Database Rules said blocked dates are "stored as reservations that belong to the HOA", but Figure 6, the data dictionary, and tests T17, T18, and T24 all use a separate table, so that sentence in the paper is the one to correct.
-2. **"Household" in Row Level Security.** No household table exists. *Default: a resident sees only their own rows.* A real household (several accounts sharing records) would need one more table.
-3. **Block over an existing booking.** *Default:* adding a block over an `approved` reservation is refused; over a `pending` one it is allowed and the request can then only be rejected.
-4. **Payment statuses and deposit.** The paper lists "payment status" without values. *Default:* `submitted`, `recorded`, `void`, plus a `kind` column (`fee` or `deposit`). Only fee payments create income ledger entries. Deposit refunds are not modelled, to keep the scope small.
-5. **Standing of a homeowner.** FR-04 mentions "standing" but the data dictionary has only `residency_status`. *Default:* `verified` means in good standing; the administrator sets `rejected` otherwise.
-6. **Guard confirmation.** *Default:* the guard only looks up and sees the details (read-only, as the paper says). Nothing is recorded when a guard "confirms".
-7. **Cut line for the add-ons.** Equipment, ledger, and guard view are optional. Decide by the end of Week 2 whether they stay.
+1. **Blocked dates: separate table or stored as reservations?** DECIDED: separate `blocked_dates` table with trigger checks. The paper's Database Rules said blocked dates are "stored as reservations that belong to the HOA", but Figure 6, the data dictionary, and tests T17, T18, and T24 all use a separate table, so that sentence in the paper is the one to correct.
+2. **"Household" in Row Level Security.** DECIDED: a resident sees only their own rows. A real household (several accounts sharing records) would need one more table.
+3. **Block over an existing booking.** DECIDED: adding a block over an `approved` reservation is refused; over a `pending` one it is allowed and the request can then only be rejected (test T24 needs this).
+4. **Payment statuses and deposit.** DECIDED: `submitted`, `recorded`, `void`, plus a `kind` column (`fee` or `deposit`). Only fee payments create income ledger entries. Deposit refunds are not modelled, to keep the scope small.
+5. **Standing of a homeowner.** DECIDED: `verified` means in good standing; the administrator sets `rejected` otherwise. There is no separate field.
+6. **Guard confirmation.** DECIDED: the guard only looks up and sees the details (read-only, as the paper says). Nothing is recorded when a guard "confirms".
+7. **Cut line for the add-ons.** DECIDED: equipment, ledger, and guard view each live in their own last migration file, so they can be dropped without touching the Must tables. The cut itself is decided on Nov 17, after the dates from T07 are known.
 
 ## 8. What this feeds
 
 - T21 Gwyneth: ERD from section 2.
-- T26 Jenny: migration files in this order: extensions and `users`, `amenities`, `reservations` with constraint and triggers, `blocked_dates`, `payments`, then the optional tables, audit triggers, RLS policies, and storage buckets.
+- T26 Jenny: migration files in `supabase/migrations`, in this order: `users` (with the extension and sign-up trigger), `amenities`, `blocked_dates`, `reservations` (constraint and triggers), `payments`, audit log and its triggers, the `availability` view, the Row Level Security policies, the storage buckets, then the three optional files (equipment, ledger, guard lookup).
 - Ezekiel's screens: see `docs/module-specs.md`.
