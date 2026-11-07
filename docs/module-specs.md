@@ -17,7 +17,7 @@ Priority: **Must** modules first. **Optional** modules (add-ons) only after the 
 **Who:** administrator. **Tables:** reads and updates `users`. **Files:** reads `residency-proofs`.
 - List of accounts with `residency_status = pending`, newest first.
 - Detail view: name, address, contact, resident type, and the proof file (signed link).
-- Actions: **Verify** (administrator picks `homeowner` or `tenant`) or **Reject** (reason is saved in the audit details).
+- Actions: **Verify** (administrator picks `homeowner` or `tenant`) or **Reject** (the reason is required by the screen and saved in `users.residency_note` in the same update as the status; the audit log picks it up by itself).
 - Rules: only `verified` residents can submit requests. An administrator cannot change their own role from this screen.
 - Done when: a new sign-up appears in the list, can be verified, and then can book; the change shows in the audit log.
 
