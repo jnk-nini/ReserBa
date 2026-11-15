@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import PageHeader from "@/components/page-header";
 import EmptyState from "@/components/empty-state";
+import FilterTabs from "@/components/filter-tabs";
 import ReservationRow from "@/components/reservation-row";
 import { requireRole } from "@/lib/auth";
 import { getServerSupabase } from "@/lib/supabase-server";
@@ -62,25 +63,7 @@ export default async function RequestsPage({ searchParams }: PageProps<"/admin/r
         </Link>
       </PageHeader>
 
-      <nav
-        aria-label="Filter requests"
-        className="-mx-4 mb-5 flex gap-1.5 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:mx-0 sm:px-0"
-      >
-        {tabs.map((tab) => (
-          <Link
-            key={tab.key}
-            href={`/admin/requests?show=${tab.key}`}
-            aria-current={show === tab.key ? "page" : undefined}
-            className={`shrink-0 rounded-full border px-4 py-2 text-[0.9375rem] font-medium whitespace-nowrap transition-colors duration-150 ${
-              show === tab.key
-                ? "border-ink bg-ink text-surface"
-                : "border-line-strong bg-surface text-ink hover:border-ink-soft/60"
-            }`}
-          >
-            {tab.label}
-          </Link>
-        ))}
-      </nav>
+      <FilterTabs label="Filter requests" basePath="/admin/requests" tabs={tabs} current={show} />
 
       {rows.length === 0 ? (
         <EmptyState icon="inbox" title="Nothing here">

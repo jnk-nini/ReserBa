@@ -1,5 +1,7 @@
+import { Avatar } from "@/components/app-shell";
+import EmptyState from "@/components/empty-state";
+import FilterTabs from "@/components/filter-tabs";
 import type { Metadata } from "next";
-import Link from "next/link";
 import ActionForm from "@/components/action-form";
 import PageHeader from "@/components/page-header";
 import StatusBadge from "@/components/status-badge";
@@ -43,36 +45,24 @@ export default async function ResidentsPage({ searchParams }: PageProps<"/admin/
         description="Check each new resident's proof of residency. Only verified residents can book."
       />
 
-      <nav aria-label="Filter people" className="mb-4 flex gap-1 overflow-x-auto">
-        {tabs.map((tab) => (
-          <Link
-            key={tab.key}
-            href={`/admin/residents?show=${tab.key}`}
-            aria-current={show === tab.key ? "page" : undefined}
-            className={`shrink-0 rounded-lg px-3 py-2 text-base font-semibold whitespace-nowrap transition-colors duration-150 ${
-              show === tab.key ? "bg-brand text-on-brand" : "text-ink hover:bg-brand-tint"
-            }`}
-          >
-            {tab.label}
-          </Link>
-        ))}
-      </nav>
+      <FilterTabs label="Filter people" basePath="/admin/residents" tabs={tabs} current={show} />
 
       {people.length === 0 ? (
-        <p className="panel text-base text-ink-soft">Nobody here.</p>
+        <EmptyState icon="people" title="Nobody here">No one matches this filter yet.</EmptyState>
       ) : (
         <ul className="flex flex-col gap-4">
           {people.map((person) => (
             <li key={person.user_id} className="panel flex flex-col gap-3">
-              <div className="flex flex-wrap items-start justify-between gap-2">
-                <div>
-                  <h2 className="text-lg font-bold">{person.full_name}</h2>
-                  <p className="text-base text-ink-soft">
+              <div className="flex items-start justify-between gap-3">
+                <Avatar name={person.full_name} className="size-11" />
+                <div className="min-w-0 flex-1">
+                  <h2 className="text-base font-semibold">{person.full_name}</h2>
+                  <p className="truncate text-[0.9375rem] text-ink-soft">
                     {person.email}
                     {person.contact_no && ` · ${person.contact_no}`}
                   </p>
-                  <p className="text-base text-ink-soft">{person.address ?? "No address given"}</p>
-                  <p className="text-sm text-ink-soft">Signed up {formatDate(person.created_at)}</p>
+                  <p className="text-[0.9375rem] text-ink-soft">{person.address ?? "No address given"}</p>
+                  <p className="text-[0.8125rem] text-ink-soft">Signed up {formatDate(person.created_at)}</p>
                 </div>
                 {person.role === "resident" ? (
                   <StatusBadge status={person.residency_status} />
@@ -89,7 +79,7 @@ export default async function ResidentsPage({ searchParams }: PageProps<"/admin/
                     href={proofLink("residency-proofs", person.proof_of_residency_url)}
                     target="_blank"
                     rel="noreferrer"
-                    className="self-start font-semibold text-brand underline underline-offset-4"
+                    className="self-start link"
                   >
                     Open the proof of residency
                   </a>

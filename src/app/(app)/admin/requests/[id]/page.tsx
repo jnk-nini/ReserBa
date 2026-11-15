@@ -105,11 +105,14 @@ export default async function RequestPage({ params }: PageProps<"/admin/requests
       </PageHeader>
 
       <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
-        <div className="flex flex-col gap-6">
-          <ReservationSummary reservation={reservation} />
+        <div className="contents lg:flex lg:flex-col lg:gap-6">
+          {/* On a phone the decision comes right after the summary; on a computer it is in the right column. */}
+          <div className="max-lg:order-1">
+            <ReservationSummary reservation={reservation} />
+          </div>
 
-          <section className="panel flex flex-col gap-3">
-            <h2 className="text-lg font-bold">
+          <section className="panel flex flex-col gap-3 max-lg:order-3">
+            <h2 className="text-base font-semibold">
               {amenity.name} on {formatDate(reservation.start_at)}
             </h2>
             <DayStrip
@@ -121,8 +124,8 @@ export default async function RequestPage({ params }: PageProps<"/admin/requests
           </section>
 
           {reservation.reservation_equipment.length > 0 && (
-            <section className="panel flex flex-col gap-4">
-              <h2 className="text-lg font-bold">Equipment</h2>
+            <section className="panel flex flex-col gap-4 max-lg:order-4">
+              <h2 className="text-base font-semibold">Equipment</h2>
               {reservation.reservation_equipment.map((line) => (
                 <div key={line.id} className="flex flex-col gap-2 border-t border-line pt-3 first:border-t-0 first:pt-0">
                   <p className="text-base font-semibold">
@@ -156,10 +159,10 @@ export default async function RequestPage({ params }: PageProps<"/admin/requests
           )}
         </div>
 
-        <div className="flex flex-col gap-6">
+        <div className="contents lg:flex lg:flex-col lg:gap-6">
           {reservation.status === "pending" && (
-            <section className="panel flex flex-col gap-4">
-              <h2 className="text-lg font-bold">Decide this request</h2>
+            <section className="panel flex flex-col gap-4 max-lg:order-2">
+              <h2 className="text-base font-semibold">Decide this request</h2>
               {blockedBy.length > 0 && (
                 <p className="notice notice-error">
                   A blocked date now covers this time ({blockedBy.map((block) => block.reason).join(", ")}).
@@ -196,8 +199,8 @@ export default async function RequestPage({ params }: PageProps<"/admin/requests
           )}
 
           {reservation.status === "approved" && (
-            <section className="panel flex flex-col gap-3">
-              <h2 className="text-lg font-bold">Cancel this reservation</h2>
+            <section className="panel flex flex-col gap-3 max-lg:order-2">
+              <h2 className="text-base font-semibold">Cancel this reservation</h2>
               <p className="text-base text-ink-soft">
                 Cancelling frees the time. Payments already recorded stay; void them below if the money is
                 returned.
@@ -215,9 +218,9 @@ export default async function RequestPage({ params }: PageProps<"/admin/requests
             </section>
           )}
 
-          <section className="panel flex flex-col gap-4">
+          <section className="panel flex flex-col gap-4 max-lg:order-5">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
-              <h2 className="text-lg font-bold">Payments</h2>
+              <h2 className="text-base font-semibold">Payments</h2>
               <p className="number text-sm text-ink-soft">
                 Fee {formatMoney(paid.fee)} of {formatMoney(reservation.total_fee)} · Deposit{" "}
                 {formatMoney(paid.deposit)} of {formatMoney(reservation.deposit)}
@@ -242,7 +245,7 @@ export default async function RequestPage({ params }: PageProps<"/admin/requests
                     href={proofLink("payment-proofs", payment.proof_url)}
                     target="_blank"
                     rel="noreferrer"
-                    className="self-start text-sm font-semibold text-brand underline underline-offset-4"
+                    className="self-start text-sm link"
                   >
                     Open the proof
                   </a>
@@ -295,7 +298,7 @@ export default async function RequestPage({ params }: PageProps<"/admin/requests
 
             {open && (
               <div className="border-t border-line pt-4">
-                <h3 className="mb-3 text-base font-bold">Record a payment received</h3>
+                <h3 className="mb-3 text-base font-semibold">Record a payment received</h3>
                 <ActionForm action={recordNewPayment} submitLabel="Record payment">
                   <input type="hidden" name="reservation_id" value={reservationId} />
                   <div className="grid gap-3 sm:grid-cols-2">
