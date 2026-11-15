@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import ActionForm from "@/components/action-form";
+import Icon from "@/components/icon";
 import PageHeader from "@/components/page-header";
 import PaymentList from "@/components/payment-list";
 import PaymentProofForm from "@/components/payment-proof-form";
@@ -9,6 +10,7 @@ import ReservationSummary from "@/components/reservation-summary";
 import { requireRole } from "@/lib/auth";
 import { displayNumber, paidSoFar, reservationDetailColumns, type ReservationDetail } from "@/lib/reservations";
 import { getServerSupabase } from "@/lib/supabase-server";
+import { formatDate } from "@/lib/time";
 import { cancelReservation } from "../actions";
 
 export const metadata: Metadata = {
@@ -35,18 +37,58 @@ export default async function ReservationPage({ params }: PageProps<"/reservatio
   const paid = paidSoFar(reservation.payments);
   const open = reservation.status === "pending" || reservation.status === "approved";
 
+  // The three things that happen to a request, so the resident can see at a
+  // glance which ones are done and what is still expected of them.
+  const proofSent = reservation.payments.some((payment) => payment.status !== "void");
+  const feePaid = paid.fee >= Number(reservation.total_fee);
+  const steps = [
+    { title: "Request sent", note: `On ${formatDate(reservation.created_at)}`, done: true },
+    {
+      title: "Payment",
+      note: feePaid
+        ? "The HOA confirmed your payment"
+        : proofSent
+          ? "Proof sent. The HOA will check it"
+          : "Pay the HOA, then send the proof below",
+      done: feePaid,
+    },
+    {
+      title: "HOA decision",
+      note: reservation.status === "approved" ? "Approved. Your slip is ready" : "Waiting for the administrator",
+      done: reservation.status === "approved",
+    },
+  ];
+
   return (
     <>
-      <PageHeader title={displayNumber(reservation)}>
+      <PageHeader title={displayNumber(reservation)} back={{ href: "/reservations", label: "My reservations" }}>
         {reservation.status === "approved" && (
           <Link href={`/reservations/${reservation.reservation_id}/slip`} className="btn btn-primary">
+            <Icon name="receipt" className="size-[1.125rem]" />
             Open the slip
           </Link>
         )}
-        <Link href="/reservations" className="btn btn-quiet">
-          All my reservations
-        </Link>
       </PageHeader>
+
+      {open && (
+        <ol className="panel mb-6 grid gap-4 sm:grid-cols-3 sm:gap-6" aria-label="Where this request is">
+          {steps.map((step, index) => (
+            <li key={step.title} className="flex gap-3">
+              <span
+                className={`number mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${
+                  step.done ? "bg-approved text-on-brand" : "border border-line-strong text-ink-soft"
+                }`}
+              >
+                {step.done ? <Icon name="check" className="size-3.5" /> : index + 1}
+              </span>
+              <span className="min-w-0">
+                <span className="block text-[0.9375rem] font-semibold">{step.title}</span>
+                <span className="block text-[0.8125rem] text-ink-soft">{step.note}</span>
+              </span>
+            </li>
+          ))}
+        </ol>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
         <div className="flex flex-col gap-6">
@@ -54,10 +96,10 @@ export default async function ReservationPage({ params }: PageProps<"/reservatio
 
           {reservation.status === "pending" && (
             <section className="panel">
-              <h2 className="text-base font-semibold">Waiting for approval</h2>
-              <p className="mt-1 mb-4 text-base text-ink-soft">
-                The HOA administrator will approve or reject this request. The time is held for you
-                until then. You can cancel it while it is waiting.
+              <h2 className="text-base font-semibold">Changed your mind?</h2>
+              <p className="mt-1 mb-4 text-[0.9375rem] text-ink-soft">
+                The time is held for you until the administrator decides. You can cancel the request while it
+                is waiting.
               </p>
               <ActionForm
                 action={cancelReservation}
