@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { getSupabase } from "@/lib/supabase";
 import PasswordInput from "@/components/password-input";
+import Spinner from "@/components/spinner";
 import { checkProofFile, uploadProof } from "@/lib/upload";
 
 // The sign-up form. It runs in the browser because it reacts to typing and
@@ -253,6 +254,7 @@ export default function SignUpForm() {
         disabled={sending}
         className="btn btn-primary"
       >
+        {sending && <Spinner />}
         {sending ? "Creating account..." : "Create account"}
       </button>
     </form>

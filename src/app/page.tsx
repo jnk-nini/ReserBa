@@ -2,6 +2,7 @@ import Link from "next/link";
 import Faq from "@/components/faq";
 import Icon from "@/components/icon";
 import Logo from "@/components/logo";
+import Reveal, { Motion } from "@/components/reveal";
 import RoleShowcase from "@/components/role-showcase";
 import SiteHeader from "@/components/site-header";
 import StatusBadge from "@/components/status-badge";
@@ -176,7 +177,7 @@ const drawings = [CalendarDrawing, RequestDrawing, SlipDrawing];
 
 export default function Home() {
   return (
-    <>
+    <Motion>
       <a
         href="#main"
         className="btn btn-primary sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50"
@@ -191,19 +192,19 @@ export default function Home() {
         <section className="mx-auto w-full max-w-6xl px-4 pt-28 sm:px-6 sm:pt-36">
           <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,31rem)] lg:gap-16">
             <div>
-              <p className="eyebrow flex items-center gap-3">
-                <span className="h-px w-8 bg-brass" aria-hidden="true" />
+              <p className="eyebrow flex animate-fade-up items-center gap-3">
+                <span className="h-px w-8 origin-left animate-[grow_0.8s_var(--ease-settle)_0.2s_both] bg-brass" aria-hidden="true" />
                 For homeowners associations
               </p>
-              <h1 className="display mt-6 text-[2.875rem] sm:text-[4rem] lg:text-[4.25rem] xl:text-[4.75rem]">
+              <h1 className="display mt-6 animate-fade-up [animation-delay:80ms] text-[2.875rem] sm:text-[4rem] lg:text-[4.25rem] xl:text-[4.75rem]">
                 Reserve the clubhouse, <em className="text-brand">without the back-and-forth.</em>
               </h1>
-              <p className="mt-6 max-w-[33rem] text-lg text-ink-soft">
+              <p className="mt-6 max-w-[33rem] animate-fade-up text-lg text-ink-soft [animation-delay:160ms]">
                 ReserBa shows your subdivision&rsquo;s free hours, takes your request from your phone, and gives you
                 a reference number for the gate. Two bookings for the same time are refused, so no one is double
                 booked.
               </p>
-              <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-4">
+              <div className="mt-9 flex animate-fade-up flex-wrap items-center gap-x-6 gap-y-4 [animation-delay:240ms]">
                 <Link href="/signup" className="btn btn-primary btn-large">
                   Create a resident account
                   <Icon name="arrow" />
@@ -214,50 +215,58 @@ export default function Home() {
               </div>
             </div>
 
-            <TryATime />
+            <div className="animate-fade-up [animation-delay:320ms]">
+              <TryATime />
+            </div>
           </div>
 
           <dl className="mt-16 grid border-y border-line-strong sm:grid-cols-3 lg:mt-24">
-            {promises.map((promise) => (
-              <div
+            {promises.map((promise, index) => (
+              <Reveal
                 key={promise.label}
+                delay={index * 0.1}
                 className="border-b border-line py-5 last:border-b-0 sm:border-r sm:border-b-0 sm:px-6 sm:py-7 sm:first:pl-0 sm:last:border-r-0"
               >
                 <dt className="eyebrow">{promise.label}</dt>
                 <dd className="display mt-2 text-2xl sm:text-[1.75rem]">{promise.line}</dd>
-              </div>
+              </Reveal>
             ))}
           </dl>
         </section>
 
         <section id="how" className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-6 lg:py-32">
           <div className="grid gap-x-16 gap-y-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
-            <h2 className="display text-4xl sm:text-5xl">From a free hour to the gate, in three steps.</h2>
-            <p className="max-w-[34rem] text-lg text-ink-soft lg:pt-3">
-              The HOA still decides every request. ReserBa keeps the schedule, the fees, and the record in order
-              while it does.
-            </p>
+            <Reveal>
+              <h2 className="display text-4xl sm:text-5xl">From a free hour to the gate, in three steps.</h2>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <p className="max-w-[34rem] text-lg text-ink-soft lg:pt-3">
+                The HOA still decides every request. ReserBa keeps the schedule, the fees, and the record in order
+                while it does.
+              </p>
+            </Reveal>
           </div>
 
           <ol className="mt-12 border-t border-line-strong lg:mt-16">
             {steps.map((step, index) => {
               const Drawing = drawings[index];
               return (
-                <li
+                <Reveal
+                  as="li"
                   key={step.title}
-                  className="grid gap-x-10 gap-y-6 border-b border-line py-8 sm:py-10 md:grid-cols-[4rem_minmax(0,1fr)_minmax(0,24rem)] md:items-center lg:gap-x-16"
+                  className="group grid gap-x-10 gap-y-6 border-b border-line py-8 sm:py-10 md:grid-cols-[4rem_minmax(0,1fr)_minmax(0,24rem)] md:items-center lg:gap-x-16"
                 >
-                  <span className="display text-5xl text-brass sm:text-6xl" aria-hidden="true">
+                  <span className="display text-5xl text-brass transition-transform duration-300 ease-settle group-hover:translate-x-1 sm:text-6xl" aria-hidden="true">
                     {index + 1}
                   </span>
                   <div>
                     <h3 className="display text-[1.75rem] sm:text-[2rem]">{step.title}</h3>
                     <p className="mt-2 max-w-md text-ink-soft">{step.text}</p>
                   </div>
-                  <div className="rounded-2xl border border-line bg-surface p-5 shadow-low sm:p-6" aria-hidden="true">
+                  <div className="rounded-2xl border border-line bg-surface p-5 shadow-low transition-[transform,box-shadow] duration-300 ease-settle group-hover:-translate-y-0.5 group-hover:shadow-high sm:p-6" aria-hidden="true">
                     <Drawing />
                   </div>
-                </li>
+                </Reveal>
               );
             })}
           </ol>
@@ -265,13 +274,15 @@ export default function Home() {
 
         <section id="roles" className="border-y border-line bg-surface">
           <div className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-6 lg:py-32">
-            <h2 className="display max-w-2xl text-4xl sm:text-5xl">One schedule, three kinds of users.</h2>
-            <p className="mt-5 max-w-[34rem] text-lg text-ink-soft">
-              Each person signs in to the screens made for their part of the work, and to nothing else.
-            </p>
-            <div className="mt-10">
+            <Reveal>
+              <h2 className="display max-w-2xl text-4xl sm:text-5xl">One schedule, three kinds of users.</h2>
+              <p className="mt-5 max-w-[34rem] text-lg text-ink-soft">
+                Each person signs in to the screens made for their part of the work, and to nothing else.
+              </p>
+            </Reveal>
+            <Reveal delay={0.1} className="mt-10">
               <RoleShowcase />
-            </div>
+            </Reveal>
           </div>
         </section>
 
@@ -291,7 +302,7 @@ export default function Home() {
 
             <ol className="mt-12 grid border-t border-on-brand/20 md:grid-cols-2 md:gap-x-16 lg:mt-16">
               {rules.map((rule, index) => (
-                <li key={rule.title} className="flex gap-5 border-b border-on-brand/20 py-6 sm:py-7">
+                <Reveal as="li" key={rule.title} delay={(index % 2) * 0.08} className="flex gap-5 border-b border-on-brand/20 py-6 sm:py-7">
                   <span className="number pt-1.5 text-[0.8125rem] font-semibold text-brass-soft" aria-hidden="true">
                     {String(index + 1).padStart(2, "0")}
                   </span>
@@ -299,7 +310,7 @@ export default function Home() {
                     <h3 className="display text-2xl sm:text-[1.75rem]">{rule.title}</h3>
                     <p className="mt-2 text-on-brand/75">{rule.text}</p>
                   </div>
-                </li>
+                </Reveal>
               ))}
             </ol>
           </div>
@@ -309,17 +320,19 @@ export default function Home() {
           id="questions"
           className="mx-auto grid w-full max-w-6xl gap-x-16 gap-y-8 px-4 py-20 sm:px-6 lg:grid-cols-[minmax(0,4fr)_minmax(0,7fr)] lg:py-32"
         >
-          <div>
+          <Reveal>
             <h2 className="display text-4xl sm:text-5xl">Questions residents ask first.</h2>
             <p className="mt-5 text-lg text-ink-soft">
               Something else? Ask your HOA office. They run ReserBa for your subdivision.
             </p>
-          </div>
-          <Faq items={questions} />
+          </Reveal>
+          <Reveal delay={0.1}>
+            <Faq items={questions} />
+          </Reveal>
         </section>
 
         <section className="mx-auto w-full max-w-6xl px-4 pb-20 sm:px-6 lg:pb-32">
-          <div className="grid items-end gap-8 border-t border-line-strong pt-12 lg:grid-cols-[minmax(0,1fr)_auto] lg:pt-16">
+          <Reveal className="grid items-end gap-8 border-t border-line-strong pt-12 lg:grid-cols-[minmax(0,1fr)_auto] lg:pt-16">
             <div>
               <h2 className="display max-w-3xl text-4xl sm:text-6xl">Your next booking starts with a free hour.</h2>
               <p className="mt-5 max-w-[34rem] text-lg text-ink-soft">
@@ -335,7 +348,7 @@ export default function Home() {
                 Log in
               </Link>
             </div>
-          </div>
+          </Reveal>
         </section>
       </main>
 
@@ -370,6 +383,6 @@ export default function Home() {
           </nav>
         </div>
       </footer>
-    </>
+    </Motion>
   );
 }

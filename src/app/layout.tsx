@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Geist_Mono, Hanken_Grotesk } from "next/font/google";
+import ClickRipple from "@/components/click-ripple";
 import "./globals.css";
 
 // Titles are set in a serif; everything that is read or tapped is set in a
@@ -49,7 +50,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${title.variable} ${body.variable} ${code.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col">{children}</body>
+      <body className="flex min-h-full flex-col">
+        {children}
+        <ClickRipple />
+      </body>
     </html>
   );
 }

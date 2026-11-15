@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react";
 import { submitPaymentProof } from "@/app/(app)/reservations/actions";
 import { checkProofFile, uploadProof } from "@/lib/upload";
+import Spinner from "@/components/spinner";
 
 // The resident's "I have paid" form (FR-19). The proof file is uploaded from
 // the browser to the private bucket first; then the form is sent with the
@@ -106,6 +107,7 @@ export default function PaymentProofForm({
         </p>
       )}
       <button type="submit" disabled={busy} className="btn btn-primary self-start">
+        {busy && <Spinner />}
         {busy ? "Sending..." : "Send the proof"}
       </button>
     </form>
