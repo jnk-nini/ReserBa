@@ -10,6 +10,7 @@ import interactionPlugin from "@fullcalendar/react/interaction";
 import "@fullcalendar/react/skeleton.css";
 import "@fullcalendar/react/themes/classic/theme.css";
 import "@fullcalendar/react/themes/classic/palette.css";
+import DaySchedule from "@/components/day-schedule";
 import { getSupabase } from "@/lib/supabase";
 import { formatClock } from "@/lib/time";
 import type { Amenity, TakenRange } from "@/lib/types";
@@ -64,25 +65,36 @@ export default function AvailabilityCalendar({
 
   return (
     <div className="flex flex-col gap-4">
-      <label className="label max-w-sm">
-        Amenity
-        <select
-          className="input"
-          value={amenityId}
-          onChange={(event) => setAmenityId(Number(event.target.value))}
+      <div>
+        <div
+          role="radiogroup"
+          aria-label="Amenity"
+          className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0"
         >
           {amenities.map((item) => (
-            <option key={item.amenity_id} value={item.amenity_id}>
+            <button
+              key={item.amenity_id}
+              type="button"
+              role="radio"
+              aria-checked={item.amenity_id === amenityId}
+              onClick={() => setAmenityId(item.amenity_id)}
+              className={`chip shrink-0 ${item.amenity_id === amenityId ? "!border-brand !bg-brand !text-on-brand" : ""}`}
+            >
               {item.name}
-            </option>
+            </button>
           ))}
-        </select>
-        <span className="hint">
+        </div>
+        <p className="mt-2 text-[0.8125rem] text-ink-soft">
           Open {formatClock(amenity.open_time)} to {formatClock(amenity.close_time)}
           {amenity.buffer_minutes > 0 && `, with ${amenity.buffer_minutes} minutes kept free after each booking`}
           .{canBook && " Tap a free time to start a request."}
-        </span>
-      </label>
+        </p>
+      </div>
+
+      {/* A phone gets one day at a time; a computer gets the week and month calendar. */}
+      <div className="lg:hidden">
+        <DaySchedule amenity={amenity} canBook={canBook} />
+      </div>
 
       {loadError && (
         <p role="alert" className="notice notice-error">
@@ -90,7 +102,7 @@ export default function AvailabilityCalendar({
         </p>
       )}
 
-      <div className="calendar-frame rounded-2xl border border-line bg-surface p-2 shadow-low sm:p-4">
+      <div className="calendar-frame hidden rounded-2xl lg:block border border-line bg-surface p-2 shadow-low sm:p-4">
         <FullCalendar
           // A new key redraws the calendar when another amenity is chosen.
           key={amenity.amenity_id}
@@ -133,7 +145,7 @@ export default function AvailabilityCalendar({
         />
       </div>
 
-      <ul className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-ink-soft">
+      <ul className="hidden flex-wrap gap-x-4 gap-y-1 text-sm text-ink-soft lg:flex">
         {Object.values(eventLooks).map((look) => (
           <li key={look.title} className="flex items-center gap-1.5">
             <span className="inline-block size-3.5 rounded-sm" style={{ background: look.color }} />

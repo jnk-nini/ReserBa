@@ -70,7 +70,7 @@ export default function DayStrip({
         {ticks.map((minute) => (
           <span
             key={minute}
-            className="absolute -translate-x-1/2 whitespace-nowrap first:translate-x-0 last:-translate-x-full"
+            className="absolute -translate-x-1/2 whitespace-nowrap first:translate-x-0 last:-translate-x-full max-sm:nth-even:hidden"
             style={{ left: `${((minute - openMinutes) / span) * 100}%` }}
           >
             {formatClock(minutesToTime(minute)).replace(":00 ", "")}
