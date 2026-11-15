@@ -8,7 +8,8 @@ export type StripSegment = {
   // Minutes since midnight, Philippine time.
   from: number;
   to: number;
-  kind: "pending" | "approved" | "blocked" | "choice" | "buffer";
+  // "clash" is a chosen time that does not fit.
+  kind: "pending" | "approved" | "blocked" | "choice" | "buffer" | "clash";
   label?: string;
 };
 
@@ -18,6 +19,7 @@ const fills: Record<StripSegment["kind"], string> = {
   blocked: "stripes",
   choice: "bg-brand/25 ring-2 ring-brand ring-inset",
   buffer: "bg-brand/10 ring-1 ring-brand/40 ring-inset",
+  clash: "bg-refused/30 ring-2 ring-refused ring-inset",
 };
 
 export default function DayStrip({
@@ -45,7 +47,7 @@ export default function DayStrip({
 
   return (
     <div>
-      <div className="relative h-10 overflow-hidden rounded-lg border border-line-strong bg-surface">
+      <div className="relative h-11 overflow-hidden rounded-lg border border-line-strong bg-surface">
         {segments.map((segment, index) => {
           const position = place(segment.from, segment.to);
           if (!position) return null;
