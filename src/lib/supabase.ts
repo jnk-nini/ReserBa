@@ -1,4 +1,4 @@
-import { createClient } from "@supabase/supabase-js";
+import { createBrowserClient } from "@supabase/ssr";
 
 // Reads the project address and public key from .env.local (or Vercel settings).
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -8,10 +8,12 @@ export function hasSupabaseKeys() {
   return Boolean(supabaseUrl && supabaseAnonKey);
 }
 
-// Use this client anywhere in the app to talk to the database.
+// The client for code that runs in the browser (forms, the calendar, uploads).
+// It keeps the login in cookies, so the server pages see the same signed-in
+// user. Calling it many times is fine: it hands back the same client.
 export function getSupabase() {
   if (!supabaseUrl || !supabaseAnonKey) {
     throw new Error("Supabase keys are missing. Check .env.local.");
   }
-  return createClient(supabaseUrl, supabaseAnonKey);
+  return createBrowserClient(supabaseUrl, supabaseAnonKey);
 }
