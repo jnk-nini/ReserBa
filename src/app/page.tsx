@@ -1,38 +1,24 @@
 import Link from "next/link";
 import Faq from "@/components/faq";
-import HeroTitle from "@/components/hero-title";
-import Icon from "@/components/icon";
+import Icon, { type IconName } from "@/components/icon";
 import Logo from "@/components/logo";
-import Reveal from "@/components/reveal";
 import RoleShowcase from "@/components/role-showcase";
 import SiteHeader from "@/components/site-header";
-import Spotlight from "@/components/spotlight";
 import StatusBadge from "@/components/status-badge";
 import TryATime from "@/components/try-a-time";
 
 // The first page a visitor sees. From top to bottom: the bar with the links,
-// the opening with a box to try a time, the row of amenities, how a booking
-// goes, what each kind of user gets, the rules the system keeps, common
-// questions, and the last invitation to sign up. Everything shown here is
-// sample data. The moving parts are in components (hero-title, try-a-time,
-// role-showcase, faq, reveal, spotlight).
+// the opening with a box to try a time, how a booking goes, what each kind of
+// user gets, the rules the system keeps, common questions, and the last
+// invitation to sign up. The page is flat on purpose: one background, white
+// boxes with hairlines, and the real product on show instead of decoration.
+// Everything shown here is sample data.
 
 const sections = [
   { href: "#how", label: "How it works" },
   { href: "#roles", label: "Who it is for" },
   { href: "#rules", label: "The rules it keeps" },
   { href: "#questions", label: "Questions" },
-];
-
-const amenities = [
-  "Clubhouse",
-  "Basketball court",
-  "Swimming pool",
-  "Gazebo",
-  "Function hall",
-  "Tennis court",
-  "Multi-purpose hall",
-  "Playground",
 ];
 
 const questions: Array<{ question: string; answer: string }> = [
@@ -68,16 +54,42 @@ const questions: Array<{ question: string; answer: string }> = [
   },
 ];
 
-// The look shared by the boxes of the dark "rules" section.
-const cell =
-  "h-full rounded-3xl border border-on-deep/10 bg-linear-to-b from-on-deep/[0.07] to-on-deep/[0.02] p-6 shadow-[inset_0_1px_0_rgb(246_243_236/0.08)] sm:p-7";
-const gold = "rgb(233 185 73 / 0.14)";
+const rules: Array<{ icon: IconName; title: string; text: string }> = [
+  {
+    icon: "calendar",
+    title: "No double booking",
+    text: "The database itself refuses two reservations for the same amenity at the same time, even when two people press the button in the same second.",
+  },
+  {
+    icon: "clock",
+    title: "Buffer time between bookings",
+    text: "Time stays free after each booking for cleaning and turnover.",
+  },
+  {
+    icon: "lock",
+    title: "Blocked dates stay blocked",
+    text: "Maintenance days and HOA events are marked once. No request can land on them.",
+  },
+  {
+    icon: "coins",
+    title: "Fees computed the same way",
+    text: "Hours times the rate, plus any equipment. Nobody adds it up by hand.",
+  },
+  {
+    icon: "history",
+    title: "A record of every change",
+    text: "Approvals, rejections, and payments go to an audit log with the name and the time.",
+  },
+  {
+    icon: "shield",
+    title: "Each person sees only what they should",
+    text: "Residents see their own reservations. Guards see today. Proofs of residency and payment stay in private storage.",
+  },
+];
 
 // The look shared by the three step boxes.
-const stepCard =
-  "flex h-full flex-col rounded-3xl border border-line bg-surface p-3 shadow-low transition-[transform,box-shadow] duration-300 ease-settle hover:-translate-y-1 hover:shadow-high";
-const stepNumber =
-  "number font-display flex size-9 items-center justify-center rounded-full bg-brand text-base font-bold text-on-brand";
+const stepCard = "flex h-full flex-col rounded-2xl border border-line bg-surface p-3 shadow-low";
+const stepNumber = "number flex size-7 items-center justify-center rounded-full bg-ink text-sm font-semibold text-surface";
 
 export default function Home() {
   return (
@@ -92,117 +104,56 @@ export default function Home() {
       <SiteHeader sections={sections} />
 
       <main id="main" className="flex-1">
-        {/* The opening. The dark band ends behind the box, so the box looks
-            like it sits on top of the page. */}
-        <section className="relative isolate">
-          <div className="absolute inset-x-0 top-0 -z-10 h-full overflow-hidden bg-deep lg:h-[calc(100%-6rem)]">
-            <div className="aurora" />
-            <div className="grid-lines absolute inset-0" />
-          </div>
-
-          <div className="mx-auto grid w-full max-w-6xl items-center gap-12 px-4 pt-28 pb-14 sm:px-6 sm:pt-32 lg:grid-cols-2 lg:pt-36 lg:pb-0">
-            <div className="text-on-deep lg:pb-32">
-              <p className="animate-rise mb-6 inline-flex items-center gap-2 rounded-full border border-on-deep/15 bg-on-deep/8 py-1.5 pr-4 pl-2 text-sm font-semibold text-on-deep-soft backdrop-blur-sm">
-                <span className="flex size-6 items-center justify-center rounded-full bg-accent text-deep">
-                  <Icon name="calendar" className="size-3.5" />
-                </span>
-                Amenity booking for homeowners associations
-              </p>
-              <HeroTitle />
-              <p className="animate-rise mt-7 max-w-[34rem] text-lg text-on-deep-soft [animation-delay:350ms] sm:text-xl">
-                ReserBa shows your subdivision&rsquo;s free hours, takes your request from your phone, and
-                gives you a reference number for the gate. Two bookings for the same time are refused,
-                so no one is double booked.
-              </p>
-              <div className="animate-rise mt-9 flex flex-wrap gap-3 [animation-delay:450ms]">
-                <Link href="/signup" className="btn btn-accent btn-large focus-visible:outline-accent">
-                  Create a resident account
-                  <Icon name="arrow" />
-                </Link>
-                <Link href="/login" className="btn btn-ghost btn-large focus-visible:outline-accent">
-                  Log in
-                </Link>
-              </div>
-              <ul className="animate-rise mt-9 flex flex-wrap gap-x-6 gap-y-2 text-[0.9375rem] text-on-deep-soft [animation-delay:550ms]">
-                {["Works on any phone", "The HOA approves every request", "No double booking"].map((line) => (
-                  <li key={line} className="flex items-center gap-2">
-                    <Icon name="check" className="size-4 text-accent" />
-                    {line}
-                  </li>
-                ))}
-              </ul>
+        {/* The opening: what it is, two buttons, and a working box to try a time. */}
+        <section className="mx-auto grid w-full max-w-6xl items-center gap-12 px-4 pt-28 pb-16 sm:px-6 sm:pt-32 lg:grid-cols-[minmax(0,1fr)_minmax(0,32rem)] lg:gap-16 lg:pb-24">
+          <div>
+            <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-line-strong bg-surface py-1 pr-3.5 pl-1.5 text-sm font-medium text-ink-soft">
+              <span className="flex size-5 items-center justify-center rounded-full bg-brand-tint text-brand">
+                <Icon name="calendar" className="size-3" />
+              </span>
+              Amenity booking for homeowners associations
+            </p>
+            <h1 className="text-[2.5rem] leading-[1.05] font-semibold tracking-tight sm:text-6xl lg:text-[3.5rem] xl:text-[4rem]">
+              Reserve the clubhouse without the back-and-forth.
+            </h1>
+            <p className="mt-6 max-w-[34rem] text-lg text-ink-soft sm:text-xl">
+              ReserBa shows your subdivision&rsquo;s free hours, takes your request from your phone, and gives you a
+              reference number for the gate. Two bookings for the same time are refused, so no one is double booked.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link href="/signup" className="btn btn-primary btn-large">
+                Create a resident account
+                <Icon name="arrow" />
+              </Link>
+              <Link href="/login" className="btn btn-quiet btn-large">
+                Log in
+              </Link>
             </div>
-
-            <div className="animate-rise relative [animation-delay:250ms]">
-              <div className="absolute inset-0 -z-10 rounded-[2.5rem] lg:-inset-6 bg-accent/20 blur-3xl" />
-              <TryATime />
-
-              {/* Two small cards that float beside the box on a wide screen. */}
-              <div
-                aria-hidden="true"
-                className="glass float absolute -top-16 -left-12 hidden items-center gap-3 rounded-2xl px-4 py-3 text-on-deep xl:flex"
-              >
-                <span className="flex size-9 items-center justify-center rounded-full bg-accent text-deep">
-                  <Icon name="check" className="size-4" />
-                </span>
-                <span className="text-sm leading-tight">
-                  <span className="block font-bold">Request approved</span>
-                  <span className="font-mono text-on-deep-soft">RB-0013</span>
-                </span>
-              </div>
-              <div
-                aria-hidden="true"
-                className="float-late absolute -right-10 -bottom-7 hidden items-center gap-3 rounded-2xl border border-line bg-surface px-4 py-3 shadow-high xl:flex"
-              >
-                <span className="flex size-9 items-center justify-center rounded-full bg-brand-tint text-brand">
-                  <Icon name="shield" className="size-4" />
-                </span>
-                <span className="text-sm leading-tight">
-                  <span className="block font-bold">Confirmed at the gate</span>
-                  <span className="text-ink-soft">Clubhouse, 1:00 PM</span>
-                </span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section aria-label="Amenities a homeowners association can list" className="pt-16 lg:pt-20">
-          <p className="text-center text-sm font-semibold text-ink-soft">
-            One calendar for every shared space in the subdivision
-          </p>
-          <div className="fade-sides mt-5 overflow-hidden">
-            <ul className="marquee">
-              {[...amenities, ...amenities].map((name, index) => (
-                <li
-                  key={index}
-                  aria-hidden={index >= amenities.length}
-                  className="font-display flex items-center gap-8 pr-8 text-2xl font-bold whitespace-nowrap text-ink/70 sm:text-3xl"
-                >
-                  {name}
-                  <span className="size-2 rounded-full bg-accent" />
+            <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-[0.9375rem] text-ink-soft">
+              {["Works on any phone", "The HOA approves every request", "No double booking"].map((line) => (
+                <li key={line} className="flex items-center gap-2">
+                  <Icon name="check" className="size-4 text-brand" />
+                  {line}
                 </li>
               ))}
             </ul>
           </div>
+
+          <TryATime />
         </section>
 
-        <section id="how" className="mx-auto w-full max-w-6xl px-4 pt-20 pb-4 sm:px-6 lg:pt-28">
-          <Reveal>
-            <h2 className="max-w-2xl text-3xl font-bold sm:text-5xl">From a free hour to the gate, in three steps.</h2>
-            <p className="mt-5 max-w-[38rem] text-lg text-ink-soft">
-              The HOA still decides every request. ReserBa keeps the schedule, the fees, and the record in
-              order while it does.
+        <section id="how" className="border-t border-line bg-surface">
+          <div className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-6 lg:py-28">
+            <h2 className="max-w-2xl text-3xl font-semibold sm:text-[2.5rem]">From a free hour to the gate, in three steps.</h2>
+            <p className="mt-4 max-w-[38rem] text-lg text-ink-soft">
+              The HOA still decides every request. ReserBa keeps the schedule, the fees, and the record in order while
+              it does.
             </p>
-          </Reveal>
 
-          <ol className="mt-12 grid gap-6 lg:grid-cols-3">
-            <li>
-              <Reveal className="h-full">
-                <Spotlight className={stepCard}>
-                  <div
-                    className="flex min-h-52 flex-col justify-center gap-4 rounded-2xl bg-ground p-5"
-                    aria-hidden="true"
-                  >
+            <ol className="mt-12 grid gap-5 lg:grid-cols-3">
+              <li>
+                <div className={`${stepCard} bg-ground`}>
+                  <div className="flex min-h-52 flex-col justify-center gap-4 rounded-xl bg-surface p-5" aria-hidden="true">
                     {[
                       ["Clubhouse", "left-[36%] w-[28%]", "Free from 5 PM"],
                       ["Basketball court", "left-[10%] w-[22%]", "Free until 4 PM"],
@@ -210,10 +161,10 @@ export default function Home() {
                     ].map(([name, bar, note]) => (
                       <div key={name}>
                         <div className="flex items-baseline justify-between gap-2 text-sm">
-                          <span className="font-semibold">{name}</span>
+                          <span className="font-medium">{name}</span>
                           <span className="text-ink-soft">{note}</span>
                         </div>
-                        <div className="relative mt-1.5 h-3 overflow-hidden rounded-full bg-closed-tint">
+                        <div className="relative mt-1.5 h-2.5 overflow-hidden rounded-full bg-closed-tint">
                           <span className={`absolute inset-y-0 rounded-full bg-approved ${bar}`} />
                         </div>
                       </div>
@@ -221,35 +172,33 @@ export default function Home() {
                   </div>
                   <div className="px-3 pt-5 pb-4">
                     <span className={stepNumber}>1</span>
-                    <h3 className="mt-4 text-xl font-bold">Check the calendar</h3>
+                    <h3 className="mt-4 text-xl font-semibold">Check the calendar</h3>
                     <p className="mt-2 text-ink-soft">
                       Every amenity shows its taken and free hours, so you know what is open before you ask.
                     </p>
                   </div>
-                </Spotlight>
-              </Reveal>
-            </li>
+                </div>
+              </li>
 
-            <li>
-              <Reveal delay={0.1} className="h-full">
-                <Spotlight className={stepCard}>
-                  <div className="flex min-h-52 flex-col justify-center rounded-2xl bg-ground p-5" aria-hidden="true">
+              <li>
+                <div className={`${stepCard} bg-ground`}>
+                  <div className="flex min-h-52 flex-col justify-center rounded-xl bg-surface p-5" aria-hidden="true">
                     <dl className="number flex flex-col gap-2 text-sm">
                       <div className="flex justify-between gap-3">
                         <dt className="text-ink-soft">Clubhouse, 4 hours at ₱500.00</dt>
-                        <dd className="font-semibold">₱2,000.00</dd>
+                        <dd className="font-medium">₱2,000.00</dd>
                       </div>
                       <div className="flex justify-between gap-3">
                         <dt className="text-ink-soft">50 monobloc chairs</dt>
-                        <dd className="font-semibold">₱250.00</dd>
+                        <dd className="font-medium">₱250.00</dd>
                       </div>
                       <div className="flex justify-between gap-3">
                         <dt className="text-ink-soft">Deposit</dt>
-                        <dd className="font-semibold">₱1,000.00</dd>
+                        <dd className="font-medium">₱1,000.00</dd>
                       </div>
-                      <div className="mt-1 flex items-center justify-between gap-3 border-t border-line-strong pt-3 text-base">
-                        <dt className="font-bold">To pay</dt>
-                        <dd className="font-bold">₱3,250.00</dd>
+                      <div className="mt-1 flex items-center justify-between gap-3 border-t border-line pt-3 text-base">
+                        <dt className="font-semibold">To pay</dt>
+                        <dd className="font-semibold">₱3,250.00</dd>
                       </div>
                     </dl>
                     <div className="mt-3">
@@ -258,219 +207,73 @@ export default function Home() {
                   </div>
                   <div className="px-3 pt-5 pb-4">
                     <span className={stepNumber}>2</span>
-                    <h3 className="mt-4 text-xl font-bold">Send a request</h3>
+                    <h3 className="mt-4 text-xl font-semibold">Send a request</h3>
                     <p className="mt-2 text-ink-soft">
-                      The fee and the deposit are computed for you. The HOA administrator approves it or
-                      tells you why not.
+                      The fee and the deposit are computed for you. The HOA administrator approves it or tells you why
+                      not.
                     </p>
                   </div>
-                </Spotlight>
-              </Reveal>
-            </li>
+                </div>
+              </li>
 
-            <li>
-              <Reveal delay={0.2} className="h-full">
-                <Spotlight className={stepCard}>
-                  <div className="flex min-h-52 flex-col justify-center rounded-2xl bg-ground p-5" aria-hidden="true">
-                    <div className="rounded-xl border border-line bg-surface p-4 shadow-low">
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <p className="text-sm text-ink-soft">Reference number</p>
-                          <p className="font-mono text-3xl font-semibold tracking-wide">RB-0013</p>
-                        </div>
-                        <StatusBadge status="approved" />
+              <li>
+                <div className={`${stepCard} bg-ground`}>
+                  <div className="flex min-h-52 flex-col justify-center rounded-xl bg-surface p-5" aria-hidden="true">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-sm text-ink-soft">Reference number</p>
+                        <p className="font-mono text-3xl font-semibold tracking-wide">RB-0013</p>
                       </div>
-                      <div className="mt-3 border-t border-dashed border-line-strong pt-3 text-sm">
-                        <p className="font-semibold">Clubhouse</p>
-                        <p className="number text-ink-soft">Sat, Nov 21, 2026, 1:00 PM to 5:00 PM</p>
-                      </div>
+                      <StatusBadge status="approved" />
+                    </div>
+                    <div className="mt-4 border-t border-dashed border-line-strong pt-4 text-sm">
+                      <p className="font-medium">Clubhouse</p>
+                      <p className="number text-ink-soft">Sat, Nov 21, 2026, 1:00 PM to 5:00 PM</p>
                     </div>
                   </div>
                   <div className="px-3 pt-5 pb-4">
                     <span className={stepNumber}>3</span>
-                    <h3 className="mt-4 text-xl font-bold">Show your slip</h3>
+                    <h3 className="mt-4 text-xl font-semibold">Show your slip</h3>
                     <p className="mt-2 text-ink-soft">
-                      An approved booking gets a reference number. The guard confirms it at the gate on
-                      the day.
+                      An approved booking gets a reference number. The guard confirms it at the gate on the day.
                     </p>
                   </div>
-                </Spotlight>
-              </Reveal>
-            </li>
-          </ol>
+                </div>
+              </li>
+            </ol>
+          </div>
         </section>
 
-        <section id="roles" className="mx-auto w-full max-w-6xl px-4 pt-24 sm:px-6 lg:pt-32">
-          <Reveal>
-            <h2 className="max-w-2xl text-3xl font-bold sm:text-5xl">One schedule, three kinds of users.</h2>
-            <p className="mt-5 max-w-[38rem] text-lg text-ink-soft">
-              Each person signs in to the screens made for their part of the work, and to nothing else.
-            </p>
-          </Reveal>
-          <Reveal delay={0.1} className="mt-10">
+        <section id="roles" className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-6 lg:py-28">
+          <h2 className="max-w-2xl text-3xl font-semibold sm:text-[2.5rem]">One schedule, three kinds of users.</h2>
+          <p className="mt-4 max-w-[38rem] text-lg text-ink-soft">
+            Each person signs in to the screens made for their part of the work, and to nothing else.
+          </p>
+          <div className="mt-10">
             <RoleShowcase />
-          </Reveal>
+          </div>
         </section>
 
-        <section id="rules" className="relative isolate mt-24 overflow-hidden bg-deep text-on-deep lg:mt-32">
-          <div className="aurora -z-10 opacity-70" />
-          <div className="grid-lines absolute inset-0 -z-10" />
+        <section id="rules" className="border-y border-line bg-surface">
           <div className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-6 lg:py-28">
-            <Reveal>
-              <h2 className="max-w-3xl text-3xl font-bold sm:text-5xl">
-                The rules are kept by the system, <span className="text-accent">not by memory.</span>
-              </h2>
-              <p className="mt-5 max-w-[38rem] text-lg text-on-deep-soft">
-                A busy officer can miss an overlap in a notebook or a group chat. These checks run on
-                every request, every time.
-              </p>
-            </Reveal>
+            <h2 className="max-w-3xl text-3xl font-semibold sm:text-[2.5rem]">
+              The rules are kept by the system, not by memory.
+            </h2>
+            <p className="mt-4 max-w-[38rem] text-lg text-ink-soft">
+              A busy officer can miss an overlap in a notebook or a group chat. These checks run on every request,
+              every time.
+            </p>
 
-            <ul className="mt-12 grid gap-4 lg:grid-cols-6">
-              <li className="lg:col-span-4">
-                <Reveal className="h-full">
-                  <Spotlight color={gold} className={cell}>
-                    <div
-                      className="flex flex-col gap-2.5 rounded-2xl border border-on-deep/10 bg-deep/60 p-4"
-                      aria-hidden="true"
-                    >
-                      <div className="flex items-center gap-3">
-                        <span className="w-14 shrink-0 text-sm text-on-deep-soft sm:w-20">Santos</span>
-                        <div className="relative h-8 grow rounded-lg bg-on-deep/8">
-                          <span className="absolute inset-y-0 left-[25%] flex w-[45%] items-center justify-center rounded-lg bg-[#2f8f6a] text-xs font-bold whitespace-nowrap">
-                            1 PM to 5 PM
-                          </span>
-                        </div>
-                        <span className="w-16 shrink-0 text-right text-sm font-semibold text-[#8fd9b6]">Saved</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <span className="w-14 shrink-0 text-sm text-on-deep-soft sm:w-20">Reyes</span>
-                        <div className="relative h-8 grow rounded-lg bg-on-deep/8">
-                          <span className="absolute inset-y-0 left-[48%] flex w-[45%] items-center justify-center rounded-lg border border-dashed border-[#ff9d8a] bg-[#ff9d8a]/15 text-xs font-bold whitespace-nowrap text-[#ffb7a8] line-through">
-                            3 PM to 7 PM
-                          </span>
-                        </div>
-                        <span className="w-16 shrink-0 text-right text-sm font-semibold text-[#ffb7a8]">Refused</span>
-                      </div>
-                    </div>
-                    <h3 className="mt-6 text-xl font-bold">No double booking</h3>
-                    <p className="mt-2 max-w-[34rem] text-on-deep-soft">
-                      The database itself refuses two reservations for the same amenity at the same time,
-                      even when two people press the button in the same second.
-                    </p>
-                  </Spotlight>
-                </Reveal>
-              </li>
-
-              <li className="lg:col-span-2">
-                <Reveal delay={0.1} className="h-full">
-                  <Spotlight color={gold} className={cell}>
-                    <div className="rounded-2xl border border-on-deep/10 bg-deep/60 p-4" aria-hidden="true">
-                      <div className="flex h-8 overflow-hidden rounded-lg bg-on-deep/8">
-                        <span className="w-[45%] rounded-lg bg-[#2f8f6a]" />
-                        <span className="stripes w-[20%] opacity-60" />
-                      </div>
-                      <p className="mt-2 flex justify-between text-xs text-on-deep-soft">
-                        <span>Booking</span>
-                        <span className="font-semibold text-accent">60 min buffer</span>
-                        <span>Next</span>
-                      </p>
-                    </div>
-                    <h3 className="mt-6 text-xl font-bold">Buffer time between bookings</h3>
-                    <p className="mt-2 text-on-deep-soft">
-                      Time stays free after each booking for cleaning and turnover.
-                    </p>
-                  </Spotlight>
-                </Reveal>
-              </li>
-
-              <li className="lg:col-span-2">
-                <Reveal className="h-full">
-                  <Spotlight color={gold} className={cell}>
-                    <div
-                      className="grid grid-cols-7 gap-1.5 rounded-2xl border border-on-deep/10 bg-deep/60 p-4"
-                      aria-hidden="true"
-                    >
-                      {Array.from({ length: 14 }, (_, day) => (
-                        <span
-                          key={day}
-                          className={`number flex h-8 items-center justify-center rounded-md text-xs ${
-                            day === 9 || day === 10
-                              ? "stripes font-bold text-deep"
-                              : "bg-on-deep/8 text-on-deep-soft"
-                          }`}
-                        >
-                          {day + 8}
-                        </span>
-                      ))}
-                    </div>
-                    <h3 className="mt-6 text-xl font-bold">Blocked dates stay blocked</h3>
-                    <p className="mt-2 text-on-deep-soft">
-                      Maintenance days and HOA events are marked once. No request can land on them.
-                    </p>
-                  </Spotlight>
-                </Reveal>
-              </li>
-
-              <li className="lg:col-span-2">
-                <Reveal delay={0.1} className="h-full">
-                  <Spotlight color={gold} className={cell}>
-                    <div className="number rounded-2xl border border-on-deep/10 bg-deep/60 p-4" aria-hidden="true">
-                      <p className="text-sm text-on-deep-soft">4 hours at ₱500.00</p>
-                      <p className="font-display mt-1 text-4xl leading-none font-bold">₱2,000.00</p>
-                    </div>
-                    <h3 className="mt-6 text-xl font-bold">Fees computed the same way</h3>
-                    <p className="mt-2 text-on-deep-soft">
-                      Hours times the rate, plus any equipment. Nobody adds it up by hand.
-                    </p>
-                  </Spotlight>
-                </Reveal>
-              </li>
-
-              <li className="lg:col-span-2">
-                <Reveal delay={0.2} className="h-full">
-                  <Spotlight color={gold} className={cell}>
-                    <ul
-                      className="flex flex-col gap-2 rounded-2xl border border-on-deep/10 bg-deep/60 p-4 text-xs"
-                      aria-hidden="true"
-                    >
-                      {[
-                        ["9:02 AM", "Request approved"],
-                        ["9:15 AM", "Payment recorded"],
-                        ["4:40 PM", "Rate changed"],
-                      ].map(([time, action]) => (
-                        <li key={time} className="flex items-center gap-2">
-                          <span className="size-1.5 rounded-full bg-accent" />
-                          <span className="number w-14 text-on-deep-soft">{time}</span>
-                          <span className="grow font-semibold">{action}</span>
-                        </li>
-                      ))}
-                    </ul>
-                    <h3 className="mt-6 text-xl font-bold">A record of every change</h3>
-                    <p className="mt-2 text-on-deep-soft">
-                      Approvals, rejections, and payments go to an audit log with the name and the time.
-                    </p>
-                  </Spotlight>
-                </Reveal>
-              </li>
-
-              <li className="lg:col-span-6">
-                <Reveal className="h-full">
-                  <Spotlight color={gold} className={`${cell} flex flex-col gap-5 sm:flex-row sm:items-center`}>
-                    <span className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-accent text-deep">
-                      <Icon name="lock" className="size-6" />
-                    </span>
-                    <div>
-                      <h3 className="text-xl font-bold">Each person sees only what they should</h3>
-                      <p className="mt-1 max-w-[46rem] text-on-deep-soft">
-                        Residents see their own reservations. Guards see today. Proofs of residency and
-                        payment stay in private storage, collected with consent under the Data Privacy
-                        Act of 2012.
-                      </p>
-                    </div>
-                  </Spotlight>
-                </Reveal>
-              </li>
+            <ul className="mt-12 grid gap-x-10 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+              {rules.map((rule) => (
+                <li key={rule.title}>
+                  <span className="flex size-10 items-center justify-center rounded-xl bg-brand-tint text-brand">
+                    <Icon name={rule.icon} />
+                  </span>
+                  <h3 className="mt-4 text-lg font-semibold">{rule.title}</h3>
+                  <p className="mt-1.5 text-ink-soft">{rule.text}</p>
+                </li>
+              ))}
             </ul>
           </div>
         </section>
@@ -479,39 +282,39 @@ export default function Home() {
           id="questions"
           className="mx-auto grid w-full max-w-6xl gap-x-12 gap-y-8 px-4 py-20 sm:px-6 lg:grid-cols-[minmax(0,4fr)_minmax(0,7fr)] lg:py-28"
         >
-          <Reveal>
-            <h2 className="text-3xl font-bold sm:text-5xl">Questions residents ask first.</h2>
-            <p className="mt-5 text-lg text-ink-soft">
+          <div>
+            <h2 className="text-3xl font-semibold sm:text-[2.5rem]">Questions residents ask first.</h2>
+            <p className="mt-4 text-lg text-ink-soft">
               Something else? Ask your HOA office. They run ReserBa for your subdivision.
             </p>
-          </Reveal>
-          <Reveal delay={0.1}>
-            <Faq items={questions} />
-          </Reveal>
+          </div>
+          <Faq items={questions} />
         </section>
 
         <section className="mx-auto w-full max-w-6xl px-4 pb-20 sm:px-6 lg:pb-28">
-          <Reveal>
-            <div className="relative isolate overflow-hidden rounded-[2rem] bg-deep px-6 py-14 text-center text-on-deep shadow-high sm:px-12 sm:py-20">
-              <div className="aurora -z-10" />
-              <div className="grid-lines absolute inset-0 -z-10" />
-              <h2 className="mx-auto max-w-2xl text-3xl font-bold sm:text-5xl">
-                Your next booking starts with a free hour.
-              </h2>
-              <p className="mx-auto mt-5 max-w-[34rem] text-lg text-on-deep-soft">
-                Create your account, upload your proof of residency, and book once the HOA verifies it.
-              </p>
-              <div className="mt-9 flex flex-wrap justify-center gap-3">
-                <Link href="/signup" className="btn btn-accent btn-large focus-visible:outline-accent">
-                  Create a resident account
-                  <Icon name="arrow" />
-                </Link>
-                <Link href="/login" className="btn btn-ghost btn-large focus-visible:outline-accent">
-                  Log in
-                </Link>
-              </div>
+          <div className="rounded-3xl bg-brand px-6 py-14 text-center text-on-brand sm:px-12 sm:py-20">
+            <h2 className="mx-auto max-w-2xl text-3xl font-semibold sm:text-[2.5rem]">
+              Your next booking starts with a free hour.
+            </h2>
+            <p className="mx-auto mt-4 max-w-[34rem] text-lg text-on-brand/80">
+              Create your account, upload your proof of residency, and book once the HOA verifies it.
+            </p>
+            <div className="mt-8 flex flex-wrap justify-center gap-3">
+              <Link
+                href="/signup"
+                className="btn btn-large bg-surface text-brand hover:bg-brand-tint focus-visible:outline-surface"
+              >
+                Create a resident account
+                <Icon name="arrow" />
+              </Link>
+              <Link
+                href="/login"
+                className="btn btn-large border border-on-brand/40 text-on-brand hover:bg-on-brand/10 focus-visible:outline-surface"
+              >
+                Log in
+              </Link>
             </div>
-          </Reveal>
+          </div>
         </section>
       </main>
 
@@ -524,21 +327,21 @@ export default function Home() {
             </p>
           </div>
           <nav aria-label="Footer">
-            <ul className="flex flex-wrap gap-x-6 gap-y-2 text-[0.9375rem] font-semibold md:justify-end">
+            <ul className="flex flex-wrap gap-x-6 gap-y-2 text-[0.9375rem] font-medium md:justify-end">
               {sections.map((section) => (
                 <li key={section.href}>
-                  <a href={section.href} className="text-ink-soft transition-colors duration-150 hover:text-brand">
+                  <a href={section.href} className="text-ink-soft transition-colors duration-150 hover:text-ink">
                     {section.label}
                   </a>
                 </li>
               ))}
               <li>
-                <Link href="/login" className="text-ink-soft transition-colors duration-150 hover:text-brand">
+                <Link href="/login" className="text-ink-soft transition-colors duration-150 hover:text-ink">
                   Log in
                 </Link>
               </li>
               <li>
-                <Link href="/signup" className="text-ink-soft transition-colors duration-150 hover:text-brand">
+                <Link href="/signup" className="text-ink-soft transition-colors duration-150 hover:text-ink">
                   Sign up
                 </Link>
               </li>

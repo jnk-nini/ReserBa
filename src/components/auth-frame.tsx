@@ -2,9 +2,10 @@ import Link from "next/link";
 import Icon from "./icon";
 import Logo from "./logo";
 
-// The frame around the login, sign-up, and password screens. On a computer
-// the dark green panel on the left reminds the visitor what ReserBa does; on
-// a phone only the form is shown, so nothing pushes it down the screen.
+// The frame around the login, sign-up, and password screens. One calm card on
+// the page background. On a computer a short list beside it reminds the
+// visitor what ReserBa does; on a phone only the form is shown, so nothing
+// pushes it down the screen.
 
 const reminders = [
   "See the free hours of every amenity",
@@ -22,37 +23,37 @@ export default function AuthFrame({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-1 flex-col lg:flex-row">
-      <aside className="dot-grid hidden bg-deep text-on-deep lg:flex lg:w-[26rem] lg:shrink-0 lg:flex-col lg:justify-between lg:p-10 xl:w-[30rem]">
-        <Link href="/" className="self-start rounded-lg focus-visible:outline-accent" aria-label="ReserBa, home">
-          <Logo tone="light" />
+    <div className="flex flex-1 flex-col">
+      <header className="mx-auto flex w-full max-w-5xl items-center justify-between px-4 pt-6 sm:px-6">
+        <Link href="/" className="rounded-lg" aria-label="ReserBa, home">
+          <Logo />
         </Link>
-        <div>
-          <p className="font-display text-[2rem] leading-[1.15] font-bold tracking-tight">
+        <Link href="/" className="text-sm font-medium text-ink-soft hover:text-ink">
+          Back to the first page
+        </Link>
+      </header>
+
+      <main className="mx-auto grid w-full max-w-5xl flex-1 items-center gap-12 px-4 py-10 sm:px-6 lg:grid-cols-[minmax(0,1fr)_26rem] lg:gap-20">
+        <div className="hidden lg:block">
+          <p className="max-w-md text-[2.25rem] leading-[1.1] font-semibold tracking-tight">
             Book the clubhouse, court, or pool without the back-and-forth.
           </p>
-          <ul className="mt-8 flex flex-col gap-3 text-on-deep-soft">
+          <ul className="mt-8 flex flex-col gap-3 text-ink-soft">
             {reminders.map((line) => (
-              <li key={line} className="flex items-center gap-2.5">
-                <Icon name="check" className="size-4 text-accent" />
+              <li key={line} className="flex items-center gap-3">
+                <span className="flex size-6 items-center justify-center rounded-full bg-brand-tint text-brand">
+                  <Icon name="check" className="size-3.5" />
+                </span>
                 {line}
               </li>
             ))}
           </ul>
         </div>
-        <p className="text-sm text-on-deep-soft">
-          Your details are used only to manage amenity bookings.
-        </p>
-      </aside>
 
-      <main className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center gap-6 px-4 py-10 sm:px-6 lg:max-w-none lg:items-center">
-        <div className="flex w-full flex-col gap-6 lg:max-w-md">
-          <Link href="/" className="self-start rounded-lg lg:hidden" aria-label="ReserBa, home">
-            <Logo />
-          </Link>
+        <div className="mx-auto flex w-full max-w-md flex-col gap-6 rounded-2xl border border-line bg-surface p-6 shadow-high sm:p-8 lg:max-w-none">
           <div>
-            <h1 className="text-3xl font-bold">{title}</h1>
-            {description && <p className="mt-2 text-base text-ink-soft">{description}</p>}
+            <h1 className="text-[1.75rem] font-semibold">{title}</h1>
+            {description && <p className="mt-1.5 text-[0.9375rem] text-ink-soft">{description}</p>}
           </div>
           {children}
         </div>

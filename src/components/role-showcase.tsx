@@ -69,7 +69,7 @@ function ResidentScreen() {
   return (
     <div>
       <div className="flex items-center justify-between gap-3">
-        <p className="font-display text-lg font-bold">My reservations</p>
+        <p className="text-lg font-semibold">My reservations</p>
         <span className="rounded-lg bg-brand px-3 py-1.5 text-sm font-semibold text-on-brand">Book an amenity</span>
       </div>
       <ul className="mt-4 flex flex-col divide-y divide-line rounded-xl border border-line bg-surface">
@@ -96,11 +96,11 @@ function AdminScreen() {
   ];
   return (
     <div>
-      <p className="font-display text-lg font-bold">Waiting for you</p>
+      <p className="text-lg font-semibold">Waiting for you</p>
       <ul className="mt-3 grid grid-cols-3 gap-2">
         {tiles.map(([count, label]) => (
           <li key={label} className="rounded-xl border border-line bg-surface px-3 py-3">
-            <p className="number font-display text-3xl leading-none font-bold text-pending">{count}</p>
+            <p className="number text-3xl leading-none font-semibold text-pending">{count}</p>
             <p className="mt-1.5 text-sm leading-snug text-ink-soft">{label}</p>
           </li>
         ))}
@@ -131,7 +131,7 @@ function AdminScreen() {
 function GuardScreen() {
   return (
     <div>
-      <p className="font-display text-lg font-bold">Check a reference number</p>
+      <p className="text-lg font-semibold">Check a reference number</p>
       <div className="mt-3 flex gap-2">
         <span className="flex min-h-11 grow items-center rounded-lg border border-brand bg-surface px-3 font-mono text-lg font-semibold tracking-wide ring-3 ring-brand/15">
           RB-0013
@@ -235,14 +235,8 @@ export default function RoleShowcase() {
 
         {/* The drawing of the screen, inside a simple browser window. */}
         <div className="relative" aria-hidden="true">
-          <div className="absolute inset-0 -z-10 rounded-[2rem] sm:-inset-4 bg-linear-to-br from-brand/25 via-accent/20 to-transparent blur-2xl" />
-          <div className="overflow-hidden rounded-2xl border border-line-strong/70 bg-ground shadow-high">
+          <div className="overflow-hidden rounded-2xl border border-line bg-ground shadow-high">
             <div className="flex items-center gap-3 border-b border-line bg-surface px-4 py-2.5">
-              <span className="flex gap-1.5">
-                <span className="size-2.5 rounded-full bg-refused/50" />
-                <span className="size-2.5 rounded-full bg-accent" />
-                <span className="size-2.5 rounded-full bg-approved/60" />
-              </span>
               <span className="grow truncate rounded-md bg-closed-tint px-3 py-1 text-center text-xs text-ink-soft">
                 {role.address}
               </span>
@@ -251,9 +245,9 @@ export default function RoleShowcase() {
               <AnimatePresence mode="wait" initial={false}>
                 <motion.div
                   key={role.id}
-                  initial={{ opacity: 0, y: 12, filter: "blur(6px)" }}
-                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                  exit={{ opacity: 0, y: -8, filter: "blur(6px)" }}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
                   transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
                 >
                   <Screen />
