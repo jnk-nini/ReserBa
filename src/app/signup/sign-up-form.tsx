@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { getSupabase } from "@/lib/supabase";
+import PasswordInput from "@/components/password-input";
 import { checkProofFile, uploadProof } from "@/lib/upload";
 
 // The sign-up form. It runs in the browser because it reacts to typing and
@@ -206,26 +207,13 @@ export default function SignUpForm() {
 
       <label className="label">
         Password
-        <input
-          name="password"
-          type="password"
-          required
-          minLength={8}
-          autoComplete="new-password"
-          className={inputClass}
-        />
+        <PasswordInput name="password" required minLength={8} autoComplete="new-password" />
         <span className="hint">At least 8 characters.</span>
       </label>
 
       <label className="label">
         Confirm password
-        <input
-          name="confirm_password"
-          type="password"
-          required
-          autoComplete="new-password"
-          className={inputClass}
-        />
+        <PasswordInput name="confirm_password" required autoComplete="new-password" />
       </label>
 
       <label className="label">

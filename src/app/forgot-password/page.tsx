@@ -21,7 +21,7 @@ export default function ForgotPasswordPage() {
         </label>
       </ActionForm>
       <p className="text-base text-ink-soft">
-        <Link href="/login" className="font-semibold text-brand underline underline-offset-4">
+        <Link href="/login" className="link">
           Back to log in
         </Link>
       </p>
