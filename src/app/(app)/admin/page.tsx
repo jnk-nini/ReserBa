@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import EmptyState from "@/components/empty-state";
 import Icon from "@/components/icon";
 import PageHeader from "@/components/page-header";
 import { requireRole } from "@/lib/auth";
@@ -60,7 +61,7 @@ export default async function AdminDashboardPage() {
       <PageHeader title="Dashboard" description={formatDate(new Date())} />
 
       <section aria-labelledby="waiting-title">
-        <h2 id="waiting-title" className="mb-3 text-lg font-bold">
+        <h2 id="waiting-title" className="mb-3 text-sm font-semibold text-ink-soft">
           Waiting for you
         </h2>
         <ul className="grid gap-3 sm:grid-cols-3">
@@ -68,18 +69,23 @@ export default async function AdminDashboardPage() {
             <li key={item.href}>
               <Link
                 href={item.href}
-                className="group flex h-full items-center gap-4 rounded-xl border border-line bg-surface px-4 py-4 text-base shadow-low transition-colors duration-150 hover:border-brand hover:bg-brand-tint sm:flex-col sm:items-start sm:gap-2"
+                className="group flex h-full flex-col justify-between gap-6 rounded-2xl border border-line bg-surface p-5 shadow-low transition-[border-color,box-shadow,transform] duration-200 ease-settle hover:-translate-y-0.5 hover:border-line-strong hover:shadow-high"
               >
-                <span
-                  className={`number font-display min-w-10 text-right text-4xl leading-none font-bold sm:text-left ${item.count > 0 ? "text-pending" : "text-ink-soft"}`}
-                >
-                  {item.count}
+                <span className="flex items-start justify-between gap-3">
+                  <span className="text-[0.9375rem] text-ink-soft">{item.label}</span>
+                  <Icon
+                    name="chevron-right"
+                    className="mt-1 size-4 text-ink-soft/50 transition-transform duration-200 ease-settle group-hover:translate-x-0.5"
+                  />
                 </span>
-                <span className="flex-1">{item.label}</span>
-                <Icon
-                  name="arrow"
-                  className="size-5 text-ink-soft transition-transform duration-200 ease-settle group-hover:translate-x-1 group-hover:text-brand sm:hidden"
-                />
+                <span className="flex items-center gap-2.5">
+                  <span
+                    className={`number text-4xl leading-none font-semibold tracking-tight ${item.count > 0 ? "text-ink" : "text-ink-soft/60"}`}
+                  >
+                    {item.count}
+                  </span>
+                  {item.count > 0 && <span className="size-2 rounded-full bg-pending" aria-label="needs attention" />}
+                </span>
               </Link>
             </li>
           ))}
@@ -87,11 +93,11 @@ export default async function AdminDashboardPage() {
       </section>
 
       <section aria-labelledby="today-title" className="mt-8">
-        <h2 id="today-title" className="mb-3 text-lg font-bold">
+        <h2 id="today-title" className="mb-3 text-sm font-semibold text-ink-soft">
           Approved for today
         </h2>
         {todayRows.length === 0 ? (
-          <p className="panel text-base text-ink-soft">No approved reservation today.</p>
+          <EmptyState icon="calendar" title="Nothing booked today">Approved reservations for today appear here.</EmptyState>
         ) : (
           <div className="table-wrap">
             <table className="table number">
@@ -114,7 +120,7 @@ export default async function AdminDashboardPage() {
                     <td>
                       <Link
                         href={`/admin/requests/${row.reservation_id}`}
-                        className="font-mono font-semibold text-brand underline underline-offset-4"
+                        className="font-mono font-medium text-brand underline decoration-brand/30 underline-offset-4 hover:decoration-brand"
                       >
                         {row.reference_no}
                       </Link>

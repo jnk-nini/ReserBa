@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import PageHeader from "@/components/page-header";
-import StatusBadge from "@/components/status-badge";
+import EmptyState from "@/components/empty-state";
+import ReservationRow from "@/components/reservation-row";
 import { requireRole } from "@/lib/auth";
-import { formatMoney } from "@/lib/money";
-import { displayNumber } from "@/lib/reservations";
 import { getServerSupabase } from "@/lib/supabase-server";
-import { formatDate, formatTime } from "@/lib/time";
 import type { Reservation } from "@/lib/types";
 
 export const metadata: Metadata = {
@@ -64,14 +62,19 @@ export default async function RequestsPage({ searchParams }: PageProps<"/admin/r
         </Link>
       </PageHeader>
 
-      <nav aria-label="Filter requests" className="mb-4 flex gap-1 overflow-x-auto">
+      <nav
+        aria-label="Filter requests"
+        className="-mx-4 mb-5 flex gap-1.5 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:mx-0 sm:px-0"
+      >
         {tabs.map((tab) => (
           <Link
             key={tab.key}
             href={`/admin/requests?show=${tab.key}`}
             aria-current={show === tab.key ? "page" : undefined}
-            className={`shrink-0 rounded-lg px-3 py-2 text-base font-semibold whitespace-nowrap transition-colors duration-150 ${
-              show === tab.key ? "bg-brand text-on-brand" : "text-ink hover:bg-brand-tint"
+            className={`shrink-0 rounded-full border px-4 py-2 text-[0.9375rem] font-medium whitespace-nowrap transition-colors duration-150 ${
+              show === tab.key
+                ? "border-ink bg-ink text-surface"
+                : "border-line-strong bg-surface text-ink hover:border-ink-soft/60"
             }`}
           >
             {tab.label}
@@ -80,38 +83,27 @@ export default async function RequestsPage({ searchParams }: PageProps<"/admin/r
       </nav>
 
       {rows.length === 0 ? (
-        <p className="panel text-base text-ink-soft">Nothing here.</p>
+        <EmptyState icon="inbox" title="Nothing here">
+          {show === "pending"
+            ? "No request is waiting for a decision. New ones appear here, oldest first."
+            : "No reservation matches this filter."}
+        </EmptyState>
       ) : (
-        <ul className="flex flex-col divide-y divide-line rounded-xl border border-line bg-surface">
+        <ul className="divide-y divide-line overflow-hidden rounded-2xl border border-line bg-surface shadow-low">
           {rows.map((row) => (
             <li key={row.reservation_id}>
-              <Link
+              <ReservationRow
                 href={`/admin/requests/${row.reservation_id}`}
-                className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 transition-colors duration-150 hover:bg-brand-tint"
-              >
-                <div>
-                  <p className="text-base font-semibold">
-                    {row.amenities?.name}
-                    <span className="font-normal text-ink-soft">
-                      {" "}
-                      for {row.guest_name ?? row.booker?.full_name}
-                      {row.guest_name && " (guest)"}
-                    </span>
-                  </p>
-                  <p className="number text-sm text-ink-soft">
-                    {formatDate(row.start_at)}, {formatTime(row.start_at)} to {formatTime(row.end_at)}
-                  </p>
-                  <p className="number text-sm text-ink-soft">
-                    <span className={row.reference_no ? "font-mono font-semibold text-ink" : ""}>
-                      {displayNumber(row)}
-                    </span>
-                    {" · "}
-                    {formatMoney(row.total_fee)}
-                    {row.payments.some((payment) => payment.status === "submitted") && " · proof to check"}
-                  </p>
-                </div>
-                <StatusBadge status={row.status} />
-              </Link>
+                amenity={row.amenities?.name ?? ""}
+                forWhom={`${row.guest_name ?? row.booker?.full_name ?? ""}${row.guest_name ? " (guest)" : ""}`}
+                startAt={row.start_at}
+                endAt={row.end_at}
+                referenceNo={row.reference_no}
+                reservationId={row.reservation_id}
+                totalFee={row.total_fee}
+                status={row.status}
+                note={row.payments.some((payment) => payment.status === "submitted") ? "proof to check" : undefined}
+              />
             </li>
           ))}
         </ul>
