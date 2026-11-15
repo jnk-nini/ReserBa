@@ -143,13 +143,13 @@ export default function DaySchedule({ amenity, canBook }: { amenity: Amenity; ca
       </section>
 
       <section aria-busy={!ready}>
-        <h2 className="mb-2 text-sm font-semibold text-ink-soft">Free times</h2>
+        <h2 className="eyebrow mb-2">Free times</h2>
         {!ready ? (
           <div className="skeleton h-16 w-full" />
         ) : windows.length === 0 ? (
           <p className="panel text-[0.9375rem] text-ink-soft">Nothing is free on this day. Try another day.</p>
         ) : (
-          <ul className="divide-y divide-line overflow-hidden rounded-2xl border border-line bg-surface shadow-low">
+          <ul className="list-card">
             {windows.map((window) => {
               const content = (
                 <>
@@ -188,8 +188,8 @@ export default function DaySchedule({ amenity, canBook }: { amenity: Amenity; ca
 
       {ready && taken.length > 0 && (
         <section>
-          <h2 className="mb-2 text-sm font-semibold text-ink-soft">Already taken</h2>
-          <ul className="divide-y divide-line overflow-hidden rounded-2xl border border-line bg-surface shadow-low">
+          <h2 className="eyebrow mb-2">Already taken</h2>
+          <ul className="list-card">
             {taken.map((range, index) => (
               <li key={index} className="flex items-center justify-between gap-3 px-4 py-3.5">
                 <span className="number text-[0.9375rem]">

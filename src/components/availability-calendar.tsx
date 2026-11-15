@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import FullCalendar from "@fullcalendar/react";
 import classicThemePlugin from "@fullcalendar/react/themes/classic";
@@ -36,9 +36,9 @@ function fromManilaClock(value: Date) {
 }
 
 const eventLooks: Record<TakenRange["kind"], { title: string; color: string }> = {
-  approved: { title: "Approved", color: "#0b6b4d" },
-  pending: { title: "Waiting for approval", color: "#e0a526" },
-  blocked: { title: "Blocked by the HOA", color: "#5b6560" },
+  approved: { title: "Approved", color: "#1c6b47" },
+  pending: { title: "Waiting for approval", color: "#d39a2c" },
+  blocked: { title: "Blocked by the HOA", color: "#5a625c" },
 };
 
 export default function AvailabilityCalendar({
@@ -53,12 +53,6 @@ export default function AvailabilityCalendar({
   const [loadError, setLoadError] = useState(false);
   const amenity = amenities.find((item) => item.amenity_id === amenityId);
 
-  // A phone shows one day at a time; a wider screen shows the week.
-  const startView = useMemo(
-    () => (typeof window !== "undefined" && window.innerWidth < 768 ? "timeGridDay" : "timeGridWeek"),
-    [],
-  );
-
   if (!amenity) {
     return <p className="notice notice-info">No amenity is open for booking yet.</p>;
   }
@@ -67,7 +61,7 @@ export default function AvailabilityCalendar({
     <div className="flex flex-col gap-4">
       <div>
         <div
-          role="radiogroup"
+          role="group"
           aria-label="Amenity"
           className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0"
         >
@@ -75,10 +69,9 @@ export default function AvailabilityCalendar({
             <button
               key={item.amenity_id}
               type="button"
-              role="radio"
-              aria-checked={item.amenity_id === amenityId}
               onClick={() => setAmenityId(item.amenity_id)}
-              className={`chip shrink-0 ${item.amenity_id === amenityId ? "!border-brand !bg-brand !text-on-brand" : ""}`}
+              aria-pressed={item.amenity_id === amenityId}
+              className="chip shrink-0"
             >
               {item.name}
             </button>
@@ -102,12 +95,12 @@ export default function AvailabilityCalendar({
         </p>
       )}
 
-      <div className="calendar-frame hidden rounded-2xl lg:block border border-line bg-surface p-2 shadow-low sm:p-4">
+      <div className="calendar-frame hidden rounded-2xl border border-line bg-surface p-4 shadow-low lg:block">
         <FullCalendar
           // A new key redraws the calendar when another amenity is chosen.
           key={amenity.amenity_id}
           plugins={[classicThemePlugin, dayGridPlugin, timeGridPlugin, interactionPlugin]}
-          initialView={startView}
+          initialView="timeGridWeek"
           timeZone="UTC"
           now={() => toManilaClock(new Date())}
           headerToolbar={{ left: "prev,next today", center: "title", right: "timeGridDay,timeGridWeek,dayGridMonth" }}

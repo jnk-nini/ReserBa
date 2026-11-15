@@ -56,11 +56,18 @@ function dayParts(date: string) {
   return { weekday: format({ weekday: "short" }), day: moment.getUTCDate(), month: format({ month: "short" }) };
 }
 
+// The start times are shown in three short groups instead of one long wall.
+const dayPartsOfTimes: Array<{ name: string; from: number; to: number }> = [
+  { name: "Morning", from: 0, to: 12 * 60 },
+  { name: "Afternoon", from: 12 * 60, to: 17 * 60 },
+  { name: "Evening", from: 17 * 60, to: 24 * 60 },
+];
+
 function Step({ number, title, children }: { number: number; title: string; children: React.ReactNode }) {
   return (
     <section className="panel flex flex-col gap-4">
-      <h2 className="flex items-center gap-2.5 text-base font-semibold">
-        <span className="number flex size-6 items-center justify-center rounded-full bg-ink text-xs font-semibold text-surface">
+      <h2 className="flex items-baseline gap-3 text-[1.0625rem] font-semibold">
+        <span className="display text-2xl text-brass" aria-hidden="true">
           {number}
         </span>
         {title}
@@ -175,9 +182,11 @@ export default function BookingForm({ amenities, equipment, walkIn = false, spon
       buttonClass="btn btn-primary btn-large flex-1 lg:w-full lg:flex-none"
       barClass="sticky bottom-[calc(3.5rem+1px+env(safe-area-inset-bottom))] z-10 -mx-4 flex items-center gap-4 border-t border-line bg-surface/95 px-4 py-3 shadow-high backdrop-blur-xl sm:-mx-6 sm:px-6 lg:static lg:col-start-1 lg:mx-0 lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none lg:backdrop-blur-none"
       bar={
-        <p className="number text-sm leading-tight lg:hidden">
-          <span className="block text-ink-soft">Total fee</span>
-          <span className="text-xl font-semibold">{formatMoney(fee)}</span>
+        <p className="number min-w-0 text-[0.8125rem] leading-tight lg:hidden">
+          <span className="block truncate text-ink-soft">
+            {chosen.month} {chosen.day}, {formatClock(minutesToTime(start))}
+          </span>
+          <span className="text-lg font-semibold">{formatMoney(fee)}</span>
         </p>
       }
     >
@@ -228,11 +237,19 @@ export default function BookingForm({ amenities, equipment, walkIn = false, spon
                   <span
                     className={`flex min-h-[4.25rem] items-center justify-between gap-3 rounded-xl border px-4 py-3 transition-[border-color,box-shadow,background-color] duration-150 peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-brand ${
                       selected
-                        ? "border-brand bg-brand-tint/50 ring-1 ring-brand"
+                        ? "border-brand bg-brand-tint/60 ring-1 ring-brand"
                         : "border-line-strong bg-surface hover:border-ink-soft/60"
                     }`}
                   >
-                    <span className="min-w-0">
+                    <span
+                      aria-hidden="true"
+                      className={`flex size-5 shrink-0 items-center justify-center rounded-full border transition-colors duration-150 ${
+                        selected ? "border-brand bg-brand text-on-brand" : "border-line-strong bg-surface text-transparent"
+                      }`}
+                    >
+                      <Icon name="check" className="size-3" />
+                    </span>
+                    <span className="min-w-0 flex-1">
                       <span className="block truncate text-base font-semibold">{item.name}</span>
                       <span className="number block text-[0.8125rem] text-ink-soft">
                         {formatClock(item.open_time)} to {formatClock(item.close_time)}
@@ -301,6 +318,14 @@ export default function BookingForm({ amenities, equipment, walkIn = false, spon
             </label>
           </div>
 
+          <div className="flex flex-col gap-2">
+            <p className="text-sm font-medium">
+              {amenity.name} on {chosen.weekday}, {chosen.month} {chosen.day}
+            </p>
+            <DayStrip openMinutes={openMinutes} closeMinutes={closeMinutes} segments={segments} />
+            <StripLegend showChoice />
+          </div>
+
           <div>
             <p className="mb-2 text-sm font-medium">How long</p>
             <div role="group" aria-label="How long" className="flex flex-wrap gap-2">
@@ -319,35 +344,41 @@ export default function BookingForm({ amenities, equipment, walkIn = false, spon
           </div>
 
           <div>
-            <p className="mb-2 text-sm font-medium">Start time</p>
-            <div role="group" aria-label="Start time" className="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-5">
-              {startOptions.map((minute) => {
-                const blocked = problem(minute, length) !== null;
+            <p className="mb-1 text-sm font-medium">Start time</p>
+            <p className="hint mb-3">A time that is crossed out cannot be booked for {lengthLabel(length)}.</p>
+            <div role="group" aria-label="Start time" className="flex flex-col gap-4">
+              {dayPartsOfTimes.map((part) => {
+                const options = startOptions.filter((minute) => minute >= part.from && minute < part.to);
+                if (options.length === 0) return null;
                 return (
-                  <button
-                    key={minute}
-                    type="button"
-                    className="chip number px-2"
-                    aria-pressed={!blocked && minute === start}
-                    disabled={blocked}
-                    onClick={() => setPickedStart(minute)}
-                  >
-                    {formatClock(minutesToTime(minute))}
-                  </button>
+                  <div key={part.name}>
+                    <p className="eyebrow mb-2">{part.name}</p>
+                    <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 xl:grid-cols-6">
+                      {options.map((minute) => {
+                        const blocked = problem(minute, length) !== null;
+                        return (
+                          <button
+                            key={minute}
+                            type="button"
+                            className="chip number px-2"
+                            aria-pressed={!blocked && minute === start}
+                            disabled={blocked}
+                            onClick={() => setPickedStart(minute)}
+                          >
+                            {formatClock(minutesToTime(minute))}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
                 );
               })}
             </div>
             {!firstFree && (
-              <p className="mt-3 text-sm text-ink-soft">
+              <p className="notice notice-info mt-3">
                 Nothing is free for {lengthLabel(length)} on this day. Try a shorter time or another day.
               </p>
             )}
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <p className="text-sm font-medium">The day at a glance</p>
-            <DayStrip openMinutes={openMinutes} closeMinutes={closeMinutes} segments={segments} />
-            <StripLegend showChoice />
           </div>
 
           {warning && (
@@ -408,9 +439,9 @@ export default function BookingForm({ amenities, equipment, walkIn = false, spon
       </div>
 
       <aside className="panel lg:sticky lg:top-8 lg:col-start-2 lg:row-span-2 lg:row-start-1">
-        <h2 className="text-base font-semibold">Summary</h2>
-        <div className="mt-4 flex flex-col gap-1 rounded-xl bg-ground p-4">
-          <p className="text-base font-semibold">{amenity.name}</p>
+        <h2 className="eyebrow">Your request</h2>
+        <div className="mt-3 flex flex-col gap-1 border-b border-line pb-4">
+          <p className="display text-[1.75rem]">{amenity.name}</p>
           <p className="number text-sm text-ink-soft">
             {chosen.weekday}, {chosen.month} {chosen.day}
           </p>
@@ -438,7 +469,7 @@ export default function BookingForm({ amenities, equipment, walkIn = false, spon
             </div>
           ))}
           <div className="flex justify-between gap-3 border-t border-line pt-3 text-base font-semibold">
-            <dt>Fee</dt>
+            <dt>Total fee</dt>
             <dd>{formatMoney(fee)}</dd>
           </div>
           <div className="flex justify-between gap-3">
