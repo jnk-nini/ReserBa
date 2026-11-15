@@ -4,42 +4,55 @@
    text-ink, bg-brand ...) so a colour is changed here once, not on every page.
 
    The rules behind the look:
-   - one calm neutral canvas, white surfaces, hairline borders;
-   - one brand colour (green), used for the main action and for "this is yours";
+   - a warm stone canvas, near-white surfaces, hairline borders;
+   - one brand colour (deep evergreen), used for the main action and for
+     "this is yours";
+   - one quiet accent (brass), only for small marks such as a rule or a label,
+     never for a button or a status;
    - status colours only for status;
-   - one typeface family, one radius scale, one shadow. */
+   - a serif for titles, a plain sans for everything that is read or tapped,
+     one radius scale, two shadows. */
 @theme {
-  --color-ground: #f6f7f6;
-  --color-surface: #ffffff;
-  --color-ink: #0e1512;
-  --color-ink-soft: #5b6560;
-  --color-line: #e6e9e7;
-  --color-line-strong: #d0d5d2;
+  --color-ground: #f4f2ed;
+  --color-surface: #fdfcfa;
+  --color-ink: #17201c;
+  --color-ink-soft: #5a625c;
+  --color-line: #e5e1d8;
+  --color-line-strong: #cdc8bb;
 
-  --color-brand: #0b6b4d;
-  --color-brand-strong: #08563d;
-  --color-brand-tint: #e8f4ee;
-  --color-on-brand: #ffffff;
+  --color-brand: #14392d;
+  --color-brand-strong: #0d2a20;
+  --color-brand-tint: #e7ede8;
+  --color-on-brand: #fbfaf6;
+  --color-brass: #9a7634;
+  --color-brass-soft: #d9c9a3;
 
   /* One colour per reservation state, used the same way everywhere. */
-  --color-approved: #0b6b4d;
-  --color-approved-tint: #e6f4ed;
-  --color-pending: #8a5a00;
-  --color-pending-tint: #fdf2d6;
-  --color-pending-fill: #e0a526;
-  --color-refused: #b3261e;
-  --color-refused-tint: #fdeceb;
-  --color-closed: #5b6560;
-  --color-closed-tint: #eceeed;
+  --color-approved: #1c6b47;
+  --color-approved-tint: #e3f0e8;
+  --color-pending: #855600;
+  --color-pending-tint: #f8edd2;
+  --color-pending-fill: #d39a2c;
+  --color-refused: #a12a22;
+  --color-refused-tint: #f8e7e4;
+  --color-closed: #5a625c;
+  --color-closed-tint: #eae7e0;
 
-  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-title), ui-serif, Georgia, serif;
+  --font-mono: var(--font-code), ui-monospace, monospace;
+
+  /* Corners are a little tighter than the Tailwind defaults, so panels look
+     tailored instead of bubbly. */
+  --radius-lg: 0.4375rem;
+  --radius-xl: 0.625rem;
+  --radius-2xl: 0.875rem;
+  --radius-3xl: 1.125rem;
 
   /* One low shadow for panels that sit on the page, one higher for things that
      float above it (menus, the sticky bar). Tinted with the ink colour. */
-  --shadow-low: 0 1px 2px rgb(14 21 18 / 0.04);
-  --shadow-high: 0 1px 2px rgb(14 21 18 / 0.06), 0 16px 40px -16px rgb(14 21 18 / 0.2);
+  --shadow-low: 0 1px 2px rgb(23 32 28 / 0.05);
+  --shadow-high: 0 1px 2px rgb(23 32 28 / 0.06), 0 18px 44px -18px rgb(23 32 28 / 0.22);
 
   /* Movement starts fast and settles, so the screen feels quick. */
   --ease-settle: cubic-bezier(0.16, 1, 0.3, 1);
@@ -53,6 +66,15 @@
     }
     to {
       background-position: -200% 0;
+    }
+  }
+
+  @keyframes rise {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
     }
   }
 
@@ -82,7 +104,6 @@
     color: var(--color-ink);
     font-family: var(--font-sans);
     line-height: 1.55;
-    font-feature-settings: "cv11", "ss01";
     -webkit-font-smoothing: antialiased;
   }
 
@@ -107,10 +128,9 @@
   h1,
   h2,
   h3 {
-    font-family: var(--font-display);
     font-weight: 600;
-    letter-spacing: -0.022em;
-    line-height: 1.15;
+    letter-spacing: -0.011em;
+    line-height: 1.2;
     text-wrap: balance;
   }
 
@@ -128,20 +148,39 @@
 }
 
 @layer components {
+  /* ---- Type ---- */
+  /* The serif, for page titles and the large lines of the first page. It is
+     drawn light, so it is only used at 22 pixels and up. */
+  .display {
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: -0.012em;
+    line-height: 1.08;
+    font-variant-numeric: lining-nums;
+  }
+  /* A small label above a block: capitals, spaced out, quiet. */
+  .eyebrow {
+    @apply text-[0.6875rem] font-semibold tracking-[0.14em] text-ink-soft uppercase;
+  }
+
   /* ---- Buttons: one solid, one outlined, one for danger ---- */
   .btn {
-    @apply inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-[0.625rem] px-4 py-2 text-[0.9375rem] font-semibold transition-[background-color,border-color,color,transform,box-shadow] duration-150 select-none active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-55 disabled:active:scale-100;
+    @apply inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-lg px-4 py-2 text-[0.9375rem] font-semibold transition-[background-color,border-color,color,transform,box-shadow] duration-150 select-none active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-55 disabled:active:scale-100;
     touch-action: manipulation;
   }
   .btn-primary {
     @apply bg-brand text-on-brand hover:bg-brand-strong;
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12), 0 1px 2px rgb(8 86 61 / 0.35);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.1), 0 1px 2px rgb(13 42 32 / 0.4);
   }
   .btn-quiet {
     @apply border border-line-strong bg-surface text-ink hover:border-ink-soft/60 hover:bg-ground;
   }
   .btn-danger {
     @apply border border-refused/35 bg-surface text-refused hover:bg-refused-tint;
+  }
+  /* The "yes" of a question about something that cannot be undone. */
+  .btn-danger-solid {
+    @apply bg-refused text-on-brand hover:bg-refused/90;
   }
   .btn-small {
     @apply min-h-9 rounded-lg px-3 py-1 text-sm;
@@ -158,13 +197,13 @@
     @apply text-[0.8125rem] font-normal text-ink-soft;
   }
   .input {
-    @apply min-h-11 w-full rounded-[0.625rem] border border-line-strong bg-surface px-3 py-2 text-base font-normal text-ink transition-[border-color,box-shadow] duration-150 placeholder:text-ink-soft/65 hover:border-ink-soft/60 focus:border-brand focus:ring-4 focus:ring-brand/12 focus:outline-none;
+    @apply min-h-11 w-full rounded-lg border border-line-strong bg-surface px-3 py-2 text-base font-normal text-ink transition-[border-color,box-shadow] duration-150 placeholder:text-ink-soft/65 hover:border-ink-soft/60 focus:border-brand focus:ring-4 focus:ring-brand/12 focus:outline-none;
   }
 
   /* A choice made by tapping a box instead of opening a list: a time, a
      length, an amenity. The chosen one has aria-pressed="true". */
   .chip {
-    @apply inline-flex min-h-11 cursor-pointer items-center justify-center rounded-[0.625rem] border border-line-strong bg-surface px-3.5 text-[0.9375rem] font-medium text-ink transition-[background-color,border-color,color,transform] duration-150 select-none hover:border-ink-soft/60 active:scale-[0.97] disabled:cursor-not-allowed disabled:border-line disabled:bg-ground disabled:text-ink-soft/50 disabled:line-through disabled:active:scale-100;
+    @apply inline-flex min-h-11 cursor-pointer items-center justify-center rounded-lg border border-line-strong bg-surface px-3.5 text-[0.9375rem] font-medium text-ink transition-[background-color,border-color,color,transform] duration-150 select-none hover:border-ink-soft/60 active:scale-[0.97] disabled:cursor-not-allowed disabled:border-line disabled:bg-ground disabled:text-ink-soft/50 disabled:line-through disabled:active:scale-100;
     touch-action: manipulation;
   }
   .chip[aria-pressed="true"] {
@@ -219,7 +258,7 @@
   }
 
   .number {
-    font-variant-numeric: tabular-nums;
+    font-variant-numeric: lining-nums tabular-nums;
   }
 
   /* A link inside a sentence. */
@@ -227,9 +266,40 @@
     @apply font-medium text-brand underline decoration-brand/30 underline-offset-4 transition-colors duration-150 hover:decoration-brand;
   }
 
+  /* A white box that holds a list of rows with hairlines between them. */
+  .list-card {
+    @apply divide-y divide-line overflow-hidden rounded-2xl border border-line bg-surface shadow-low;
+  }
+
   /* A row in a list that opens something: soft hover, a chevron that nudges. */
   .row-link {
     @apply flex items-center gap-4 px-4 py-4 transition-colors duration-150 hover:bg-ground/70 active:bg-ground sm:px-5;
+  }
+
+  /* A sheet that rises from the bottom of a phone screen (the "More" menu,
+     the account menu). It is a <dialog>, so the page behind cannot be used
+     until it is closed, and the Escape key closes it. */
+  .sheet {
+    @apply m-0 mt-auto max-h-[85dvh] w-full max-w-none overflow-y-auto rounded-t-3xl bg-surface p-0 text-ink shadow-high;
+  }
+  .sheet[open] {
+    animation: rise 0.28s var(--ease-settle) both;
+  }
+  .sheet::backdrop,
+  .confirm::backdrop {
+    background: rgb(23 32 28 / 0.45);
+  }
+  .sheet-row {
+    @apply flex min-h-12 items-center gap-3 rounded-xl px-3 text-base font-medium text-ink active:bg-ground;
+  }
+
+  /* A small box in the middle of the screen that asks "are you sure?" before
+     something that cannot be undone. */
+  .confirm {
+    @apply m-auto w-[calc(100%-2rem)] max-w-sm rounded-2xl border border-line bg-surface p-6 text-ink shadow-high;
+  }
+  .confirm[open] {
+    animation: pop 0.2s var(--ease-settle) both;
   }
 
   /* A grey block that stands in for content while a page is loading. */

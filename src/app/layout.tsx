@@ -1,16 +1,25 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Cormorant_Garamond, Geist_Mono, Hanken_Grotesk } from "next/font/google";
 import "./globals.css";
 
-// One typeface family for the whole product. Headings use its heavier weights.
-const geist = Geist({
-  variable: "--font-geist",
+// Titles are set in a serif; everything that is read or tapped is set in a
+// plain sans, so forms and tables stay easy to scan.
+const title = Cormorant_Garamond({
+  variable: "--font-title",
   subsets: ["latin"],
+  weight: ["500", "600"],
+  style: ["normal", "italic"],
+});
+
+// "latin-ext" carries the peso sign.
+const body = Hanken_Grotesk({
+  variable: "--font-body",
+  subsets: ["latin", "latin-ext"],
 });
 
 // Used only for reference numbers such as RB-0013, so each character is clear.
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const code = Geist_Mono({
+  variable: "--font-code",
   subsets: ["latin"],
 });
 
@@ -30,7 +39,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#ffffff",
+  themeColor: "#f4f2ed",
   viewportFit: "cover",
 };
 
@@ -38,7 +47,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${geist.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${title.variable} ${body.variable} ${code.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">{children}</body>
     </html>
