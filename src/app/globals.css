@@ -59,6 +59,50 @@
 
   --animate-shimmer: shimmer 1.4s linear infinite;
   --animate-pop: pop 0.28s var(--ease-settle) both;
+  --animate-spin-slow: spin 0.75s linear infinite;
+  --animate-ripple: ripple 0.55s ease-out forwards;
+  --animate-fade-up: fade-up 0.6s var(--ease-settle) both;
+  --animate-fade-in: fade-in 0.4s ease-out both;
+
+  @keyframes ripple {
+    from {
+      transform: scale(0);
+      opacity: 0.35;
+    }
+    to {
+      transform: scale(1);
+      opacity: 0;
+    }
+  }
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes grow {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
 
   @keyframes shimmer {
     from {
@@ -165,11 +209,28 @@
 
   /* ---- Buttons: one solid, one outlined, one for danger ---- */
   .btn {
-    @apply inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-lg px-4 py-2 text-[0.9375rem] font-semibold transition-[background-color,border-color,color,transform,box-shadow] duration-150 select-none active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-55 disabled:active:scale-100;
+    @apply relative inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-lg px-4 py-2 text-[0.9375rem] font-semibold transition-[background-color,border-color,color,transform,box-shadow] duration-150 select-none active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-55 disabled:active:scale-100;
     touch-action: manipulation;
+    overflow: hidden;
+  }
+  /* Arrows inside a button lean forward a little on hover. */
+  .btn svg {
+    @apply transition-transform duration-200 ease-settle;
+  }
+  .btn:hover:not(:disabled) svg {
+    @apply translate-x-0.5;
+  }
+  /* The circle that spreads from the finger or pointer on a press. It is
+     added by ClickRipple and removes itself when it has faded. */
+  .ripple {
+    @apply pointer-events-none absolute animate-ripple rounded-full bg-current;
+  }
+  /* A small ring that turns, shown inside a button while it saves. */
+  .spinner {
+    @apply inline-block size-4 shrink-0 animate-spin-slow rounded-full border-2 border-current border-t-transparent;
   }
   .btn-primary {
-    @apply bg-brand text-on-brand hover:bg-brand-strong;
+    @apply bg-brand text-on-brand hover:-translate-y-px hover:bg-brand-strong active:translate-y-0;
     box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.1), 0 1px 2px rgb(13 42 32 / 0.4);
   }
   .btn-quiet {
@@ -203,7 +264,7 @@
   /* A choice made by tapping a box instead of opening a list: a time, a
      length, an amenity. The chosen one has aria-pressed="true". */
   .chip {
-    @apply inline-flex min-h-11 cursor-pointer items-center justify-center rounded-lg border border-line-strong bg-surface px-3.5 text-[0.9375rem] font-medium text-ink transition-[background-color,border-color,color,transform] duration-150 select-none hover:border-ink-soft/60 active:scale-[0.97] disabled:cursor-not-allowed disabled:border-line disabled:bg-ground disabled:text-ink-soft/50 disabled:line-through disabled:active:scale-100;
+    @apply inline-flex min-h-11 cursor-pointer items-center justify-center rounded-lg border border-line-strong bg-surface px-3.5 text-[0.9375rem] font-medium text-ink transition-[background-color,border-color,color,transform] duration-150 select-none hover:border-ink-soft/60 active:scale-[0.96] disabled:cursor-not-allowed disabled:border-line disabled:bg-ground disabled:text-ink-soft/50 disabled:line-through disabled:active:scale-100;
     touch-action: manipulation;
   }
   .chip[aria-pressed="true"] {

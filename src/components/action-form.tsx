@@ -2,6 +2,7 @@
 
 import { useActionState, useRef } from "react";
 import type { FormState } from "@/lib/types";
+import Spinner from "./spinner";
 
 // A form that sends its fields to a server action and shows what came back:
 // the reason when the save was refused, or a short confirmation.
@@ -108,12 +109,14 @@ export default function ActionForm({
         <div className={barClass}>
           {bar}
           <button type="submit" disabled={pending || disabled} className={buttonClass}>
+            {pending && <Spinner />}
             {pending ? pendingLabel : submitLabel}
           </button>
         </div>
       ) : (
         <button type="submit" disabled={pending || disabled} className={buttonClass}>
-          {pending ? pendingLabel : submitLabel}
+          {pending && <Spinner />}
+            {pending ? pendingLabel : submitLabel}
         </button>
       )}
     </form>
