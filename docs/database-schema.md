@@ -236,6 +236,9 @@ Both buckets are private. Files are opened only through signed links that expire
 - **Table privileges are granted on purpose:** a new Supabase project gives the signed-in role no read or write privilege on new tables, so the migrations grant each table only what its screens need (no one gets TRUNCATE, anonymous visitors get nothing, and payments, reservations, and the audit log have no delete privilege). Row Level Security then decides which rows.
 - **Sign-up form data:** the database reads `full_name`, `contact_no`, `address`, and `consent` (must be `true`) from the sign-up user data.
 
+- **One function saves a request (added Nov 15):** `request_reservation(amenity, start, end, equipment, guest name, sponsor)` saves the reservation and its equipment lines in one transaction and returns the new id. The resident booking form and the administrator walk-in form both call it. If the equipment is refused, the reservation is not saved either. It runs with the caller's rights, so Row Level Security and all triggers still apply.
+- **A rejected resident can try again (added Nov 15):** when a rejected resident saves a new proof of residency, the database sets the status back to `pending` and clears the note. The resident still cannot set the status themselves. The change is written to the audit log.
+
 ## 7. Open decisions for Jenny
 
 All seven are settled (Jenny, Nov 8). The migrations in `supabase/migrations` follow them.
