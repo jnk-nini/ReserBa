@@ -70,8 +70,8 @@ export default async function RequestsPage({ searchParams }: PageProps<"/admin/r
             key={tab.key}
             href={`/admin/requests?show=${tab.key}`}
             aria-current={show === tab.key ? "page" : undefined}
-            className={`shrink-0 rounded-lg px-3 py-2 text-base font-semibold whitespace-nowrap transition-colors duration-150 ${
-              show === tab.key ? "bg-brand text-on-brand" : "text-ink hover:bg-brand-tint"
+            className={`shrink-0 rounded-full px-4 py-2 text-base font-semibold whitespace-nowrap transition-colors duration-150 ${
+              show === tab.key ? "bg-brand text-on-brand" : "text-ink hover:bg-brand-tint/70"
             }`}
           >
             {tab.label}
@@ -82,12 +82,12 @@ export default async function RequestsPage({ searchParams }: PageProps<"/admin/r
       {rows.length === 0 ? (
         <p className="panel text-base text-ink-soft">Nothing here.</p>
       ) : (
-        <ul className="flex flex-col divide-y divide-line rounded-xl border border-line bg-surface">
+        <ul className="panel-flush flex flex-col divide-y divide-line">
           {rows.map((row) => (
             <li key={row.reservation_id}>
               <Link
                 href={`/admin/requests/${row.reservation_id}`}
-                className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 transition-colors duration-150 hover:bg-brand-tint"
+                className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 transition-colors duration-150 hover:bg-brand-tint/70"
               >
                 <div>
                   <p className="text-base font-semibold">
