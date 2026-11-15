@@ -90,7 +90,7 @@ export default function AvailabilityCalendar({
         </p>
       )}
 
-      <div className="calendar-frame rounded-xl border border-line bg-surface p-2 sm:p-3">
+      <div className="calendar-frame glass p-2 sm:p-3">
         <FullCalendar
           // A new key redraws the calendar when another amenity is chosen.
           key={amenity.amenity_id}

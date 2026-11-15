@@ -45,27 +45,25 @@ export default async function ReservationsPage() {
           </Link>
         </div>
       ) : (
-        <ul className="flex flex-col divide-y divide-line rounded-xl border border-line bg-surface">
+        <ul className="grid gap-3 sm:grid-cols-2">
           {rows.map((row) => (
             <li key={row.reservation_id}>
-              <Link
-                href={`/reservations/${row.reservation_id}`}
-                className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 transition-colors duration-150 hover:bg-brand-tint"
-              >
-                <div>
-                  <p className="text-base font-semibold">{row.amenities?.name}</p>
-                  <p className="number text-sm text-ink-soft">
-                    {formatDate(row.start_at)}, {formatTime(row.start_at)} to {formatTime(row.end_at)}
-                  </p>
-                  <p className="number text-sm text-ink-soft">
-                    <span className={row.reference_no ? "font-mono font-semibold text-ink" : ""}>
-                      {displayNumber(row)}
-                    </span>
-                    {" · "}
-                    {formatMoney(row.total_fee)}
-                  </p>
-                </div>
-                <StatusBadge status={row.status} />
+              <Link href={`/reservations/${row.reservation_id}`} className="tile flex h-full flex-col gap-3">
+                <span className="flex items-start justify-between gap-3">
+                  <span className="text-lg font-bold">{row.amenities?.name}</span>
+                  <StatusBadge status={row.status} />
+                </span>
+                <span className="number text-base text-ink-soft">
+                  {formatDate(row.start_at)}
+                  <br />
+                  {formatTime(row.start_at)} to {formatTime(row.end_at)}
+                </span>
+                <span className="number mt-auto flex items-center justify-between gap-3 border-t border-line pt-3 text-sm text-ink-soft">
+                  <span className={row.reference_no ? "font-mono font-semibold text-ink" : ""}>
+                    {displayNumber(row)}
+                  </span>
+                  <span className="text-base font-semibold text-ink">{formatMoney(row.total_fee)}</span>
+                </span>
               </Link>
             </li>
           ))}

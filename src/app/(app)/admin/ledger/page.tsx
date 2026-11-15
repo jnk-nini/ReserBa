@@ -65,7 +65,7 @@ export default async function LedgerPage({ searchParams }: PageProps<"/admin/led
           ["Expenses", expense],
           ["Difference", income - expense],
         ].map(([label, amount]) => (
-          <div key={label} className="rounded-xl border border-line bg-surface px-4 py-3">
+          <div key={label} className="glass px-4 py-3">
             <dt className="text-sm text-ink-soft">
               {label}, {formatMonth(month)}
             </dt>

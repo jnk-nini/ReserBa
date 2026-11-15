@@ -24,6 +24,24 @@ Every functional requirement of Appendix B (FR-01 to FR-30) has a screen.
 
 Tracker tasks this covers: T25 to T41 (development). T42 (phone check) was done once for every screen at 390 px wide; repeat it on real phones.
 
+## Design update (Nov 15, branch `feature/emerald-redesign`)
+
+The look was changed; no rule, form, or database code was touched.
+
+- **Theme** (`src/app/globals.css`, `src/app/layout.tsx`): porcelain white page, deep green gradient (`emerald`), stone and soft gold accents, Plus Jakarta Sans, frosted panels (`panel`, `panel-flush`, `tile`, `glass-dark`), pill buttons and pill status badges. Colours are still changed in one place, the `@theme` block. Inside a dark area the class `on-dark` turns the colour names light, so the same parts work there.
+- **Landing page** (`src/app/page.tsx`): hero with the "Try a time" sample (`src/components/try-a-time.tsx`), features grid, rules cards, steps (swiped sideways on a phone), questions (`src/components/accordion.tsx`), closing banner, footer.
+- **Signed-in screens**: green menu, the administrator dashboard and My reservations shown as cards, and the main action of the role kept at the bottom of a phone screen (`src/components/mobile-action.tsx`).
+- **New shared parts**: `icons.tsx` (line drawings), `sheet.tsx` (a panel that slides up from the bottom on a phone).
+
+How it was checked: `npm run lint` and `npm run build` pass. The landing page and login were opened in a browser at 1360 px and 390 px wide (no sideways scroll, every button at least 44 px). The signed-in screens were **not** opened against the Supabase project after the change; do that as each role before merging.
+
+Still to decide or do for the design:
+
+- The reservations, counts, and day on the landing page are samples and are labelled so. The answers under "Questions" were written from the README and module specs; the group should read them once.
+- The bottom sheet is used only on the landing page. The booking form and calendar are still full pages.
+- Only "Approved for today" on the dashboard turns into cards on a phone. The other administrator tables (ledger, reports, audit log, people) still scroll sideways.
+- Repeat T42 (phone check) on real phones for every screen, and retake the screenshots for the user guides (T52, T53).
+
 ## How it was checked (Nov 15)
 
 - `supabase/tests/database_rules_test.sql`: 75 checks pass (the 30 conflict cases, fee checks, role access checks).
@@ -62,4 +80,5 @@ Things in the system that are limits, not bugs:
 - T43: decide the final sample data (10 residents) and clear the test rows.
 - T44 to T47: run the tests by hand and fill in Appendix D and the results tables. The SQL test file gives the expected and actual result for each case.
 - T51: production setup (items 1 to 5 above).
-- T52, T53: user guides and screenshots.
+- T52, T53: user guides and screenshots (after the design update is merged).
+- Design update: check the signed-in screens as each role, then merge the pull request.

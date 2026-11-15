@@ -68,7 +68,7 @@ export default async function GuardPage({ searchParams }: PageProps<"/guard">) {
       {today.length === 0 ? (
         <p className="panel text-base text-ink-soft">No approved reservation today.</p>
       ) : (
-        <ul className="flex flex-col divide-y divide-line rounded-xl border border-line bg-surface">
+        <ul className="panel-flush flex flex-col divide-y divide-line">
           {today.map((row) => (
             <li key={row.reference_no} className="flex flex-wrap items-center justify-between gap-2 px-4 py-3">
               <div>

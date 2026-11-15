@@ -45,7 +45,7 @@ export default function DayStrip({
 
   return (
     <div>
-      <div className="relative h-10 overflow-hidden rounded-lg border border-line-strong bg-surface">
+      <div className="relative h-11 overflow-hidden rounded-xl border border-line-strong bg-surface">
         {segments.map((segment, index) => {
           const position = place(segment.from, segment.to);
           if (!position) return null;

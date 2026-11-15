@@ -11,7 +11,7 @@ export default function PageHeader({
   return (
     <header className="mb-6 flex flex-wrap items-end justify-between gap-3">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{title}</h1>
+        <h1 className="text-3xl font-extrabold tracking-[-0.03em] sm:text-4xl">{title}</h1>
         {description && <p className="mt-1 max-w-prose text-base text-ink-soft">{description}</p>}
       </div>
       {children && <div className="no-print flex flex-wrap gap-2">{children}</div>}

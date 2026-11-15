@@ -59,22 +59,22 @@ export default async function AdminDashboardPage() {
       <PageHeader title="Dashboard" description={formatDate(new Date())} />
 
       <section aria-labelledby="waiting-title">
-        <h2 id="waiting-title" className="mb-3 text-lg font-bold">
+        <h2 id="waiting-title" className="mb-3 text-xl font-bold">
           Waiting for you
         </h2>
-        <ul className="flex flex-col divide-y divide-line rounded-xl border border-line bg-surface">
+        <ul className="grid gap-3 sm:grid-cols-3">
           {waiting.map((item) => (
             <li key={item.href}>
-              <Link
-                href={item.href}
-                className="flex items-center gap-4 px-4 py-3 text-base transition-colors duration-150 hover:bg-brand-tint"
-              >
+              <Link href={item.href} className="tile flex h-full items-center gap-4 sm:flex-col sm:items-start sm:gap-3">
                 <span
-                  className={`number min-w-10 text-right text-2xl font-bold ${item.count > 0 ? "text-pending" : "text-ink-soft"}`}
+                  className={`number min-w-12 text-4xl font-extrabold tracking-tight sm:text-5xl ${item.count > 0 ? "text-pending" : "text-ink-soft/60"}`}
                 >
                   {item.count}
                 </span>
-                <span>{item.label}</span>
+                <span className="flex-1 text-base font-medium">{item.label}</span>
+                <span className={`badge ${item.count > 0 ? "bg-pending-tint text-pending" : "bg-approved-tint text-approved"}`}>
+                  {item.count > 0 ? "Pending" : "All done"}
+                </span>
               </Link>
             </li>
           ))}
@@ -82,13 +82,29 @@ export default async function AdminDashboardPage() {
       </section>
 
       <section aria-labelledby="today-title" className="mt-8">
-        <h2 id="today-title" className="mb-3 text-lg font-bold">
+        <h2 id="today-title" className="mb-3 text-xl font-bold">
           Approved for today
         </h2>
         {todayRows.length === 0 ? (
           <p className="panel text-base text-ink-soft">No approved reservation today.</p>
         ) : (
-          <div className="table-wrap">
+          <>
+          <ul className="flex flex-col gap-3 sm:hidden">
+            {todayRows.map((row) => (
+              <li key={row.reservation_id}>
+                <Link href={`/admin/requests/${row.reservation_id}`} className="tile number block">
+                  <span className="flex items-center justify-between gap-3">
+                    <span className="text-base font-semibold">{row.amenities?.name}</span>
+                    <span className="font-mono text-sm font-semibold text-jade">{row.reference_no}</span>
+                  </span>
+                  <span className="mt-1 block text-sm text-ink-soft">
+                    {formatTime(row.start_at)} to {formatTime(row.end_at)} · {row.guest_name ?? row.booker?.full_name}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <div className="table-wrap hidden sm:block">
             <table className="table number">
               <thead>
                 <tr>
@@ -119,6 +135,7 @@ export default async function AdminDashboardPage() {
               </tbody>
             </table>
           </div>
+          </>
         )}
       </section>
     </>
