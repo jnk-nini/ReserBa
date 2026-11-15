@@ -134,7 +134,12 @@
     touch-action: manipulation;
   }
   .btn-primary {
-    @apply bg-brand text-on-brand shadow-low hover:bg-brand-strong;
+    @apply bg-brand text-on-brand hover:bg-brand-strong;
+    background-image: linear-gradient(to bottom, rgb(255 255 255 / 0.14), transparent 60%);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.18),
+      0 1px 2px rgb(16 53 42 / 0.3),
+      0 6px 16px -6px rgb(16 53 42 / 0.45);
   }
   .btn-quiet {
     @apply border border-line-strong bg-surface text-ink hover:border-brand hover:bg-brand-tint;
@@ -151,6 +156,31 @@
   /* For the dark bands: a gold button and a see-through one. */
   .btn-accent {
     @apply bg-accent text-deep hover:bg-accent-strong;
+    background-image: linear-gradient(to bottom, rgb(255 255 255 / 0.35), transparent 60%);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.5),
+      0 8px 24px -8px rgb(233 185 73 / 0.6);
+  }
+  /* A band of light that crosses the two main buttons when the pointer is on
+     them. */
+  .btn-primary,
+  .btn-accent {
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-primary::after,
+  .btn-accent::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(110deg, transparent 35%, rgb(255 255 255 / 0.35) 50%, transparent 65%);
+    transform: translateX(-120%);
+    transition: transform 0.7s var(--ease-settle);
+    pointer-events: none;
+  }
+  .btn-primary:hover::after,
+  .btn-accent:hover::after {
+    transform: translateX(120%);
   }
   .btn-ghost {
     @apply border border-on-deep/35 text-on-deep hover:border-on-deep/70 hover:bg-on-deep/10;
@@ -167,7 +197,7 @@
   }
 
   .panel {
-    @apply rounded-xl border border-line bg-surface p-4 shadow-low sm:p-5;
+    @apply rounded-2xl border border-line bg-surface p-4 shadow-low sm:p-6;
   }
 
   .notice {
@@ -238,6 +268,160 @@
   );
 }
 
+/* ---- Effects for the first page and the dark panels ---- */
+
+/* Two soft patches of light, green and gold, that drift slowly behind the
+   dark bands. */
+.aurora {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.aurora::before,
+.aurora::after {
+  content: "";
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+  animation: drift 16s ease-in-out infinite alternate;
+}
+.aurora::before {
+  top: -16rem;
+  left: -12rem;
+  width: 44rem;
+  height: 44rem;
+  background: radial-gradient(circle, rgb(52 160 118 / 0.55), transparent 65%);
+}
+.aurora::after {
+  top: 4rem;
+  right: -12rem;
+  width: 36rem;
+  height: 36rem;
+  background: radial-gradient(circle, rgb(233 185 73 / 0.3), transparent 65%);
+  animation-delay: -8s;
+}
+@keyframes drift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(4rem, 3rem, 0) scale(1.15);
+  }
+}
+
+/* Thin grid lines that fade out toward the edges. */
+.grid-lines {
+  background-image:
+    linear-gradient(to right, rgb(246 243 236 / 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(246 243 236 / 0.07) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 75% 75% at 50% 20%, #000 30%, transparent 100%);
+}
+
+/* A point of gold light that travels around the edge of a box. */
+@property --beam-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+.beam {
+  position: relative;
+}
+.beam::before {
+  content: "";
+  position: absolute;
+  inset: -1.5px;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--beam-angle),
+    transparent 0 68%,
+    var(--color-accent) 84%,
+    #fff3cf 90%,
+    transparent 100%
+  );
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  animation: beam 7s linear infinite;
+  pointer-events: none;
+}
+@keyframes beam {
+  to {
+    --beam-angle: 360deg;
+  }
+}
+
+/* A glow that follows the pointer inside a box. The position comes from
+   components/spotlight.tsx. */
+.spotlight {
+  position: relative;
+  overflow: hidden;
+}
+.spotlight::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    26rem circle at var(--spot-x, 50%) var(--spot-y, 0%),
+    var(--spot-color, rgb(31 92 69 / 0.1)),
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.4s;
+  pointer-events: none;
+}
+.spotlight:hover::after {
+  opacity: 1;
+}
+
+/* A see-through card that floats over the dark bands. */
+.glass {
+  background: linear-gradient(to bottom right, rgb(246 243 236 / 0.14), rgb(246 243 236 / 0.05));
+  border: 1px solid rgb(246 243 236 / 0.18);
+  box-shadow:
+    inset 0 1px 0 rgb(246 243 236 / 0.2),
+    0 20px 40px -20px rgb(0 0 0 / 0.5);
+  backdrop-filter: blur(14px);
+}
+
+.float {
+  animation: float 6s ease-in-out infinite;
+}
+.float-late {
+  animation: float 7s ease-in-out -3s infinite;
+}
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* A row of words that slides sideways without end. It stops under the
+   pointer. */
+.marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 36s linear infinite;
+}
+.marquee:hover {
+  animation-play-state: paused;
+}
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+.fade-sides {
+  mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+}
+
 /* A faint grid of dots behind the top of the first page, like a planner. */
 .dot-grid {
   background-image: radial-gradient(rgb(246 243 236 / 0.09) 1px, transparent 1px);
@@ -285,5 +469,13 @@
   * {
     transition-duration: 0s !important;
     animation-duration: 0s !important;
+  }
+  .marquee,
+  .float,
+  .float-late,
+  .beam::before,
+  .aurora::before,
+  .aurora::after {
+    animation: none !important;
   }
 }

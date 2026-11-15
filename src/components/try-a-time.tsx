@@ -1,5 +1,6 @@
 "use client";
 
+import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import DayStrip, { StripLegend, type StripSegment } from "./day-strip";
 import Icon from "./icon";
@@ -136,7 +137,7 @@ export default function TryATime() {
   const fee = previewFee(hours * 60, sample.rate, 0);
 
   return (
-    <div className="rounded-2xl border border-line bg-surface p-4 text-ink shadow-high sm:p-6">
+    <div className="beam rounded-3xl border border-line bg-surface p-4 text-ink shadow-high sm:p-6">
       <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
         <h2 className="text-lg font-bold">Try a time</h2>
         <p className="text-sm text-ink-soft">A sample Saturday. Nothing is saved.</p>
@@ -153,11 +154,18 @@ export default function TryATime() {
             type="button"
             aria-pressed={itemIndex === index}
             onClick={() => setIndex(itemIndex)}
-            className={`min-h-11 cursor-pointer rounded-lg px-2 py-1.5 text-sm leading-tight font-semibold transition-colors duration-150 sm:text-base ${
-              itemIndex === index ? "bg-surface text-ink shadow-low" : "text-ink-soft hover:text-ink"
+            className={`relative min-h-11 cursor-pointer rounded-lg px-2 py-1.5 text-sm leading-tight font-semibold transition-colors duration-150 sm:text-base ${
+              itemIndex === index ? "text-ink" : "text-ink-soft hover:text-ink"
             }`}
           >
-            {item.name}
+            {itemIndex === index && (
+              <motion.span
+                layoutId="try-amenity"
+                className="absolute inset-0 rounded-lg bg-surface shadow-low"
+                transition={{ type: "spring", stiffness: 420, damping: 36 }}
+              />
+            )}
+            <span className="relative">{item.name}</span>
           </button>
         ))}
       </div>
@@ -206,19 +214,33 @@ export default function TryATime() {
         </div>
       </div>
 
-      <div
-        role="status"
-        className={`mt-5 flex gap-3 rounded-xl border px-4 py-3 ${
-          answer.fits
-            ? "border-approved/30 bg-approved-tint text-approved"
-            : "border-refused/30 bg-refused-tint text-refused"
-        }`}
-      >
-        <Icon name={answer.fits ? "check" : "lock"} className="mt-0.5 size-5" />
-        <div>
-          <p className="font-bold">{answer.title}</p>
-          <p className="text-[0.9375rem]">{answer.detail}</p>
-        </div>
+      <div role="status" className="mt-5 min-h-[5.5rem]">
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={answer.title + answer.detail}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.18 }}
+            className={`flex gap-3 rounded-xl border px-4 py-3 ${
+              answer.fits
+                ? "border-approved/30 bg-approved-tint text-approved"
+                : "border-refused/30 bg-refused-tint text-refused"
+            }`}
+          >
+            <span
+              className={`mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full text-on-brand ${
+                answer.fits ? "bg-approved" : "bg-refused"
+              }`}
+            >
+              <Icon name={answer.fits ? "check" : "lock"} className="size-3.5" />
+            </span>
+            <div>
+              <p className="font-bold">{answer.title}</p>
+              <p className="text-[0.9375rem]">{answer.detail}</p>
+            </div>
+          </motion.div>
+        </AnimatePresence>
       </div>
 
       <div className="number mt-4 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 text-sm text-ink-soft">

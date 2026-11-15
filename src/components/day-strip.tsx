@@ -51,10 +51,15 @@ export default function DayStrip({
         {segments.map((segment, index) => {
           const position = place(segment.from, segment.to);
           if (!position) return null;
+          // The chosen time keeps one key, so it slides to its new place
+          // instead of jumping when the person changes it.
+          const picked = segment.kind === "choice" || segment.kind === "clash";
+          const key = picked ? "picked" : segment.kind === "buffer" ? "picked-buffer" : index;
+          const moves = picked || segment.kind === "buffer";
           return (
             <div
-              key={index}
-              className={`absolute inset-y-0 ${fills[segment.kind]}`}
+              key={key}
+              className={`absolute inset-y-0 ${moves ? "transition-[left,width,background-color] duration-300 ease-settle" : ""} ${fills[segment.kind]}`}
               style={position}
               title={segment.label}
             />
