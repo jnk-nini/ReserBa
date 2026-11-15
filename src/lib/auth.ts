@@ -47,5 +47,5 @@ export async function requireRole(...roles: Role[]) {
 export function homePathFor(role: Role) {
   if (role === "admin") return "/admin";
   if (role === "guard") return "/guard";
-  return "/calendar";
+  return "/home";
 }

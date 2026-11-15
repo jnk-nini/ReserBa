@@ -9,16 +9,18 @@ import { logOut } from "../auth-actions";
 // The frame around every signed-in screen: the menu of the person's role,
 // and the page itself. How it looks is in components/app-shell.tsx.
 
+// `tab` marks the links that sit in the bottom bar on a phone; the rest go
+// under "More". The account is not in these lists: on a computer it is at the
+// foot of the side bar, on a phone behind the round button in the top bar.
 const menus: Record<Role, NavItem[]> = {
   resident: [
+    { href: "/home", label: "Home", icon: "home", tab: true },
     { href: "/calendar", label: "Calendar", icon: "calendar", tab: true },
     { href: "/book", label: "Book", icon: "plus", tab: true },
     { href: "/reservations", label: "My reservations", short: "Reservations", icon: "ticket", tab: true },
     { href: "/fund", label: "Fund summary", short: "Fund", icon: "coins", tab: true },
-    { href: "/account", label: "Account", icon: "user", tab: true },
   ],
-  // On a computer the links are grouped under small headings; on a phone the
-  // ones marked `tab` sit in the bottom bar and the rest are under "More".
+  // On a computer the links are grouped under small headings.
   admin: [
     { href: "/admin", label: "Dashboard", icon: "gauge", group: "Today", tab: true },
     { href: "/admin/requests", label: "Requests", icon: "inbox", group: "Today", tab: true },
@@ -30,12 +32,8 @@ const menus: Record<Role, NavItem[]> = {
     { href: "/admin/ledger", label: "Fund ledger", icon: "book", group: "Records" },
     { href: "/admin/reports", label: "Reports", icon: "chart", group: "Records" },
     { href: "/admin/audit", label: "Audit log", icon: "history", group: "Records" },
-    { href: "/account", label: "Account", icon: "user", group: "Records" },
   ],
-  guard: [
-    { href: "/guard", label: "Today", icon: "shield", tab: true },
-    { href: "/account", label: "Account", icon: "user", tab: true },
-  ],
+  guard: [{ href: "/guard", label: "Today at the gate", short: "Today", icon: "shield", tab: true }],
 };
 
 const roleNames: Record<Role, string> = {
