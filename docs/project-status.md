@@ -36,6 +36,15 @@ Tracker tasks this covers: T25 to T41 (development). T42 (phone check) was done 
 - **Questions before something that cannot be undone** now open in a box with the look of the system, not the browser's own box.
 - **Fixed.** The calendar no longer shows a mismatch warning when it loads on a phone.
 
+## Speed update (Nov 16)
+
+Every click felt slow because the pages ran in Vercel's default region (United States) while the database is in Singapore, and each page asked Supabase who was signed in two times before reading its data.
+
+- `vercel.json` now runs the pages in Singapore (`sin1`), beside the database.
+- The login is checked from its signature (`getClaims`) in `src/proxy.ts` and `src/lib/auth.ts`, which saves the trips to the Supabase server where the project uses the newer signing keys.
+- `src/app/(app)/loading.tsx` shows grey blocks at once when a screen is opened, so a tap always gets an answer.
+- The week calendar library is in `src/components/week-calendar.tsx` and is downloaded only on a computer. A phone no longer loads it or asks for the same schedule twice.
+
 ## How it was checked (Nov 15)
 
 - `supabase/tests/database_rules_test.sql`: 75 checks pass (the 30 conflict cases, fee checks, role access checks).
