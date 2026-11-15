@@ -11,28 +11,30 @@ import { logOut } from "../auth-actions";
 
 const menus: Record<Role, NavItem[]> = {
   resident: [
-    { href: "/calendar", label: "Calendar", icon: "calendar" },
-    { href: "/book", label: "Book", icon: "plus" },
-    { href: "/reservations", label: "My reservations", icon: "ticket" },
-    { href: "/fund", label: "Fund summary", icon: "coins" },
-    { href: "/account", label: "Account", icon: "user" },
+    { href: "/calendar", label: "Calendar", icon: "calendar", tab: true },
+    { href: "/book", label: "Book", icon: "plus", tab: true },
+    { href: "/reservations", label: "My reservations", short: "Reservations", icon: "ticket", tab: true },
+    { href: "/fund", label: "Fund summary", short: "Fund", icon: "coins", tab: true },
+    { href: "/account", label: "Account", icon: "user", tab: true },
   ],
+  // On a computer the links are grouped under small headings; on a phone the
+  // ones marked `tab` sit in the bottom bar and the rest are under "More".
   admin: [
-    { href: "/admin", label: "Dashboard", icon: "gauge" },
-    { href: "/admin/requests", label: "Requests", icon: "inbox" },
-    { href: "/admin/walk-in", label: "Walk-in", icon: "walk" },
-    { href: "/calendar", label: "Calendar", icon: "calendar" },
-    { href: "/admin/residents", label: "People", icon: "people" },
-    { href: "/admin/amenities", label: "Amenities", icon: "building" },
-    { href: "/admin/equipment", label: "Equipment", icon: "box" },
-    { href: "/admin/ledger", label: "Fund ledger", icon: "book" },
-    { href: "/admin/reports", label: "Reports", icon: "chart" },
-    { href: "/admin/audit", label: "Audit log", icon: "history" },
-    { href: "/account", label: "Account", icon: "user" },
+    { href: "/admin", label: "Dashboard", icon: "gauge", group: "Today", tab: true },
+    { href: "/admin/requests", label: "Requests", icon: "inbox", group: "Today", tab: true },
+    { href: "/admin/walk-in", label: "Walk-in", icon: "walk", group: "Today" },
+    { href: "/calendar", label: "Calendar", icon: "calendar", group: "Today", tab: true },
+    { href: "/admin/residents", label: "People", icon: "people", group: "Manage", tab: true },
+    { href: "/admin/amenities", label: "Amenities", icon: "building", group: "Manage" },
+    { href: "/admin/equipment", label: "Equipment", icon: "box", group: "Manage" },
+    { href: "/admin/ledger", label: "Fund ledger", icon: "book", group: "Records" },
+    { href: "/admin/reports", label: "Reports", icon: "chart", group: "Records" },
+    { href: "/admin/audit", label: "Audit log", icon: "history", group: "Records" },
+    { href: "/account", label: "Account", icon: "user", group: "Records" },
   ],
   guard: [
-    { href: "/guard", label: "Today", icon: "shield" },
-    { href: "/account", label: "Account", icon: "user" },
+    { href: "/guard", label: "Today", icon: "shield", tab: true },
+    { href: "/account", label: "Account", icon: "user", tab: true },
   ],
 };
 
