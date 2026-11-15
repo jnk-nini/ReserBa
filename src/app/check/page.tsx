@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { connection } from "next/server";
-import { hasSupabaseKeys, getSupabase } from "@/lib/supabase";
+import { hasSupabaseKeys } from "@/lib/supabase";
 
 async function checkConnection() {
   if (!hasSupabaseKeys()) {
@@ -11,7 +11,6 @@ async function checkConnection() {
     // public key alone and needs no tables, so it is a safe first test.
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
     const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string;
-    getSupabase();
     const response = await fetch(`${url}/auth/v1/settings`, {
       headers: { apikey: key },
       cache: "no-store",
@@ -35,11 +34,7 @@ async function Result() {
   const result = await checkConnection();
   return (
     <p
-      className={`rounded-lg border p-4 text-base ${
-        result.ok
-          ? "border-green-300 bg-green-50 text-green-900"
-          : "border-red-300 bg-red-50 text-red-900"
-      }`}
+      className={`notice ${result.ok ? "notice-ok" : "notice-error"}`}
     >
       {result.message}
     </p>
@@ -50,7 +45,7 @@ export default function CheckPage() {
   return (
     <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center gap-4 px-4 py-8">
       <h1 className="text-2xl font-semibold">Connection check</h1>
-      <Suspense fallback={<p className="text-base text-zinc-600">Checking...</p>}>
+      <Suspense fallback={<p className="text-base text-ink-soft">Checking...</p>}>
         <Result />
       </Suspense>
     </main>

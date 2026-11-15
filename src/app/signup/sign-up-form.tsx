@@ -1,22 +1,29 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { getSupabase } from "@/lib/supabase";
+import { checkProofFile, uploadProof } from "@/lib/upload";
 
 // The sign-up form. It runs in the browser because it reacts to typing and
 // clicks. On submit it asks Supabase to create the account and sends the
 // resident's details along as "user data". The database sign-up trigger reads
 // full_name, contact_no, address and consent from that user data and creates
 // the matching row in the users table.
+//
+// The proof of residency is a file, and only a logged-in person may upload to
+// the private bucket. When Supabase logs the new account in right away, the
+// file is uploaded here. When Supabase first wants the email confirmed, there
+// is no login yet, so the resident uploads the proof from the Account page
+// after confirming.
 
 type Status =
   | { kind: "idle" }
   | { kind: "sending" }
   | { kind: "error"; message: string }
-  | { kind: "done"; needsEmailCheck: boolean };
+  | { kind: "done"; needsEmailCheck: boolean; proofSaved: boolean };
 
-const inputClass =
-  "w-full rounded-lg border border-zinc-300 px-3 py-2 text-base focus:border-zinc-900 focus:outline-none";
+const inputClass = "input";
 
 export default function SignUpForm() {
   const [status, setStatus] = useState<Status>({ kind: "idle" });
@@ -32,6 +39,8 @@ export default function SignUpForm() {
     const password = String(form.get("password") ?? "");
     const confirm = String(form.get("confirm_password") ?? "");
     const consent = form.get("consent") === "on";
+    const proofEntry = form.get("proof");
+    const proof = proofEntry instanceof File && proofEntry.size > 0 ? proofEntry : null;
 
     // Checks that the browser cannot do alone.
     if (password.length < 8) {
@@ -50,12 +59,23 @@ export default function SignUpForm() {
       return;
     }
 
+    if (proof) {
+      const problem = checkProofFile(proof);
+      if (problem) {
+        setStatus({ kind: "error", message: problem });
+        return;
+      }
+    }
+
     setStatus({ kind: "sending" });
     try {
-      const { data, error } = await getSupabase().auth.signUp({
+      const supabase = getSupabase();
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
+          // Where the confirmation link in the email comes back to.
+          emailRedirectTo: `${window.location.origin}/auth/callback?next=/account`,
           // These keys must match what the database trigger reads.
           data: {
             full_name: fullName,
@@ -79,8 +99,23 @@ export default function SignUpForm() {
         });
         return;
       }
+      // A session means the account is already logged in, so the proof can be
+      // uploaded now and its path saved on the resident's own row.
+      let proofSaved = false;
+      if (data.session && data.user && proof) {
+        try {
+          const path = await uploadProof("residency-proofs", data.user.id, proof);
+          const { error: saveError } = await supabase
+            .from("users")
+            .update({ proof_of_residency_url: path })
+            .eq("user_id", data.user.id);
+          proofSaved = !saveError;
+        } catch {
+          proofSaved = false;
+        }
+      }
       // No session means Supabase is waiting for the email to be confirmed.
-      setStatus({ kind: "done", needsEmailCheck: !data.session });
+      setStatus({ kind: "done", needsEmailCheck: !data.session, proofSaved });
     } catch {
       setStatus({
         kind: "error",
@@ -91,13 +126,30 @@ export default function SignUpForm() {
 
   if (status.kind === "done") {
     return (
-      <div className="rounded-lg border border-green-300 bg-green-50 p-4 text-base text-green-900">
-        <p className="font-medium">Account created.</p>
-        <p className="mt-1">
-          {status.needsEmailCheck
-            ? "We sent a confirmation link to your email. Open it to finish. After that, the HOA administrator will verify that you live in the subdivision before you can book."
-            : "The HOA administrator will verify that you live in the subdivision before you can book."}
-        </p>
+      <div className="notice notice-ok">
+        <p className="font-semibold">Account created.</p>
+        {status.needsEmailCheck ? (
+          <p className="mt-1">
+            We sent a confirmation link to your email. Open it to finish. Then log in and upload your
+            proof of residency on the Account page, so the HOA administrator can verify that you live
+            in the subdivision.
+          </p>
+        ) : status.proofSaved ? (
+          <p className="mt-1">
+            Your proof of residency was received. The HOA administrator will verify it before you can
+            book.
+          </p>
+        ) : (
+          <p className="mt-1">
+            One more step: upload your proof of residency on the Account page, so the HOA
+            administrator can verify that you live in the subdivision.
+          </p>
+        )}
+        {!status.needsEmailCheck && (
+          <Link href="/account" className="btn btn-primary mt-3">
+            Go to my account
+          </Link>
+        )}
       </div>
     );
   }
@@ -106,7 +158,7 @@ export default function SignUpForm() {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <label className="flex flex-col gap-1 text-sm font-medium">
+      <label className="label">
         Full name
         <input
           name="full_name"
@@ -117,7 +169,7 @@ export default function SignUpForm() {
         />
       </label>
 
-      <label className="flex flex-col gap-1 text-sm font-medium">
+      <label className="label">
         Contact number
         <input
           name="contact_no"
@@ -129,7 +181,7 @@ export default function SignUpForm() {
         />
       </label>
 
-      <label className="flex flex-col gap-1 text-sm font-medium">
+      <label className="label">
         Home address in the subdivision
         <input
           name="address"
@@ -141,7 +193,7 @@ export default function SignUpForm() {
         />
       </label>
 
-      <label className="flex flex-col gap-1 text-sm font-medium">
+      <label className="label">
         Email
         <input
           name="email"
@@ -152,7 +204,7 @@ export default function SignUpForm() {
         />
       </label>
 
-      <label className="flex flex-col gap-1 text-sm font-medium">
+      <label className="label">
         Password
         <input
           name="password"
@@ -162,10 +214,10 @@ export default function SignUpForm() {
           autoComplete="new-password"
           className={inputClass}
         />
-        <span className="text-xs font-normal text-zinc-500">At least 8 characters.</span>
+        <span className="hint">At least 8 characters.</span>
       </label>
 
-      <label className="flex flex-col gap-1 text-sm font-medium">
+      <label className="label">
         Confirm password
         <input
           name="confirm_password"
@@ -176,8 +228,22 @@ export default function SignUpForm() {
         />
       </label>
 
-      <label className="flex items-start gap-2 text-sm">
-        <input name="consent" type="checkbox" required className="mt-1" />
+      <label className="label">
+        Proof of residency
+        <input
+          name="proof"
+          type="file"
+          accept="image/jpeg,image/png,application/pdf"
+          className={`${inputClass} file:mr-3 file:rounded-md file:border-0 file:bg-brand-tint file:px-3 file:py-1 file:font-semibold file:text-brand`}
+        />
+        <span className="hint">
+          A photo or PDF of a utility bill, title, or lease that shows your name and address. JPG,
+          PNG, or PDF, up to 5 MB. You can also add it later from your Account page.
+        </span>
+      </label>
+
+      <label className="flex items-start gap-2 text-base">
+        <input name="consent" type="checkbox" required className="mt-1 size-5 shrink-0" />
         <span>
           I agree that ReserBa may collect and keep my name, contact details and
           address to manage amenity bookings, as described under the Data
@@ -188,7 +254,7 @@ export default function SignUpForm() {
       {status.kind === "error" && (
         <p
           role="alert"
-          className="rounded-lg border border-red-300 bg-red-50 p-3 text-sm text-red-900"
+          className="notice notice-error"
         >
           {status.message}
         </p>
@@ -197,7 +263,7 @@ export default function SignUpForm() {
       <button
         type="submit"
         disabled={sending}
-        className="rounded-lg bg-zinc-900 px-4 py-2 text-base font-medium text-white disabled:opacity-60"
+        className="btn btn-primary"
       >
         {sending ? "Creating account..." : "Create account"}
       </button>

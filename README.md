@@ -9,7 +9,7 @@ This repository is part of our Software Engineering group project.
 - Next.js (React) with Tailwind CSS
 - Supabase (PostgreSQL, authentication, storage)
 - Vercel (hosting and automatic deployment)
-- FullCalendar, jsPDF, SheetJS
+- FullCalendar, jsPDF, SheetJS (the `xlsx` package)
 
 ## Getting started
 
@@ -17,6 +17,54 @@ This repository is part of our Software Engineering group project.
 2. Install the packages: `npm install`
 3. Copy `.env.example` to `.env.local` and fill in the values. Ask the project leader for the keys.
 4. Start the app: `npm run dev`, then open http://localhost:3000
+
+Before a pull request, run `npm run lint` and `npm run build`. Both must finish without errors.
+
+## How the project is organized
+
+| Folder | What is in it |
+|---|---|
+| `src/app` | The pages. Public pages (`login`, `signup`, password reset) sit at the top. Pages for signed-in people are in `(app)`: resident pages (`calendar`, `book`, `reservations`, `fund`, `account`), administrator pages (`admin/...`), and the guard page (`guard`). |
+| `src/app/**/actions.ts` | Server actions: the code that saves a form. Each one checks who is signed in, sends the change to the database, and returns the database's reason if it refuses. |
+| `src/components` | Parts of screens used in more than one place (booking form, day strip, calendar, export buttons). |
+| `src/lib` | Helpers: the Supabase clients, dates in Philippine time, money, error messages. |
+| `src/proxy.ts` | Runs before every page: keeps the login fresh and sends signed-out visitors to the login page. |
+| `supabase/migrations` | The database, in order. See `docs/database-schema.md`. |
+| `supabase/tests` | Tests of the database rules. |
+| `docs` | The schema, the module specs, and the project status. |
+
+The rules that protect the data (no overlapping reservations, buffer time, blocked dates, operating hours, equipment quantity, who may see what, the audit log) are in the database, not in the pages. The pages only show the result.
+
+## Database
+
+- New database change: add a new file in `supabase/migrations` with a later date in its name. Do not edit a migration that is already applied.
+- Apply it in the Supabase SQL editor (or with `supabase db push`), then run the tests.
+- Sample amenities and equipment: `supabase/seed.sql`.
+
+### Testing the database rules
+
+`supabase/tests/database_rules_test.sql` runs the 30 conflict cases of Appendix D, the fee checks, and the role access checks. Paste the whole file into the Supabase SQL editor and press Run. It rolls everything back at the end, so nothing stays in the database. Every row of the result must say PASS.
+
+`supabase/tests/simultaneous_test.sh` runs tests T23 and T30 with two connections at the same moment. Use it only on a local or test database.
+
+### First administrator
+
+Everyone who signs up starts as a resident. To make the first administrator, sign up, then run this once in the Supabase SQL editor with that person's email:
+
+```sql
+update public.users set role = 'admin' where email = 'the.email@example.com';
+```
+
+After that, an administrator can make guard or administrator accounts from the People screen.
+
+### Supabase settings the app needs
+
+In the Supabase dashboard, under Authentication, URL Configuration:
+
+- Site URL: the address of the deployed app.
+- Redirect URLs: add `https://<the deployed address>/auth/callback` and `http://localhost:3000/auth/callback`.
+
+Without these, the links in the confirmation and password reset emails do not come back to the app.
 
 ## Team
 

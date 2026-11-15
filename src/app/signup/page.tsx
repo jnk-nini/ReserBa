@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import AuthFrame from "@/components/auth-frame";
 import SignUpForm from "./sign-up-form";
 
 export const metadata: Metadata = {
@@ -9,15 +11,17 @@ export const metadata: Metadata = {
 // lives in sign-up-form.tsx because it needs to run in the browser.
 export default function SignUpPage() {
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center gap-6 px-4 py-8">
-      <div>
-        <h1 className="text-2xl font-semibold">Create your account</h1>
-        <p className="mt-1 text-base text-zinc-600">
-          For residents of the subdivision. The HOA administrator will check
-          your address before you can book an amenity.
-        </p>
-      </div>
+    <AuthFrame
+      title="Create your account"
+      description="For residents of the subdivision. The HOA administrator will check your address before you can book an amenity."
+    >
       <SignUpForm />
-    </main>
+      <p className="text-base text-ink-soft">
+        Already have an account?{" "}
+        <Link href="/login" className="font-semibold text-brand underline underline-offset-4">
+          Log in
+        </Link>
+      </p>
+    </AuthFrame>
   );
 }

@@ -1,26 +1,178 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* The look of ReserBa in one place. Screens use these names (bg-ground,
+   text-ink, bg-brand ...) so a colour is changed here once, not on every page. */
+@theme {
+  --color-ground: #f6f3ec;
+  --color-surface: #fffdf8;
+  --color-ink: #1c2a23;
+  --color-ink-soft: #55625a;
+  --color-line: #dcd5c5;
+  --color-line-strong: #b9b09b;
+
+  --color-brand: #1f5c45;
+  --color-brand-strong: #164533;
+  --color-brand-tint: #e3efe8;
+  --color-on-brand: #ffffff;
+
+  /* One colour per reservation state, used the same way everywhere. */
+  --color-approved: #17553c;
+  --color-approved-tint: #d9eedf;
+  --color-pending: #7a4a00;
+  --color-pending-tint: #fbe7c2;
+  --color-refused: #8f2415;
+  --color-refused-tint: #f8ddd6;
+  --color-closed: #55625a;
+  --color-closed-tint: #e8e3d8;
+
+  --font-sans: var(--font-public-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@layer base {
+  body {
+    background: var(--color-ground);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  ::selection {
+    background: var(--color-brand);
+    color: var(--color-on-brand);
+  }
+
+  /* One visible focus ring for keyboard users, on every control. */
+  :focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+  }
+
+  input,
+  select,
+  textarea {
+    accent-color: var(--color-brand);
+    caret-color: var(--color-brand);
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  .btn {
+    @apply inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-lg px-4 py-2 text-base font-semibold transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-60;
+  }
+  .btn-primary {
+    @apply bg-brand text-on-brand hover:bg-brand-strong;
+  }
+  .btn-quiet {
+    @apply border border-line-strong bg-surface text-ink hover:bg-brand-tint;
+  }
+  .btn-danger {
+    @apply border border-refused bg-surface text-refused hover:bg-refused-tint;
+  }
+  .btn-small {
+    @apply min-h-9 px-3 py-1 text-sm;
+  }
+
+  .label {
+    @apply flex flex-col gap-1 text-sm font-semibold text-ink;
+  }
+  .hint {
+    @apply text-sm font-normal text-ink-soft;
+  }
+  .input {
+    @apply min-h-11 w-full rounded-lg border border-line-strong bg-surface px-3 py-2 text-base font-normal text-ink placeholder:text-ink-soft/70 focus:border-brand;
+  }
+
+  .panel {
+    @apply rounded-xl border border-line bg-surface p-4 sm:p-5;
+  }
+
+  .notice {
+    @apply rounded-lg border px-4 py-3 text-base;
+  }
+  .notice-error {
+    @apply border-refused/40 bg-refused-tint text-refused;
+  }
+  .notice-ok {
+    @apply border-approved/40 bg-approved-tint text-approved;
+  }
+  .notice-info {
+    @apply border-pending/40 bg-pending-tint text-pending;
+  }
+
+  .badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-sm font-semibold whitespace-nowrap;
+  }
+
+  /* Tables scroll sideways on a phone instead of breaking the page. */
+  .table-wrap {
+    @apply overflow-x-auto rounded-xl border border-line bg-surface;
+  }
+  .table {
+    @apply w-full border-collapse text-left text-sm;
+  }
+  .table th {
+    @apply border-b border-line bg-brand-tint px-3 py-2 font-semibold whitespace-nowrap text-ink;
+  }
+  .table td {
+    @apply border-b border-line px-3 py-2 align-top;
+  }
+  .table tr:last-child td {
+    @apply border-b-0;
+  }
+
+  .number {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Blocked time on the day strip and the calendar: diagonal stripes. */
+.stripes {
+  background-image: repeating-linear-gradient(
+    135deg,
+    var(--color-closed) 0 2px,
+    var(--color-closed-tint) 2px 8px
+  );
+}
+
+/* The calendar (FullCalendar) takes its colours from ReserBa's palette. */
+.calendar-frame {
+  --fc-classic-button: var(--color-brand);
+  --fc-classic-button-border: var(--color-brand);
+  --fc-classic-button-strong: var(--color-brand-strong);
+  --fc-classic-button-strong-border: var(--color-brand-strong);
+  --fc-classic-button-outline: var(--color-brand);
+  --fc-classic-button-foreground: var(--color-on-brand);
+  --fc-classic-primary: var(--color-brand);
+  --fc-classic-primary-foreground: var(--color-on-brand);
+  --fc-classic-highlight: var(--color-brand-tint);
+  --fc-classic-today: var(--color-brand-tint);
+  --fc-classic-background: var(--color-surface);
+  --fc-classic-foreground: var(--color-ink);
+  --fc-classic-muted-foreground: var(--color-ink-soft);
+  --fc-classic-faint-foreground: var(--color-ink-soft);
+  --fc-classic-border: var(--color-line);
+  --fc-classic-strong-border: var(--color-line-strong);
+}
+
+/* The reservation slip prints on one page without the menus. */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: #ffffff;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0s !important;
+    animation-duration: 0s !important;
+  }
 }
