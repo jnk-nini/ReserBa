@@ -46,7 +46,10 @@ export default function SiteHeader({ sections }: { sections: Array<{ href: strin
           </ul>
         </nav>
         <div className="flex items-center gap-2">
-          <Link href="/login" className="btn btn-quiet btn-small sm:min-h-10 sm:px-4">
+          <Link
+            href="/login"
+            className="flex min-h-10 items-center rounded-lg px-3 text-[0.9375rem] font-semibold text-ink transition-colors duration-150 hover:text-brand"
+          >
             Log in
           </Link>
           <Link href="/signup" className="btn btn-primary btn-small hidden sm:inline-flex sm:min-h-10 sm:px-4">

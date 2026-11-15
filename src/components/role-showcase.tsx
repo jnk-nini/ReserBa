@@ -69,7 +69,7 @@ function ResidentScreen() {
   return (
     <div>
       <div className="flex items-center justify-between gap-3">
-        <p className="text-lg font-semibold">My reservations</p>
+        <p className="display text-2xl">My reservations</p>
         <span className="rounded-lg bg-brand px-3 py-1.5 text-sm font-semibold text-on-brand">Book an amenity</span>
       </div>
       <ul className="mt-4 flex flex-col divide-y divide-line rounded-xl border border-line bg-surface">
@@ -96,7 +96,7 @@ function AdminScreen() {
   ];
   return (
     <div>
-      <p className="text-lg font-semibold">Waiting for you</p>
+      <p className="display text-2xl">Waiting for you</p>
       <ul className="mt-3 grid grid-cols-3 gap-2">
         {tiles.map(([count, label]) => (
           <li key={label} className="rounded-xl border border-line bg-surface px-3 py-3">
@@ -131,7 +131,7 @@ function AdminScreen() {
 function GuardScreen() {
   return (
     <div>
-      <p className="text-lg font-semibold">Check a reference number</p>
+      <p className="display text-2xl">Check a reference number</p>
       <div className="mt-3 flex gap-2">
         <span className="flex min-h-11 grow items-center rounded-lg border border-brand bg-surface px-3 font-mono text-lg font-semibold tracking-wide ring-3 ring-brand/15">
           RB-0013
@@ -174,7 +174,7 @@ export default function RoleShowcase() {
       <div
         role="tablist"
         aria-label="Kinds of users"
-        className="inline-flex max-w-full gap-1 overflow-x-auto rounded-2xl border border-line bg-surface p-1.5 shadow-low [scrollbar-width:none]"
+        className="flex max-w-full gap-7 overflow-x-auto border-b border-line-strong [scrollbar-width:none] sm:gap-10"
       >
         {roles.map((item) => {
           const active = item.id === current;
@@ -187,19 +187,19 @@ export default function RoleShowcase() {
               aria-selected={active}
               aria-controls="role-panel"
               onClick={() => setCurrent(item.id)}
-              className={`relative flex min-h-11 shrink-0 cursor-pointer items-center gap-2 rounded-xl px-4 py-2 font-semibold whitespace-nowrap transition-colors duration-200 ${
-                active ? "text-on-brand" : "text-ink-soft hover:text-ink"
+              className={`relative flex min-h-12 shrink-0 cursor-pointer items-center gap-2 pb-3 text-base font-semibold whitespace-nowrap transition-colors duration-200 ${
+                active ? "text-brand" : "text-ink-soft hover:text-ink"
               }`}
             >
+              <Icon name={item.icon} className="size-[1.125rem]" />
+              {item.name}
               {active && (
                 <motion.span
                   layoutId="role-tab"
-                  className="absolute inset-0 rounded-xl bg-brand"
+                  className="absolute inset-x-0 -bottom-px h-0.5 bg-brand"
                   transition={{ type: "spring", stiffness: 380, damping: 34 }}
                 />
               )}
-              <Icon name={item.icon} className="relative size-[1.125rem]" />
-              <span className="relative">{item.name}</span>
             </button>
           );
         })}
@@ -209,7 +209,7 @@ export default function RoleShowcase() {
         id="role-panel"
         role="tabpanel"
         aria-labelledby={`tab-${role.id}`}
-        className="mt-8 grid items-center gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-14"
+        className="mt-10 grid items-center gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-16"
       >
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
@@ -219,13 +219,11 @@ export default function RoleShowcase() {
             exit={{ opacity: 0, x: 12 }}
             transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
           >
-            <h3 className="text-2xl font-bold sm:text-3xl">{role.summary}</h3>
-            <ul className="mt-6 flex flex-col gap-3.5 text-lg">
+            <h3 className="display text-3xl sm:text-4xl">{role.summary}</h3>
+            <ul className="mt-6 border-t border-line">
               {role.points.map((point) => (
-                <li key={point} className="flex gap-3">
-                  <span className="mt-1 flex size-6 shrink-0 items-center justify-center rounded-full bg-brand-tint text-brand">
-                    <Icon name="check" className="size-3.5" />
-                  </span>
+                <li key={point} className="flex gap-3 border-b border-line py-3.5">
+                  <Icon name="check" className="mt-1 size-4 text-brand" />
                   <span>{point}</span>
                 </li>
               ))}
