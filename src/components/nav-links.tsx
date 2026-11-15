@@ -37,11 +37,11 @@ export function SideLinks({ items }: { items: NavItem[] }) {
   }
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-6">
       {groups.map((group, index) => (
         <div key={index}>
           {group.name && (
-            <p className="mb-1 px-3 text-xs font-semibold tracking-wide text-ink-soft/80 uppercase">{group.name}</p>
+            <p className="eyebrow mb-1.5 px-3">{group.name}</p>
           )}
           <ul className="flex flex-col gap-0.5">
             {group.items.map((item) => {
@@ -51,8 +51,10 @@ export function SideLinks({ items }: { items: NavItem[] }) {
                   <Link
                     href={item.href}
                     aria-current={active ? "page" : undefined}
-                    className={`flex min-h-10 items-center gap-3 rounded-lg px-3 py-2 text-[0.9375rem] font-medium transition-colors duration-150 ${
-                      active ? "bg-brand-tint text-brand" : "text-ink-soft hover:bg-ground hover:text-ink"
+                    className={`relative flex min-h-10 items-center gap-3 rounded-lg px-3 py-2 text-[0.9375rem] transition-colors duration-150 ${
+                      active
+                        ? "bg-brand-tint font-semibold text-brand before:absolute before:inset-y-2 before:-left-3 before:w-[3px] before:rounded-r-full before:bg-brand"
+                        : "font-medium text-ink-soft hover:bg-ground hover:text-ink"
                     }`}
                   >
                     <Icon name={item.icon} className="size-[1.125rem]" />
@@ -74,11 +76,13 @@ export function TabLink({ item, active }: { item: NavItem; active: boolean }) {
     <Link
       href={item.href}
       aria-current={active ? "page" : undefined}
-      className={`flex min-h-14 flex-1 flex-col items-center justify-center gap-0.5 text-[0.6875rem] font-medium transition-colors duration-150 active:scale-95 ${
-        active ? "text-brand" : "text-ink-soft"
+      className={`relative flex min-h-14 flex-1 flex-col items-center justify-center gap-0.5 text-[0.6875rem] transition-colors duration-150 active:scale-95 ${
+        active
+          ? "font-semibold text-brand before:absolute before:top-0 before:h-0.5 before:w-8 before:rounded-b-full before:bg-brand"
+          : "font-medium text-ink-soft"
       }`}
     >
-      <Icon name={item.icon} className="size-6" />
+      <Icon name={item.icon} className="size-[1.375rem]" />
       <span className="max-w-full truncate px-1">{item.short ?? item.label}</span>
     </Link>
   );

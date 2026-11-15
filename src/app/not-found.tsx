@@ -10,7 +10,8 @@ export default function NotFound() {
         <Logo />
       </Link>
       <div>
-        <h1 className="text-3xl font-bold">This page is not here.</h1>
+        <p className="eyebrow">Error 404</p>
+        <h1 className="display mt-3 text-5xl">This page is not here.</h1>
         <p className="mt-2 text-base text-ink-soft">
           The link may be old, or the address may have a typing mistake. Your reservations are safe.
         </p>

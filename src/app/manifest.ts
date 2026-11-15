@@ -10,12 +10,12 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "Book the clubhouse, court, or pool of your subdivision.",
     start_url: "/home",
     display: "standalone",
-    background_color: "#f6f7f6",
-    theme_color: "#ffffff",
+    background_color: "#f4f2ed",
+    theme_color: "#14392d",
     icons: [
       { src: "/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
       { src: "/icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
-      { src: "/icon-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+      { src: "/icon-maskable-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
     ],
   };
 }

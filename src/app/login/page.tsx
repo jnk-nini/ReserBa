@@ -28,22 +28,27 @@ export default function LoginPage({ searchParams }: PageProps<"/login">) {
       <Suspense>
         <LinkNotice searchParams={searchParams} />
       </Suspense>
-      <ActionForm action={logIn} submitLabel="Log in" pendingLabel="Logging in...">
+      <ActionForm
+        action={logIn}
+        submitLabel="Log in"
+        pendingLabel="Logging in..."
+        buttonClass="btn btn-primary btn-large mt-1"
+      >
         <label className="label">
           Email
-          <input name="email" type="email" required autoComplete="email" className="input" />
+          <input name="email" type="email" required autoComplete="email" inputMode="email" className="input" />
         </label>
-        <label className="label">
-          Password
-          <PasswordInput name="password" required autoComplete="current-password" />
-        </label>
+        <div className="label">
+          <span className="flex items-baseline justify-between gap-3">
+            <label htmlFor="password">Password</label>
+            <Link href="/forgot-password" className="text-[0.8125rem] font-medium text-brand hover:underline">
+              Forgot your password?
+            </Link>
+          </span>
+          <PasswordInput id="password" name="password" required autoComplete="current-password" />
+        </div>
       </ActionForm>
-      <p className="text-base text-ink-soft">
-        <Link href="/forgot-password" className="link">
-          Forgot your password?
-        </Link>
-      </p>
-      <p className="text-base text-ink-soft">
+      <p className="border-t border-line pt-5 text-[0.9375rem] text-ink-soft">
         New resident?{" "}
         <Link href="/signup" className="link">
           Create an account

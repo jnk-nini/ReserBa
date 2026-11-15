@@ -16,7 +16,7 @@ export default function SignUpPage() {
       description="For residents of the subdivision. The HOA administrator will check your address before you can book an amenity."
     >
       <SignUpForm />
-      <p className="text-base text-ink-soft">
+      <p className="border-t border-line pt-5 text-[0.9375rem] text-ink-soft">
         Already have an account?{" "}
         <Link href="/login" className="link">
           Log in

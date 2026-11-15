@@ -20,7 +20,7 @@ export default function ForgotPasswordPage() {
           <input name="email" type="email" required autoComplete="email" className="input" />
         </label>
       </ActionForm>
-      <p className="text-base text-ink-soft">
+      <p className="border-t border-line pt-5 text-[0.9375rem] text-ink-soft">
         <Link href="/login" className="link">
           Back to log in
         </Link>

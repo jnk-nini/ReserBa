@@ -32,12 +32,12 @@ export function DateTile({ value, muted = false }: { value: string; muted?: bool
   return (
     <span
       aria-hidden="true"
-      className={`flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-xl border leading-none ${
-        muted ? "border-line bg-ground text-ink-soft" : "border-line bg-surface text-ink"
+      className={`flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-xl leading-none ${
+        muted ? "bg-closed-tint text-ink-soft" : "bg-brand-tint text-brand"
       }`}
     >
-      <span className="text-[0.6875rem] font-semibold tracking-wide uppercase">{month}</span>
-      <span className="number mt-0.5 text-xl font-semibold">{date.getUTCDate()}</span>
+      <span className="text-[0.625rem] font-semibold tracking-[0.12em] uppercase">{month}</span>
+      <span className="display mt-0.5 text-[1.625rem] font-semibold">{date.getUTCDate()}</span>
       <span className="sr-only">{weekday}</span>
     </span>
   );

@@ -51,40 +51,49 @@ export default async function AdminDashboardPage() {
   const todayRows = (todayResult.data ?? []) as unknown as TodayRow[];
 
   const waiting = [
-    { count: requests.count ?? 0, label: "reservation requests to decide", href: "/admin/requests" },
-    { count: residents.count ?? 0, label: "residents to verify", href: "/admin/residents" },
-    { count: payments.count ?? 0, label: "payment proofs to check", href: "/admin/requests?show=payments" },
+    { count: requests.count ?? 0, label: "requests to decide", action: "Decide", href: "/admin/requests" },
+    { count: residents.count ?? 0, label: "residents to verify", action: "Verify", href: "/admin/residents" },
+    { count: payments.count ?? 0, label: "payment proofs to check", action: "Check", href: "/admin/requests?show=payments" },
   ];
 
   return (
     <>
-      <PageHeader title="Dashboard" description={formatDate(new Date())} />
+      <PageHeader title="Dashboard" description={formatDate(new Date())}>
+        <Link href="/admin/walk-in" className="btn btn-primary">
+          <Icon name="plus" className="size-[1.125rem]" />
+          Encode a walk-in
+        </Link>
+      </PageHeader>
 
       <section aria-labelledby="waiting-title">
-        <h2 id="waiting-title" className="mb-3 text-sm font-semibold text-ink-soft">
+        <h2 id="waiting-title" className="eyebrow mb-3">
           Waiting for you
         </h2>
-        <ul className="grid gap-3 sm:grid-cols-3">
+        <ul className="grid overflow-hidden rounded-2xl border border-line bg-surface shadow-low sm:grid-cols-3">
           {waiting.map((item) => (
-            <li key={item.href}>
+            <li key={item.href} className="border-b border-line last:border-b-0 sm:border-r sm:border-b-0 sm:last:border-r-0">
               <Link
                 href={item.href}
-                className="group flex h-full flex-col justify-between gap-6 rounded-2xl border border-line bg-surface p-5 shadow-low transition-[border-color,box-shadow,transform] duration-200 ease-settle hover:-translate-y-0.5 hover:border-line-strong hover:shadow-high"
+                className="group flex h-full items-center justify-between gap-4 p-5 transition-colors duration-150 hover:bg-ground/70 sm:flex-col sm:items-start sm:gap-5 sm:p-6"
               >
-                <span className="flex items-start justify-between gap-3">
-                  <span className="text-[0.9375rem] text-ink-soft">{item.label}</span>
-                  <Icon
-                    name="chevron-right"
-                    className="mt-1 size-4 text-ink-soft/50 transition-transform duration-200 ease-settle group-hover:translate-x-0.5"
-                  />
-                </span>
-                <span className="flex items-center gap-2.5">
+                <span className="flex items-baseline gap-3 sm:flex-col sm:gap-2">
                   <span
-                    className={`number text-4xl leading-none font-semibold tracking-tight ${item.count > 0 ? "text-ink" : "text-ink-soft/60"}`}
+                    className={`display number text-5xl sm:text-6xl ${item.count > 0 ? "text-ink" : "text-ink-soft/50"}`}
                   >
                     {item.count}
                   </span>
-                  {item.count > 0 && <span className="size-2 rounded-full bg-pending" aria-label="needs attention" />}
+                  <span className="text-[0.9375rem] text-ink-soft">{item.label}</span>
+                </span>
+                <span
+                  className={`flex shrink-0 items-center gap-1 text-sm font-semibold ${item.count > 0 ? "text-brand" : "text-ink-soft"}`}
+                >
+                  {item.count > 0 ? item.action : "All clear"}
+                  {item.count > 0 && (
+                    <Icon
+                      name="chevron-right"
+                      className="size-4 transition-transform duration-200 ease-settle group-hover:translate-x-0.5"
+                    />
+                  )}
                 </span>
               </Link>
             </li>
@@ -93,7 +102,7 @@ export default async function AdminDashboardPage() {
       </section>
 
       <section aria-labelledby="today-title" className="mt-8">
-        <h2 id="today-title" className="mb-3 text-sm font-semibold text-ink-soft">
+        <h2 id="today-title" className="eyebrow mb-3">
           Approved for today
         </h2>
         {todayRows.length === 0 ? (

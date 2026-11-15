@@ -18,11 +18,32 @@ Every functional requirement of Appendix B (FR-01 to FR-30) has a screen.
 | Area | Screens | Requirements |
 |---|---|---|
 | Accounts | `/signup`, `/login`, `/forgot-password`, `/reset-password`, `/account` | FR-01 to FR-03, FR-05 |
-| Resident | `/calendar`, `/book`, `/reservations`, `/reservations/[id]`, slip, `/fund` | FR-09 to FR-15, FR-18, FR-19, FR-23 |
+| Resident | `/home`, `/calendar`, `/book`, `/reservations`, `/reservations/[id]`, slip, `/fund` | FR-09 to FR-15, FR-18, FR-19, FR-23 |
 | Administrator | `/admin` (dashboard), `/admin/requests`, `/admin/requests/[id]`, `/admin/walk-in`, `/admin/residents`, `/admin/amenities`, `/admin/equipment`, `/admin/ledger`, `/admin/reports`, `/admin/audit` | FR-04, FR-06 to FR-08, FR-16, FR-17, FR-20 to FR-22, FR-24 to FR-26, FR-30 |
 | Guard | `/guard` | FR-27, FR-28 |
 
 Tracker tasks this covers: T25 to T41 (development). T42 (phone check) was done once for every screen at 390 px wide; repeat it on real phones.
+
+## Design update (Nov 16)
+
+- **Look.** Warm stone background, deep evergreen as the one brand colour, a small brass accent for rules and labels. Titles use a serif (Cormorant Garamond); forms, tables, and buttons use a plain sans (Hanken Grotesk). All colours, corners, and shadows are named once in `src/app/globals.css`.
+- **Logo.** An arched gate with two leaves that stand side by side without touching: two bookings that do not overlap. The drawing is in `src/components/logo.tsx`; the browser icon, home screen icons, and the picture for shared links are in `src/app` and `public`.
+- **First page.** Laid out like a printed notice: large serif lines and hairline rules instead of boxes.
+- **Resident home (`/home`).** New first screen for residents: the next reservation with its number, what else is coming up, and the amenities with a Book link.
+- **Account and log out on a phone.** The round button with the initials in the top bar opens the account link and the log out button. Before this, residents and guards had no log out button on a phone.
+- **Booking form.** The day strip sits under the day, and start times are grouped into morning, afternoon, and evening.
+- **Reservation screen.** Shows the three steps of a request (sent, payment, HOA decision) and the fee still to pay.
+- **Questions before something that cannot be undone** now open in a box with the look of the system, not the browser's own box.
+- **Fixed.** The calendar no longer shows a mismatch warning when it loads on a phone.
+
+## Speed update (Nov 16)
+
+Every click felt slow because the pages ran in Vercel's default region (United States) while the database is in Singapore, and each page asked Supabase who was signed in two times before reading its data.
+
+- `vercel.json` now runs the pages in Singapore (`sin1`), beside the database.
+- The login is checked from its signature (`getClaims`) in `src/proxy.ts` and `src/lib/auth.ts`, which saves the trips to the Supabase server where the project uses the newer signing keys.
+- `src/app/(app)/loading.tsx` shows grey blocks at once when a screen is opened, so a tap always gets an answer.
+- The week calendar library is in `src/components/week-calendar.tsx` and is downloaded only on a computer. A phone no longer loads it or asks for the same schedule twice.
 
 ## How it was checked (Nov 15)
 

@@ -1,13 +1,14 @@
 import Link from "next/link";
+import AccountMenu from "./account-menu";
 import Icon from "./icon";
 import Logo from "./logo";
 import MobileTabs from "./mobile-tabs";
 import { SideLinks, type NavItem } from "./nav-links";
 
-// What every signed-in screen sits in. On a computer: a white side bar with
-// the menu, and the page beside it. On a phone: a slim top bar and a bottom
-// tab bar, which is where thumbs are. The layout file decides who the person
-// is and which menu they get; this file only draws it.
+// What every signed-in screen sits in. On a computer: a side bar with the
+// menu, and the page beside it. On a phone: a slim top bar with the account
+// button, and a bottom tab bar, which is where thumbs are. The layout file
+// decides who the person is and which menu they get; this file only draws it.
 
 type Props = {
   fullName: string;
@@ -26,6 +27,7 @@ function initials(name: string) {
   return (first + last).toUpperCase();
 }
 
+// A person's initials in a circle, for lists of people.
 export function Avatar({ name, className = "size-9" }: { name: string; className?: string }) {
   return (
     <span
@@ -38,6 +40,8 @@ export function Avatar({ name, className = "size-9" }: { name: string; className
 }
 
 export default function AppShell({ fullName, roleName, items, logOut, children }: Props) {
+  const letters = initials(fullName);
+
   return (
     <div className="flex flex-1 flex-col lg:flex-row">
       <a
@@ -48,22 +52,16 @@ export default function AppShell({ fullName, roleName, items, logOut, children }
       </a>
 
       {/* The top bar of a phone. */}
-      <header className="no-print sticky top-0 z-20 flex h-14 items-center justify-between border-b border-line bg-surface/90 px-4 backdrop-blur-md lg:hidden">
+      <header className="no-print sticky top-0 z-20 flex h-14 items-center justify-between border-b border-line bg-ground/90 pr-3 pl-4 backdrop-blur-md lg:hidden">
         <Link href="/home" className="rounded-lg" aria-label="ReserBa, home">
           <Logo />
         </Link>
-        <div className="flex items-center gap-2.5">
-          <span className="text-right text-xs leading-tight">
-            <span className="block max-w-32 truncate font-semibold">{fullName}</span>
-            <span className="text-ink-soft">{roleName}</span>
-          </span>
-          <Avatar name={fullName} />
-        </div>
+        <AccountMenu fullName={fullName} roleName={roleName} initials={letters} logOut={logOut} />
       </header>
 
       {/* The side bar of a computer. */}
-      <aside className="no-print sticky top-0 hidden h-dvh w-64 shrink-0 flex-col border-r border-line bg-surface lg:flex">
-        <div className="px-5 pt-6 pb-6">
+      <aside className="no-print sticky top-0 hidden h-dvh w-[17rem] shrink-0 flex-col border-r border-line bg-surface lg:flex">
+        <div className="px-6 pt-7 pb-8">
           <Link href="/home" className="rounded-lg" aria-label="ReserBa, home">
             <Logo />
           </Link>
@@ -74,15 +72,23 @@ export default function AppShell({ fullName, roleName, items, logOut, children }
         </nav>
 
         <div className="border-t border-line p-3">
-          <div className="flex items-center gap-3 px-2 py-2">
-            <Avatar name={fullName} />
-            <p className="min-w-0 text-sm leading-tight">
+          <Link
+            href="/account"
+            className="flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors duration-150 hover:bg-ground"
+          >
+            <span
+              aria-hidden="true"
+              className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand text-[0.8125rem] font-semibold text-on-brand"
+            >
+              {letters}
+            </span>
+            <span className="min-w-0 text-sm leading-tight">
               <span className="block truncate font-semibold" title={fullName}>
                 {fullName}
               </span>
-              <span className="text-ink-soft">{roleName}</span>
-            </p>
-          </div>
+              <span className="block truncate text-ink-soft">{roleName}</span>
+            </span>
+          </Link>
           <form action={logOut}>
             <button
               type="submit"
@@ -95,11 +101,14 @@ export default function AppShell({ fullName, roleName, items, logOut, children }
         </div>
       </aside>
 
-      <main id="content" className="mx-auto w-full max-w-5xl flex-1 px-4 pt-6 pb-28 sm:px-6 lg:px-10 lg:py-10 lg:pb-10">
+      <main
+        id="content"
+        className="mx-auto w-full max-w-[68rem] flex-1 px-4 pt-6 pb-28 sm:px-6 lg:px-12 lg:pt-12 lg:pb-16"
+      >
         {children}
       </main>
 
-      <MobileTabs items={items} fullName={fullName} roleName={roleName} logOut={logOut} />
+      <MobileTabs items={items} />
     </div>
   );
 }
@@ -108,12 +117,12 @@ export default function AppShell({ fullName, roleName, items, logOut, children }
 export function ShellLoading() {
   return (
     <div className="flex flex-1 flex-col lg:flex-row" aria-busy="true">
-      <div className="h-14 border-b border-line bg-surface lg:h-dvh lg:w-64 lg:shrink-0 lg:border-r lg:border-b-0" />
-      <div className="mx-auto w-full max-w-5xl flex-1 px-4 py-6 sm:px-6 lg:px-10 lg:py-10">
+      <div className="h-14 border-b border-line bg-ground lg:h-dvh lg:w-[17rem] lg:shrink-0 lg:border-r lg:border-b-0 lg:bg-surface" />
+      <div className="mx-auto w-full max-w-[68rem] flex-1 px-4 py-6 sm:px-6 lg:px-12 lg:py-12">
         <p className="sr-only" role="status">
           Loading
         </p>
-        <div className="skeleton h-8 w-56" />
+        <div className="skeleton h-9 w-56" />
         <div className="skeleton mt-3 h-5 w-80 max-w-full" />
         <div className="skeleton mt-8 h-32 w-full" />
         <div className="skeleton mt-4 h-32 w-full" />

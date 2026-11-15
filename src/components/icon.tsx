@@ -3,6 +3,12 @@
 // one family. An icon sits beside its words, so screen readers skip it.
 
 const paths = {
+  home: (
+    <>
+      <path d="M4 10.5 12 4l8 6.5V19a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 19z" />
+      <path d="M9.5 20.5v-6h5v6" />
+    </>
+  ),
   calendar: (
     <>
       <rect x="3.5" y="5" width="17" height="15.5" rx="2.5" />
@@ -134,6 +140,20 @@ const paths = {
   ),
   "chevron-right": <path d="m9.5 5.5 6.5 6.5-6.5 6.5" />,
   close: <path d="M6 6l12 12M18 6 6 18" />,
+  "arrow-left": <path d="M19 12H5M11 6l-6 6 6 6" />,
+  upload: <path d="M12 16V4.5M7.5 9 12 4.5 16.5 9M5 16.5v1A2.5 2.5 0 0 0 7.5 20h9a2.5 2.5 0 0 0 2.5-2.5v-1" />,
+  printer: (
+    <>
+      <path d="M7 8.5V4h10v4.5M7 17H5.5A2 2 0 0 1 3.5 15v-4.5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2V15a2 2 0 0 1-2 2H17" />
+      <path d="M7 14h10v6H7z" />
+    </>
+  ),
+  alert: (
+    <>
+      <path d="M12 4 3 19.5h18z" />
+      <path d="M12 10v4.5M12 17.25v.01" />
+    </>
+  ),
 } as const;
 
 export type IconName = keyof typeof paths;

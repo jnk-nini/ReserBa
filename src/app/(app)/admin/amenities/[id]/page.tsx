@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import ActionForm from "@/components/action-form";
 import AmenityForm from "@/components/amenity-form";
@@ -39,11 +38,7 @@ export default async function AmenityPage({ params }: PageProps<"/admin/amenitie
 
   return (
     <>
-      <PageHeader title={amenity.name}>
-        <Link href="/admin/amenities" className="btn btn-quiet">
-          All amenities
-        </Link>
-      </PageHeader>
+      <PageHeader title={amenity.name} back={{ href: "/admin/amenities", label: "Amenities" }} />
 
       <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
         <section className="panel">
