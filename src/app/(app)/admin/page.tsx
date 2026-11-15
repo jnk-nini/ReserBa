@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Icon from "@/components/icon";
 import PageHeader from "@/components/page-header";
 import { requireRole } from "@/lib/auth";
 import { getServerSupabase } from "@/lib/supabase-server";
@@ -62,19 +63,23 @@ export default async function AdminDashboardPage() {
         <h2 id="waiting-title" className="mb-3 text-lg font-bold">
           Waiting for you
         </h2>
-        <ul className="flex flex-col divide-y divide-line rounded-xl border border-line bg-surface">
+        <ul className="grid gap-3 sm:grid-cols-3">
           {waiting.map((item) => (
             <li key={item.href}>
               <Link
                 href={item.href}
-                className="flex items-center gap-4 px-4 py-3 text-base transition-colors duration-150 hover:bg-brand-tint"
+                className="group flex h-full items-center gap-4 rounded-xl border border-line bg-surface px-4 py-4 text-base shadow-low transition-colors duration-150 hover:border-brand hover:bg-brand-tint sm:flex-col sm:items-start sm:gap-2"
               >
                 <span
-                  className={`number min-w-10 text-right text-2xl font-bold ${item.count > 0 ? "text-pending" : "text-ink-soft"}`}
+                  className={`number font-display min-w-10 text-right text-4xl leading-none font-bold sm:text-left ${item.count > 0 ? "text-pending" : "text-ink-soft"}`}
                 >
                   {item.count}
                 </span>
-                <span>{item.label}</span>
+                <span className="flex-1">{item.label}</span>
+                <Icon
+                  name="arrow"
+                  className="size-5 text-ink-soft transition-transform duration-200 ease-settle group-hover:translate-x-1 group-hover:text-brand sm:hidden"
+                />
               </Link>
             </li>
           ))}
