@@ -1,7 +1,8 @@
 import Link from "next/link";
+import Logo from "./logo";
 
-// The frame around the login, sign-up, and password screens: a frosted card
-// on the deep green ground.
+// The frame around the login, sign-up, and password screens: a plain card on
+// a quiet ground, beside a short statement of what the product is for.
 export default function AuthFrame({
   title,
   description,
@@ -12,17 +13,32 @@ export default function AuthFrame({
   children: React.ReactNode;
 }) {
   return (
-    <div className="emerald flex flex-1 flex-col bg-fixed">
-      <main className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center gap-6 px-4 py-10">
-        <Link href="/" className="flex min-h-11 items-center self-start text-xl font-extrabold tracking-tight text-white">
-          ReserBa
+    <div className="grid flex-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
+      <aside className="emerald on-dark relative hidden flex-col justify-between p-12 lg:flex">
+        <Link href="/" aria-label="ReserBa home" className="w-fit text-white">
+          <Logo />
         </Link>
-        <div className="flex flex-col gap-6 rounded-3xl border border-white/60 bg-white/95 p-6 text-ink shadow-float backdrop-blur-xl sm:p-8">
+        <div>
+          <p className="max-w-md font-display text-5xl leading-[1.08] tracking-tight">
+            The schedule that <em className="text-sage">protects itself.</em>
+          </p>
+          <p className="mt-5 max-w-sm text-base text-ink-soft">
+            No double bookings, buffer time kept, fees computed, and every approval on record.
+          </p>
+        </div>
+        <p className="text-sm text-ink-soft">Amenity booking for homeowners associations</p>
+      </aside>
+
+      <main className="flex flex-col justify-center px-4 py-10 sm:px-8">
+        <div className="mx-auto flex w-full max-w-sm flex-col gap-8">
+          <Link href="/" aria-label="ReserBa home" className="w-fit lg:hidden">
+            <Logo />
+          </Link>
           <div>
-            <h1 className="text-3xl font-extrabold tracking-[-0.03em]">{title}</h1>
-            {description && <p className="mt-1.5 text-base text-ink-soft">{description}</p>}
+            <h1 className="font-display text-4xl leading-tight font-normal tracking-tight">{title}</h1>
+            {description && <p className="mt-2 text-[0.9375rem] text-ink-soft">{description}</p>}
           </div>
-          {children}
+          <div className="flex flex-col gap-5">{children}</div>
         </div>
       </main>
     </div>

@@ -74,7 +74,7 @@ export default async function EquipmentPage() {
         ))}
 
         <section className="panel">
-          <h2 className="mb-4 text-lg font-bold">Add an item</h2>
+          <h2 className="mb-4 text-lg font-semibold">Add an item</h2>
           <ActionForm action={saveEquipment} submitLabel="Add item" buttonClass="btn btn-primary self-start">
             <EquipmentFields />
           </ActionForm>

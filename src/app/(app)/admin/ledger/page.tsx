@@ -65,11 +65,11 @@ export default async function LedgerPage({ searchParams }: PageProps<"/admin/led
           ["Expenses", expense],
           ["Difference", income - expense],
         ].map(([label, amount]) => (
-          <div key={label} className="glass px-4 py-3">
+          <div key={label} className="card px-4 py-3">
             <dt className="text-sm text-ink-soft">
               {label}, {formatMonth(month)}
             </dt>
-            <dd className="text-2xl font-bold">{formatMoney(amount as number)}</dd>
+            <dd className="text-2xl font-semibold">{formatMoney(amount as number)}</dd>
           </div>
         ))}
       </dl>
@@ -127,7 +127,7 @@ export default async function LedgerPage({ searchParams }: PageProps<"/admin/led
         )}
 
         <section className="panel">
-          <h2 className="mb-4 text-lg font-bold">Add an expense</h2>
+          <h2 className="mb-4 text-lg font-semibold">Add an expense</h2>
           <ActionForm action={addExpense} submitLabel="Add expense">
             <label className="label">
               Date

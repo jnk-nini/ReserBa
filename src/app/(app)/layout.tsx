@@ -1,39 +1,63 @@
 import Link from "next/link";
 import { Suspense } from "react";
-import MobileAction from "@/components/mobile-action";
-import NavLinks, { type NavItem } from "@/components/nav-links";
+import Icon from "@/components/icons";
+import AppShell from "@/components/app-shell";
+import { type NavGroup } from "@/components/nav-links";
 import { requireUser } from "@/lib/auth";
 import type { Role } from "@/lib/types";
-import { logOut } from "../auth-actions";
 
-// The frame around every signed-in screen: the green bar with the menu of the
-// person's role, and the page itself. On a phone the main action of the role
-// stays at the bottom of the screen.
+// The frame around every signed-in screen: the menu of the person's role down
+// the side (a drawer on a phone), and the page itself. On a phone the main
+// action of the role stays at the bottom of the screen.
 
-const menus: Record<Role, NavItem[]> = {
+const menus: Record<Role, NavGroup[]> = {
   resident: [
-    { href: "/calendar", label: "Calendar" },
-    { href: "/book", label: "Book" },
-    { href: "/reservations", label: "My reservations" },
-    { href: "/fund", label: "Fund summary" },
-    { href: "/account", label: "Account" },
+    {
+      items: [
+        { href: "/calendar", label: "Calendar", icon: "calendar" },
+        { href: "/book", label: "Book", icon: "plus" },
+        { href: "/reservations", label: "My reservations", icon: "slip" },
+      ],
+    },
+    {
+      label: "Community",
+      items: [{ href: "/fund", label: "Fund summary", icon: "wallet" }],
+    },
+    { label: "You", items: [{ href: "/account", label: "Account", icon: "user" }] },
   ],
   admin: [
-    { href: "/admin", label: "Dashboard" },
-    { href: "/admin/requests", label: "Requests" },
-    { href: "/admin/walk-in", label: "Walk-in" },
-    { href: "/calendar", label: "Calendar" },
-    { href: "/admin/residents", label: "People" },
-    { href: "/admin/amenities", label: "Amenities" },
-    { href: "/admin/equipment", label: "Equipment" },
-    { href: "/admin/ledger", label: "Fund ledger" },
-    { href: "/admin/reports", label: "Reports" },
-    { href: "/admin/audit", label: "Audit log" },
-    { href: "/account", label: "Account" },
+    {
+      label: "Today",
+      items: [
+        { href: "/admin", label: "Dashboard", icon: "home" },
+        { href: "/admin/requests", label: "Requests", icon: "inbox" },
+        { href: "/admin/walk-in", label: "Walk-in", icon: "walkin" },
+        { href: "/calendar", label: "Calendar", icon: "calendar" },
+      ],
+    },
+    {
+      label: "Manage",
+      items: [
+        { href: "/admin/residents", label: "People", icon: "people" },
+        { href: "/admin/amenities", label: "Amenities", icon: "building" },
+        { href: "/admin/equipment", label: "Equipment", icon: "equipment" },
+      ],
+    },
+    {
+      label: "Records",
+      items: [
+        { href: "/admin/ledger", label: "Fund ledger", icon: "ledger" },
+        { href: "/admin/reports", label: "Reports", icon: "chart" },
+        { href: "/admin/audit", label: "Audit log", icon: "audit" },
+      ],
+    },
+    { label: "You", items: [{ href: "/account", label: "Account", icon: "user" }] },
   ],
   guard: [
-    { href: "/guard", label: "Today" },
-    { href: "/account", label: "Account" },
+    {
+      items: [{ href: "/guard", label: "Today", icon: "gate" }],
+    },
+    { label: "You", items: [{ href: "/account", label: "Account", icon: "user" }] },
   ],
 };
 
@@ -53,60 +77,53 @@ async function Frame({ children }: { children: React.ReactNode }) {
         ? { href: "/book", label: "Book now" }
         : null;
 
-  return (
-    <div className="flex flex-1 flex-col lg:flex-row">
-      <aside className="emerald no-print sticky top-0 z-20 border-b border-white/10 lg:h-screen lg:w-64 lg:shrink-0 lg:overflow-y-auto lg:border-r lg:border-b-0">
-        <div className="flex items-center justify-between gap-3 px-4 pt-3 lg:flex-col lg:items-start lg:px-5 lg:pt-6">
-          <Link href="/home" className="flex min-h-11 items-center text-xl font-extrabold tracking-tight">
-            ReserBa
-          </Link>
-          <div className="flex items-center gap-3 lg:w-full lg:flex-col lg:items-stretch lg:gap-3 lg:rounded-2xl lg:border lg:border-white/15 lg:bg-black/20 lg:p-3 lg:backdrop-blur-md">
-            <p className="text-right text-sm leading-tight lg:text-left">
-              <span className="block max-w-40 truncate font-semibold">{user.full_name}</span>
-              <span className="text-mint/75">{roleNames[user.role]}</span>
-            </p>
-            <form action={logOut}>
-              <button
-                type="submit"
-                className="min-h-11 w-full cursor-pointer rounded-full border border-white/25 bg-white/5 px-4 text-sm font-semibold transition-colors duration-150 hover:bg-white/15 lg:min-h-9"
-              >
-                Log out
-              </button>
-            </form>
-          </div>
-        </div>
-        <nav aria-label="Main menu">
-          <NavLinks items={menus[user.role]} />
-        </nav>
-      </aside>
+  const banner = waiting ? (
+    <p className="notice notice-info no-print mb-6 flex items-start gap-2.5">
+      <Icon name="info" className="mt-0.5 size-4 shrink-0" />
+      <span>
+        {user.residency_status === "rejected"
+          ? "Your residency was not verified. "
+          : "Your account is waiting for the HOA administrator to verify your residency. You can look at the calendar, but you cannot book yet. "}
+        <Link href="/account" className="font-semibold underline underline-offset-4">
+          {user.residency_status === "rejected"
+            ? "See the reason and upload a new proof."
+            : user.proof_of_residency_url
+              ? "See your account."
+              : "Upload your proof of residency."}
+        </Link>
+      </span>
+    </p>
+  ) : null;
 
-      <main
-        className={`mx-auto w-full max-w-5xl flex-1 px-4 py-6 sm:px-6 lg:py-10 ${action ? "pb-28 lg:pb-10" : ""}`}
-      >
-        {waiting && (
-          <p className="notice notice-info no-print mb-6">
-            {user.residency_status === "rejected"
-              ? "Your residency was not verified. "
-              : "Your account is waiting for the HOA administrator to verify your residency. You can look at the calendar, but you cannot book yet. "}
-            <Link href="/account" className="font-semibold underline underline-offset-4">
-              {user.residency_status === "rejected"
-                ? "See the reason and upload a new proof."
-                : user.proof_of_residency_url
-                  ? "See your account."
-                  : "Upload your proof of residency."}
-            </Link>
-          </p>
-        )}
-        {children}
-      </main>
-      {action && <MobileAction href={action.href} label={action.label} />}
+  return (
+    <AppShell groups={menus[user.role]} name={user.full_name} roleName={roleNames[user.role]} banner={banner} action={action}>
+      {children}
+    </AppShell>
+  );
+}
+
+// What shows while the person's account is loaded: the shape of the page, so
+// it does not jump when the content arrives.
+function FrameSkeleton() {
+  return (
+    <div className="flex flex-1 flex-col lg:flex-row" aria-busy="true">
+      <div className="hidden w-64 shrink-0 border-r border-line bg-surface lg:block" />
+      <div className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-6 lg:px-10 lg:py-10">
+        <div className="skeleton mb-2 h-8 w-56" />
+        <div className="skeleton mb-8 h-4 w-80 max-w-full" />
+        <div className="grid gap-3 sm:grid-cols-3">
+          <div className="skeleton h-28" />
+          <div className="skeleton h-28" />
+          <div className="skeleton h-28" />
+        </div>
+      </div>
     </div>
   );
 }
 
 export default function AppLayout({ children }: LayoutProps<"/">) {
   return (
-    <Suspense fallback={<p className="p-6 text-base text-ink-soft">Loading...</p>}>
+    <Suspense fallback={<FrameSkeleton />}>
       <Frame>{children}</Frame>
     </Suspense>
   );

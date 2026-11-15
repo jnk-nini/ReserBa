@@ -1,7 +1,7 @@
 // The small line drawings used across the screens. Each one is drawn on a
 // 24 by 24 grid and takes the colour of the text around it.
 
-type IconName =
+export type IconName =
   | "calendar"
   | "overlap"
   | "buffer"
@@ -16,7 +16,24 @@ type IconName =
   | "chevron"
   | "close"
   | "wallet"
-  | "shield";
+  | "shield"
+  | "home"
+  | "plus"
+  | "list"
+  | "people"
+  | "building"
+  | "chart"
+  | "user"
+  | "menu"
+  | "logout"
+  | "inbox"
+  | "walkin"
+  | "ledger"
+  | "gate"
+  | "info"
+  | "alert"
+  | "download"
+  | "sparkle";
 
 const paths: Record<IconName, React.ReactNode> = {
   calendar: (
@@ -86,6 +103,86 @@ const paths: Record<IconName, React.ReactNode> = {
       <path d="m9 12 2.2 2.2L15 10.5" />
     </>
   ),
+  home: (
+    <>
+      <rect x="3.5" y="3.5" width="7" height="7" rx="2" />
+      <rect x="13.5" y="3.5" width="7" height="4.5" rx="2" />
+      <rect x="13.5" y="11" width="7" height="9.5" rx="2" />
+      <rect x="3.5" y="13.5" width="7" height="7" rx="2" />
+    </>
+  ),
+  plus: <path d="M12 5v14M5 12h14" />,
+  list: <path d="M8.5 6.5H20M8.5 12H20M8.5 17.5H20M4 6.5h.01M4 12h.01M4 17.5h.01" />,
+  people: (
+    <>
+      <circle cx="9" cy="8.5" r="3.25" />
+      <path d="M3 19.5c.4-3.2 2.9-5 6-5s5.6 1.8 6 5" />
+      <path d="M16 5.6a3.1 3.1 0 0 1 0 5.8M18 14.9c1.7.6 2.8 2.1 3 4.6" />
+    </>
+  ),
+  building: (
+    <>
+      <path d="M5 20.5V5.5A1.5 1.5 0 0 1 6.5 4h6A1.5 1.5 0 0 1 14 5.5v15M14 10h3.5A1.5 1.5 0 0 1 19 11.5v9M3.5 20.5h17" />
+      <path d="M8.5 8h2M8.5 12h2M8.5 16h2" />
+    </>
+  ),
+  chart: (
+    <>
+      <path d="M4 4v16.5h16.5" />
+      <path d="M8.5 16v-4M13 16V8M17.5 16v-6.5" />
+    </>
+  ),
+  user: (
+    <>
+      <circle cx="12" cy="8.5" r="3.75" />
+      <path d="M4.5 20c.6-3.6 3.5-5.5 7.5-5.5s6.9 1.9 7.5 5.5" />
+    </>
+  ),
+  menu: <path d="M4 7h16M4 12h16M4 17h16" />,
+  logout: (
+    <>
+      <path d="M14 4.5h3.5A1.5 1.5 0 0 1 19 6v12a1.5 1.5 0 0 1-1.5 1.5H14" />
+      <path d="M10 8.5 5.5 12l4.5 3.5M5.5 12H15" />
+    </>
+  ),
+  inbox: (
+    <>
+      <path d="M4 13.5 6.2 6A1.5 1.5 0 0 1 7.6 5h8.8a1.5 1.5 0 0 1 1.4 1L20 13.5" />
+      <path d="M4 13.5V18a1.5 1.5 0 0 0 1.5 1.5h13A1.5 1.5 0 0 0 20 18v-4.5h-4.5a3.5 3.5 0 0 1-7 0z" />
+    </>
+  ),
+  walkin: (
+    <>
+      <circle cx="13" cy="5" r="1.75" />
+      <path d="m10.5 20 1.5-5.5-2.5-2.5 1-4 3.5 1.5 2.5 2.5M8 12.5 6 15M12 14.5l3 2 .5 3.5" />
+    </>
+  ),
+  ledger: (
+    <>
+      <rect x="4" y="3.5" width="16" height="17" rx="2.5" />
+      <path d="M8 8.5h8M8 12.5h8M8 16.5h4" />
+    </>
+  ),
+  gate: (
+    <>
+      <path d="M4 20.5V9l8-5 8 5v11.5M9 20.5v-6h6v6" />
+      <path d="M3 20.5h18" />
+    </>
+  ),
+  info: (
+    <>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M12 11v5M12 7.9v.1" />
+    </>
+  ),
+  alert: (
+    <>
+      <path d="M12 4 3 19.5h18z" />
+      <path d="M12 10v4.5M12 17.2v.1" />
+    </>
+  ),
+  download: <path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19.5h14" />,
+  sparkle: <path d="M12 3.5 14 10l6.5 2-6.5 2-2 6.5-2-6.5-6.5-2L10 10z" />,
 };
 
 export default function Icon({ name, className = "size-5" }: { name: IconName; className?: string }) {

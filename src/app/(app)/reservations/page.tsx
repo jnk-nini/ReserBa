@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import AmenityArt from "@/components/amenity-art";
+import EmptyState from "@/components/empty-state";
 import PageHeader from "@/components/page-header";
 import StatusBadge from "@/components/status-badge";
 import { requireRole } from "@/lib/auth";
@@ -35,34 +37,39 @@ export default async function ReservationsPage() {
       </PageHeader>
 
       {rows.length === 0 ? (
-        <div className="panel text-base">
-          <p className="font-semibold">You have no reservations yet.</p>
-          <p className="mt-1 text-ink-soft">
-            Check the calendar for a free time, then send a request. It shows up here with its status.
-          </p>
-          <Link href="/calendar" className="btn btn-quiet mt-4">
-            Open the calendar
-          </Link>
-        </div>
+        <EmptyState
+          icon="calendar"
+          title="You have no reservations yet"
+          action={
+            <Link href="/calendar" className="btn btn-quiet">
+              Open the calendar
+            </Link>
+          }
+        >
+          Check the calendar for a free time, then send a request. It shows up here with its status.
+        </EmptyState>
       ) : (
-        <ul className="grid gap-3 sm:grid-cols-2">
+        <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {rows.map((row) => (
             <li key={row.reservation_id}>
-              <Link href={`/reservations/${row.reservation_id}`} className="tile flex h-full flex-col gap-3">
-                <span className="flex items-start justify-between gap-3">
-                  <span className="text-lg font-bold">{row.amenities?.name}</span>
-                  <StatusBadge status={row.status} />
-                </span>
-                <span className="number text-base text-ink-soft">
-                  {formatDate(row.start_at)}
-                  <br />
-                  {formatTime(row.start_at)} to {formatTime(row.end_at)}
-                </span>
-                <span className="number mt-auto flex items-center justify-between gap-3 border-t border-line pt-3 text-sm text-ink-soft">
-                  <span className={row.reference_no ? "font-mono font-semibold text-ink" : ""}>
-                    {displayNumber(row)}
+              <Link href={`/reservations/${row.reservation_id}`} className="tile group flex h-full flex-col overflow-hidden p-0">
+                <AmenityArt name={row.amenities?.name ?? ""} className="h-24 object-cover" />
+                <span className="flex flex-1 flex-col gap-3 p-5">
+                  <span className="flex items-start justify-between gap-3">
+                    <span className="text-base font-semibold">{row.amenities?.name}</span>
+                    <StatusBadge status={row.status} />
                   </span>
-                  <span className="text-base font-semibold text-ink">{formatMoney(row.total_fee)}</span>
+                  <span className="number text-[0.9375rem] text-ink-soft">
+                    {formatDate(row.start_at)}
+                    <br />
+                    {formatTime(row.start_at)} to {formatTime(row.end_at)}
+                  </span>
+                  <span className="number mt-auto flex items-center justify-between gap-3 border-t border-line pt-3 text-sm text-ink-soft">
+                    <span className={row.reference_no ? "font-mono font-medium text-ink" : ""}>
+                      {displayNumber(row)}
+                    </span>
+                    <span className="text-[0.9375rem] font-semibold text-ink">{formatMoney(row.total_fee)}</span>
+                  </span>
                 </span>
               </Link>
             </li>

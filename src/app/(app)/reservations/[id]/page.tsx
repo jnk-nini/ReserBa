@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import ActionForm from "@/components/action-form";
+import Icon from "@/components/icons";
 import PageHeader from "@/components/page-header";
 import PaymentList from "@/components/payment-list";
 import PaymentProofForm from "@/components/payment-proof-form";
@@ -15,9 +16,10 @@ export const metadata: Metadata = {
   title: "Reservation | ReserBa",
 };
 
-export default async function ReservationPage({ params }: PageProps<"/reservations/[id]">) {
+export default async function ReservationPage({ params, searchParams }: PageProps<"/reservations/[id]">) {
   const user = await requireRole("resident", "admin");
   const { id } = await params;
+  const { sent } = await searchParams;
   if (user.role === "admin") {
     redirect(`/admin/requests/${id}`);
   }
@@ -37,6 +39,20 @@ export default async function ReservationPage({ params }: PageProps<"/reservatio
 
   return (
     <>
+      {sent && reservation.status === "pending" && (
+        <div role="status" className="well mb-8 flex items-start gap-4">
+          <span className="grid size-10 shrink-0 place-items-center rounded-full bg-brand text-on-brand">
+            <Icon name="check" />
+          </span>
+          <div>
+            <p className="text-base font-semibold">Request sent</p>
+            <p className="mt-0.5 text-[0.9375rem] text-ink-soft">
+              The time is held for you while the HOA administrator reviews it. Once approved, it gets a
+              reference number and a slip for the gate. You can send a proof of payment below.
+            </p>
+          </div>
+        </div>
+      )}
       <PageHeader title={displayNumber(reservation)}>
         {reservation.status === "approved" && (
           <Link href={`/reservations/${reservation.reservation_id}/slip`} className="btn btn-primary">
@@ -54,7 +70,7 @@ export default async function ReservationPage({ params }: PageProps<"/reservatio
 
           {reservation.status === "pending" && (
             <section className="panel">
-              <h2 className="text-lg font-bold">Waiting for approval</h2>
+              <h2 className="text-lg font-semibold">Waiting for approval</h2>
               <p className="mt-1 mb-4 text-base text-ink-soft">
                 The HOA administrator will approve or reject this request. The time is held for you
                 until then. You can cancel it while it is waiting.
@@ -73,11 +89,11 @@ export default async function ReservationPage({ params }: PageProps<"/reservatio
         </div>
 
         <section className="panel flex flex-col gap-4">
-          <h2 className="text-lg font-bold">Payments</h2>
+          <h2 className="text-lg font-semibold">Payments</h2>
           <PaymentList payments={reservation.payments} />
           {open && (
             <>
-              <h3 className="border-t border-line pt-4 text-base font-bold">Send a proof of payment</h3>
+              <h3 className="border-t border-line pt-4 text-base font-semibold">Send a proof of payment</h3>
               <p className="-mt-2 text-sm text-ink-soft">
                 Pay the HOA in cash or by e-wallet, then send the proof here. The administrator
                 confirms it.

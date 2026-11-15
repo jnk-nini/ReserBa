@@ -34,13 +34,13 @@ export default function Sheet({
           if (event.target === dialog.current) dialog.current?.close();
         }}
       >
-        <div aria-hidden="true" className="mx-auto mb-3 h-1.5 w-10 rounded-full bg-line-strong sm:hidden" />
+        <div aria-hidden="true" className="mx-auto mb-3 h-1 w-9 rounded-full bg-line-strong sm:hidden" />
         <div className="mb-4 flex items-center justify-between gap-3">
-          <h2 className="text-xl font-bold">{title}</h2>
+          <h2 className="text-lg font-semibold">{title}</h2>
           <button
             type="button"
             aria-label="Close"
-            className="grid size-11 cursor-pointer place-items-center rounded-full text-ink-soft transition-colors duration-150 hover:bg-brand-tint"
+            className="grid size-10 cursor-pointer place-items-center rounded-lg text-ink-soft transition-colors duration-150 hover:bg-brand-tint"
             onClick={() => dialog.current?.close()}
           >
             <Icon name="close" />

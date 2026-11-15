@@ -23,7 +23,7 @@ export default async function AccountPage() {
         {isResident && (
           <section className="panel flex flex-col gap-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <h2 className="text-lg font-bold">Residency</h2>
+              <h2 className="text-lg font-semibold">Residency</h2>
               <StatusBadge status={user.residency_status} />
             </div>
             {user.residency_status === "verified" && (
@@ -61,7 +61,7 @@ export default async function AccountPage() {
         )}
 
         <section className="panel">
-          <h2 className="mb-4 text-lg font-bold">Your details</h2>
+          <h2 className="mb-4 text-lg font-semibold">Your details</h2>
           <ActionForm action={saveProfile} submitLabel="Save details">
             <label className="label">
               Full name

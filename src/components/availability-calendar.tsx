@@ -35,9 +35,9 @@ function fromManilaClock(value: Date) {
 }
 
 const eventLooks: Record<TakenRange["kind"], { title: string; color: string }> = {
-  approved: { title: "Approved", color: "#17553c" },
-  pending: { title: "Waiting for approval", color: "#a36400" },
-  blocked: { title: "Blocked by the HOA", color: "#55625a" },
+  approved: { title: "Approved", color: "#1b7a53" },
+  pending: { title: "Waiting for approval", color: "#a8680a" },
+  blocked: { title: "Blocked by the HOA", color: "#5f6b65" },
 };
 
 export default function AvailabilityCalendar({
@@ -90,7 +90,7 @@ export default function AvailabilityCalendar({
         </p>
       )}
 
-      <div className="calendar-frame glass p-2 sm:p-3">
+      <div className="calendar-frame card overflow-hidden p-2 sm:p-4">
         <FullCalendar
           // A new key redraws the calendar when another amenity is chosen.
           key={amenity.amenity_id}
@@ -136,7 +136,7 @@ export default function AvailabilityCalendar({
       <ul className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-ink-soft">
         {Object.values(eventLooks).map((look) => (
           <li key={look.title} className="flex items-center gap-1.5">
-            <span className="inline-block size-3.5 rounded-sm" style={{ background: look.color }} />
+            <span className="inline-block size-3 rounded-[3px]" style={{ background: look.color }} />
             {look.title}
           </li>
         ))}

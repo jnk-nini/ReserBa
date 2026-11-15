@@ -1,8 +1,15 @@
+"use client";
+
+import { useRef, useState } from "react";
 import { formatClock, minutesToTime } from "@/lib/time";
 
 // The day strip: one amenity's day drawn as a bar from opening to closing time.
 // Taken time is filled in, so a person sees at a glance where a new booking
 // fits. The lighter tail after a booking is its buffer time.
+//
+// When `onSelect` is given the strip is also a control: press and drag across
+// it to choose a time, in steps of 30 minutes. The form's From and To lists
+// stay as the keyboard way to do the same thing.
 
 export type StripSegment = {
   // Minutes since midnight, Philippine time.
@@ -20,15 +27,23 @@ const fills: Record<StripSegment["kind"], string> = {
   buffer: "bg-brand/10 ring-1 ring-brand/40 ring-inset",
 };
 
+const STEP = 30;
+
 export default function DayStrip({
   openMinutes,
   closeMinutes,
   segments,
+  onSelect,
 }: {
   openMinutes: number;
   closeMinutes: number;
   segments: StripSegment[];
+  onSelect?: (from: number, to: number) => void;
 }) {
+  const track = useRef<HTMLDivElement>(null);
+  const anchor = useRef<number | null>(null);
+  const [hover, setHover] = useState<number | null>(null);
+  const [dragging, setDragging] = useState(false);
   const span = closeMinutes - openMinutes;
   // A tick every two hours, on the hour.
   const ticks: number[] = [];
@@ -43,9 +58,66 @@ export default function DayStrip({
     return { left: `${((start - openMinutes) / span) * 100}%`, width: `${((end - start) / span) * 100}%` };
   }
 
+  // The 30-minute slot under the pointer, as its start minute.
+  function slotAt(clientX: number) {
+    const box = track.current?.getBoundingClientRect();
+    if (!box) return openMinutes;
+    const ratio = Math.min(Math.max((clientX - box.left) / box.width, 0), 0.9999);
+    const minute = openMinutes + ratio * span;
+    return openMinutes + Math.floor((minute - openMinutes) / STEP) * STEP;
+  }
+
+  function choose(a: number, b: number) {
+    const from = Math.min(a, b);
+    const to = Math.min(Math.max(a, b) + STEP, closeMinutes);
+    onSelect?.(from, to);
+  }
+
+  const interactive = Boolean(onSelect);
+
   return (
     <div>
-      <div className="relative h-11 overflow-hidden rounded-xl border border-line-strong bg-surface">
+      <div
+        ref={track}
+        className={`relative h-12 touch-pan-y overflow-hidden rounded-lg border border-line-strong bg-surface select-none ${
+          interactive ? "cursor-crosshair" : ""
+        }`}
+        onPointerDown={
+          interactive
+            ? (event) => {
+                event.currentTarget.setPointerCapture(event.pointerId);
+                anchor.current = slotAt(event.clientX);
+                setDragging(true);
+                choose(anchor.current, anchor.current);
+              }
+            : undefined
+        }
+        onPointerMove={
+          interactive
+            ? (event) => {
+                setHover(slotAt(event.clientX));
+                if (anchor.current !== null) choose(anchor.current, slotAt(event.clientX));
+              }
+            : undefined
+        }
+        onPointerUp={
+          interactive
+            ? () => {
+                anchor.current = null;
+                setDragging(false);
+              }
+            : undefined
+        }
+        onPointerCancel={
+          interactive
+            ? () => {
+                anchor.current = null;
+                setDragging(false);
+              }
+            : undefined
+        }
+        onPointerLeave={interactive ? () => setHover(null) : undefined}
+      >
         {segments.map((segment, index) => {
           const position = place(segment.from, segment.to);
           if (!position) return null;
@@ -58,8 +130,20 @@ export default function DayStrip({
             />
           );
         })}
+        {interactive && hover !== null && !dragging && (
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-0 border-x border-brand/60 bg-brand/10"
+            style={place(hover, hover + STEP) ?? undefined}
+          />
+        )}
       </div>
-      <div className="relative mt-1 h-5 text-xs text-ink-soft number" aria-hidden="true">
+      {interactive && hover !== null && (
+        <p className="number mt-1 text-xs text-ink-soft" aria-hidden="true">
+          {formatClock(minutesToTime(hover))}
+        </p>
+      )}
+      <div className="number relative mt-1.5 h-5 text-xs text-ink-soft" aria-hidden="true">
         {ticks.map((minute) => (
           <span
             key={minute}
@@ -92,10 +176,10 @@ export function StripLegend({
     items.push(["bg-brand/10 ring-1 ring-brand/40 ring-inset", "Buffer after it"]);
   }
   return (
-    <ul className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-ink-soft">
+    <ul className="flex flex-wrap gap-x-4 gap-y-1 text-[0.8125rem] text-ink-soft">
       {items.map(([fill, label]) => (
         <li key={label} className="flex items-center gap-1.5">
-          <span className={`inline-block size-3.5 rounded-sm ${fill}`} />
+          <span className={`inline-block size-3 rounded-[3px] ${fill}`} />
           {label}
         </li>
       ))}

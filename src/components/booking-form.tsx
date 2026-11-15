@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from "react";
 import ActionForm from "@/components/action-form";
+import AmenityArt from "@/components/amenity-art";
 import DayStrip, { StripLegend, type StripSegment } from "@/components/day-strip";
 import { submitReservation } from "@/app/(app)/book/actions";
+import Icon from "@/components/icons";
 import { formatMoney, previewFee } from "@/lib/money";
 import { getSupabase } from "@/lib/supabase";
 import {
@@ -125,12 +127,12 @@ export default function BookingForm({ amenities, equipment, walkIn = false, spon
       submitLabel={walkIn ? "Save the reservation" : "Send the request"}
       pendingLabel="Checking and saving..."
       className="grid gap-6 lg:grid-cols-[1fr_20rem] lg:items-start"
-      buttonClass="btn btn-primary lg:col-start-1"
+      buttonClass="btn btn-primary w-full sm:w-auto sm:self-start lg:col-start-1"
     >
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-6">
         {walkIn && (
           <fieldset className="panel flex flex-col gap-4">
-            <legend className="px-1 text-base font-bold">Who is it for?</legend>
+            <legend className="px-1 text-base font-semibold">Who is it for?</legend>
             <label className="label">
               Guest name
               <input
@@ -156,37 +158,76 @@ export default function BookingForm({ amenities, equipment, walkIn = false, spon
           </fieldset>
         )}
 
-        <label className="label">
-          Amenity
-          <select
-            name="amenity_id"
-            className="input"
-            value={amenityId}
-            onChange={(event) => setAmenityId(Number(event.target.value))}
-          >
-            {amenities.map((item) => (
-              <option key={item.amenity_id} value={item.amenity_id}>
-                {item.name}
-              </option>
-            ))}
-          </select>
-          <span className="hint">
-            Open {formatClock(amenity.open_time)} to {formatClock(amenity.close_time)}.
-          </span>
-        </label>
+        <fieldset>
+          <legend className="mb-2 text-sm font-medium">Amenity</legend>
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            {amenities.map((item) => {
+              const selected = item.amenity_id === amenityId;
+              return (
+                <label
+                  key={item.amenity_id}
+                  className={`group relative cursor-pointer overflow-hidden rounded-xl border bg-surface transition-[border-color,box-shadow] duration-150 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-brand ${
+                    selected
+                      ? "border-brand shadow-[0_0_0_1px_var(--color-brand)]"
+                      : "border-line hover:border-line-strong hover:shadow-raised"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="amenity_id"
+                    value={item.amenity_id}
+                    checked={selected}
+                    onChange={() => setAmenityId(item.amenity_id)}
+                    className="sr-only"
+                  />
+                  <AmenityArt name={item.name} className="h-20 object-cover" />
+                  <span className="flex items-start justify-between gap-2 p-3">
+                    <span>
+                      <span className="block text-[0.9375rem] font-semibold">{item.name}</span>
+                      <span className="number block text-[0.8125rem] text-ink-soft">
+                        {formatClock(item.open_time)} to {formatClock(item.close_time)}
+                      </span>
+                      <span className="number mt-0.5 block text-[0.8125rem] text-ink-soft">
+                        {formatMoney(item.rate_resident)} per hour
+                      </span>
+                    </span>
+                    <span
+                      aria-hidden="true"
+                      className={`mt-0.5 grid size-5 shrink-0 place-items-center rounded-full border transition-colors duration-150 ${
+                        selected ? "border-brand bg-brand text-on-brand" : "border-line-strong text-transparent"
+                      }`}
+                    >
+                      <Icon name="check" className="size-3" />
+                    </span>
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+        </fieldset>
 
-        <label className="label">
-          Date
-          <input
-            name="date"
-            type="date"
-            required
-            min={today}
-            value={date}
-            onChange={(event) => event.target.value && setDate(event.target.value)}
-            className="input"
-          />
-        </label>
+        <div className="grid gap-4 sm:grid-cols-[1fr_auto] sm:items-end">
+          <label className="label">
+            Date
+            <input
+              name="date"
+              type="date"
+              required
+              min={today}
+              value={date}
+              onChange={(event) => event.target.value && setDate(event.target.value)}
+              className="input"
+            />
+          </label>
+          <div className="flex gap-2">
+            <button type="button" className="btn btn-quiet" onClick={() => setDate(today)}>
+              Today
+            </button>
+            <button type="button" className="btn btn-quiet" onClick={() => setDate(addDays(today, 1))}>
+              Tomorrow
+            </button>
+          </div>
+        </div>
 
         <div className="grid grid-cols-2 gap-3">
           <label className="label">
@@ -226,23 +267,62 @@ export default function BookingForm({ amenities, equipment, walkIn = false, spon
           </label>
         </div>
 
-        <div className="flex flex-col gap-2">
-          <p className="text-sm font-semibold">That day at {amenity.name}</p>
-          <DayStrip openMinutes={openMinutes} closeMinutes={closeMinutes} segments={segments} />
+        <div className="flex flex-wrap items-center gap-2" role="group" aria-label="How long">
+          <span className="mr-1 text-sm text-ink-soft">How long</span>
+          {[60, 120, 180, 240].map((length) => {
+            const fits = safeStart + length <= closeMinutes;
+            const active = safeEnd - safeStart === length;
+            return (
+              <button
+                key={length}
+                type="button"
+                disabled={!fits}
+                aria-pressed={active}
+                onClick={() => setEnd(safeStart + length)}
+                className={`min-h-9 cursor-pointer rounded-full border px-3.5 text-sm font-medium transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-40 ${
+                  active
+                    ? "border-brand bg-brand-tint text-brand-strong"
+                    : "border-line-strong text-ink-soft hover:bg-brand-tint/60 hover:text-ink"
+                }`}
+              >
+                {length / 60} {length === 60 ? "hour" : "hours"}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="card flex flex-col gap-3 p-4">
+          <div className="flex items-baseline justify-between gap-3">
+            <p className="text-sm font-medium">That day at {amenity.name}</p>
+            <p className="number text-sm font-semibold text-brand-strong">
+              {formatClock(minutesToTime(safeStart))} to {formatClock(minutesToTime(safeEnd))}
+            </p>
+          </div>
+          <DayStrip
+            openMinutes={openMinutes}
+            closeMinutes={closeMinutes}
+            segments={segments}
+            onSelect={(from, to) => {
+              setStart(from);
+              setEnd(to);
+            }}
+          />
           <StripLegend showChoice />
+          <p className="hint">Drag across the bar to pick a time, or use the lists above.</p>
         </div>
 
         {warning && (
-          <p role="alert" className="notice notice-error">
-            {warning}
+          <p role="alert" className="notice notice-error flex items-start gap-2">
+            <Icon name="alert" className="mt-0.5 size-4 shrink-0" />
+            <span>{warning}</span>
           </p>
         )}
 
         {equipment.length > 0 && (
           <fieldset className="flex flex-col gap-3">
-            <legend className="mb-2 text-sm font-semibold">Equipment to borrow (optional)</legend>
+            <legend className="mb-2 text-sm font-medium">Equipment to borrow (optional)</legend>
             {equipment.map((item) => (
-              <label key={item.equipment_id} className="flex items-center justify-between gap-3 text-base">
+              <label key={item.equipment_id} className="card flex items-center justify-between gap-3 p-3 text-[0.9375rem]">
                 <span>
                   {item.name}
                   <span className="block text-sm text-ink-soft">
@@ -268,34 +348,40 @@ export default function BookingForm({ amenities, equipment, walkIn = false, spon
         )}
       </div>
 
-      <aside className="panel lg:sticky lg:top-6 lg:col-start-2 lg:row-span-2 lg:row-start-1">
-        <h2 className="text-lg font-bold">Fee summary</h2>
-        <dl className="number mt-3 flex flex-col gap-2 text-base">
+      <aside className="card overflow-hidden lg:sticky lg:top-6 lg:col-start-2 lg:row-span-2 lg:row-start-1">
+        <div className="border-b border-dashed border-line-strong bg-brand-tint/50 px-5 py-4">
+          <p className="eyebrow text-ink-soft">Fee summary</p>
+          <p className="number mt-1 text-3xl font-semibold tracking-tight">{formatMoney(fee)}</p>
+          <p className="mt-0.5 text-[0.8125rem] text-ink-soft">
+            plus {formatMoney(amenity.deposit)} security deposit
+          </p>
+        </div>
+        <dl className="number flex flex-col gap-2.5 px-5 py-4 text-[0.9375rem]">
           <div className="flex justify-between gap-3">
-            <dt>
+            <dt className="text-ink-soft">
               {amenity.name}, {minutes / 60} {minutes === 60 ? "hour" : "hours"} at {formatMoney(hourlyRate)}
               {isGuest && " (non-resident)"}
             </dt>
-            <dd>{formatMoney(fee - equipmentTotal)}</dd>
+            <dd className="shrink-0">{formatMoney(fee - equipmentTotal)}</dd>
           </div>
           {equipmentLines.map((line) => (
             <div key={line.item.equipment_id} className="flex justify-between gap-3">
-              <dt>
+              <dt className="text-ink-soft">
                 {line.item.name} x {line.quantity}
               </dt>
-              <dd>{formatMoney(line.quantity * Number(line.item.rate))}</dd>
+              <dd className="shrink-0">{formatMoney(line.quantity * Number(line.item.rate))}</dd>
             </div>
           ))}
-          <div className="flex justify-between gap-3 border-t border-line pt-2 font-bold">
+          <div className="flex justify-between gap-3 border-t border-line pt-2.5 font-semibold">
             <dt>Fee</dt>
             <dd>{formatMoney(fee)}</dd>
           </div>
           <div className="flex justify-between gap-3">
-            <dt>Security deposit</dt>
+            <dt className="text-ink-soft">Security deposit</dt>
             <dd>{formatMoney(amenity.deposit)}</dd>
           </div>
         </dl>
-        <p className="mt-3 text-sm text-ink-soft">
+        <p className="border-t border-line px-5 py-4 text-[0.8125rem] leading-relaxed text-ink-soft">
           The request is saved as waiting for approval. Payment is made to the HOA in cash or by e-wallet,
           outside this system.
         </p>

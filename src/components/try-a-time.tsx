@@ -51,7 +51,7 @@ const amenities: SampleAmenity[] = [
   },
 ];
 
-const lengths = [60, 120, 180, 240];
+const lengths = [30, 60, 90, 120, 150, 180, 210, 240];
 
 function answerFor(amenity: SampleAmenity, start: number, end: number) {
   if (end > amenity.close) {
@@ -123,7 +123,7 @@ export default function TryATime() {
           <select className="input" value={length} onChange={(event) => setLength(Number(event.target.value))}>
             {lengths.map((minutes) => (
               <option key={minutes} value={minutes}>
-                {minutes / 60} {minutes === 60 ? "hour" : "hours"}
+                {minutes < 60 ? `${minutes} minutes` : `${minutes / 60} ${minutes === 60 ? "hour" : "hours"}`}
               </option>
             ))}
           </select>
@@ -131,15 +131,24 @@ export default function TryATime() {
       </div>
 
       <div>
-        <DayStrip openMinutes={amenity.open} closeMinutes={amenity.close} segments={segments} />
+        <DayStrip
+          openMinutes={amenity.open}
+          closeMinutes={amenity.close}
+          segments={segments}
+          onSelect={(a, b) => {
+            setStart(a);
+            setLength(Math.min(Math.max(b - a, 30), 240));
+          }}
+        />
         <div className="mt-2">
           <StripLegend showChoice />
         </div>
+        <p className="hint mt-2">Drag across the bar to try a time.</p>
       </div>
 
       <p
         role="status"
-        className={`flex flex-col gap-0.5 rounded-2xl border px-4 py-3 text-base font-medium ${
+        className={`flex flex-col gap-0.5 rounded-lg border px-4 py-3 text-[0.9375rem] font-medium ${
           answer.ok
             ? "border-approved/30 bg-approved-tint text-approved"
             : "border-pending/30 bg-pending-tint text-pending"

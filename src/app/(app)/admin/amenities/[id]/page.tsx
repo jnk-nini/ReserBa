@@ -47,7 +47,7 @@ export default async function AmenityPage({ params }: PageProps<"/admin/amenitie
 
       <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
         <section className="panel">
-          <h2 className="mb-4 text-lg font-bold">Details</h2>
+          <h2 className="mb-4 text-lg font-semibold">Details</h2>
           <AmenityForm amenity={amenity} />
           <p className="mt-4 text-sm text-ink-soft">
             An amenity with reservations is not deleted. Untick &quot;Open for booking&quot; to hide it
@@ -56,7 +56,7 @@ export default async function AmenityPage({ params }: PageProps<"/admin/amenitie
         </section>
 
         <section className="panel flex flex-col gap-4">
-          <h2 className="text-lg font-bold">Blocked dates</h2>
+          <h2 className="text-lg font-semibold">Blocked dates</h2>
           <p className="text-base text-ink-soft">
             Times the association keeps for itself, such as an assembly or repairs. Nobody can book
             over them.
@@ -91,7 +91,7 @@ export default async function AmenityPage({ params }: PageProps<"/admin/amenitie
           )}
 
           <div className="border-t border-line pt-4">
-            <h3 className="mb-3 text-base font-bold">Block a date</h3>
+            <h3 className="mb-3 text-base font-semibold">Block a date</h3>
             <ActionForm action={addBlockedDate} submitLabel="Block this time">
               <input type="hidden" name="amenity_id" value={amenity.amenity_id} />
               <div className="grid gap-3 sm:grid-cols-2">

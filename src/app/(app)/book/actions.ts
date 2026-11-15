@@ -57,5 +57,5 @@ export async function submitReservation(_state: FormState, formData: FormData): 
     return { error: friendlyError(error) };
   }
 
-  redirect(isAdmin ? `/admin/requests/${data}` : `/reservations/${data}`);
+  redirect(isAdmin ? `/admin/requests/${data}?sent=1` : `/reservations/${data}?sent=1`);
 }

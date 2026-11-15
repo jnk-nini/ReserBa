@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import ActionForm from "@/components/action-form";
+import EmptyState from "@/components/empty-state";
 import PageHeader from "@/components/page-header";
 import StatusBadge from "@/components/status-badge";
 import { requireRole } from "@/lib/auth";
@@ -43,15 +44,13 @@ export default async function ResidentsPage({ searchParams }: PageProps<"/admin/
         description="Check each new resident's proof of residency. Only verified residents can book."
       />
 
-      <nav aria-label="Filter people" className="mb-4 flex gap-1 overflow-x-auto">
+      <nav aria-label="Filter people" className="tabs">
         {tabs.map((tab) => (
           <Link
             key={tab.key}
             href={`/admin/residents?show=${tab.key}`}
             aria-current={show === tab.key ? "page" : undefined}
-            className={`shrink-0 rounded-full px-4 py-2 text-base font-semibold whitespace-nowrap transition-colors duration-150 ${
-              show === tab.key ? "bg-brand text-on-brand" : "text-ink hover:bg-brand-tint/70"
-            }`}
+            className="tab"
           >
             {tab.label}
           </Link>
@@ -59,14 +58,14 @@ export default async function ResidentsPage({ searchParams }: PageProps<"/admin/
       </nav>
 
       {people.length === 0 ? (
-        <p className="panel text-base text-ink-soft">Nobody here.</p>
+        <EmptyState icon="people" title="Nobody here">No one matches this filter.</EmptyState>
       ) : (
         <ul className="flex flex-col gap-4">
           {people.map((person) => (
             <li key={person.user_id} className="panel flex flex-col gap-3">
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div>
-                  <h2 className="text-lg font-bold">{person.full_name}</h2>
+                  <h2 className="text-lg font-semibold">{person.full_name}</h2>
                   <p className="text-base text-ink-soft">
                     {person.email}
                     {person.contact_no && ` · ${person.contact_no}`}

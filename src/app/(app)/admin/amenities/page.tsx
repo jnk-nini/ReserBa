@@ -66,7 +66,7 @@ export default async function AmenitiesPage() {
       )}
 
       <section className="panel max-w-2xl">
-        <h2 className="mb-4 text-lg font-bold">Add an amenity</h2>
+        <h2 className="mb-4 text-lg font-semibold">Add an amenity</h2>
         <AmenityForm />
       </section>
     </>

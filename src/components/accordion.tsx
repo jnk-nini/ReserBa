@@ -12,15 +12,12 @@ export default function Accordion({ items }: { items: AccordionItem[] }) {
   const [open, setOpen] = useState<number | null>(0);
 
   return (
-    <ul className="flex flex-col gap-3">
+    <ul className="flex flex-col divide-y divide-line border-y border-line">
       {items.map((item, index) => {
         const isOpen = open === index;
         return (
           <li
             key={item.question}
-            className={`rounded-2xl border bg-slate-50 transition duration-200 hover:-translate-y-px hover:shadow-sm ${
-              isOpen ? "border-sage/60 shadow-sm" : "border-line"
-            }`}
           >
             <h3>
               <button
@@ -29,12 +26,12 @@ export default function Accordion({ items }: { items: AccordionItem[] }) {
                 aria-controls={`answer-${index}`}
                 id={`question-${index}`}
                 onClick={() => setOpen(isOpen ? null : index)}
-                className="flex min-h-14 w-full cursor-pointer items-center justify-between gap-4 rounded-2xl px-5 py-4 text-left text-base font-semibold sm:text-lg"
+                className="flex min-h-14 w-full cursor-pointer items-center justify-between gap-4 py-5 text-left text-base font-medium sm:text-[1.0625rem]"
               >
                 {item.question}
                 <span
-                  className={`grid size-8 shrink-0 place-items-center rounded-full transition duration-300 ${
-                    isOpen ? "rotate-180 bg-jade text-white" : "bg-brand-tint text-jade"
+                  className={`grid size-7 shrink-0 place-items-center rounded-full border border-line-strong text-ink-soft transition duration-300 ${
+                    isOpen ? "rotate-180 bg-brand-tint text-brand" : ""
                   }`}
                 >
                   <Icon name="chevron" className="size-4" />
@@ -51,7 +48,7 @@ export default function Accordion({ items }: { items: AccordionItem[] }) {
               }`}
             >
               <div className="overflow-hidden" inert={!isOpen}>
-                <p className="max-w-prose px-5 pb-5 text-base text-ink-soft">{item.answer}</p>
+                <p className="max-w-prose pr-10 pb-5 text-base leading-relaxed text-ink-soft">{item.answer}</p>
               </div>
             </div>
           </li>

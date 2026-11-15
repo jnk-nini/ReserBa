@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import EmptyState from "@/components/empty-state";
 import PageHeader from "@/components/page-header";
 import StatusBadge from "@/components/status-badge";
 import { requireRole } from "@/lib/auth";
@@ -64,15 +65,13 @@ export default async function RequestsPage({ searchParams }: PageProps<"/admin/r
         </Link>
       </PageHeader>
 
-      <nav aria-label="Filter requests" className="mb-4 flex gap-1 overflow-x-auto">
+      <nav aria-label="Filter requests" className="tabs">
         {tabs.map((tab) => (
           <Link
             key={tab.key}
             href={`/admin/requests?show=${tab.key}`}
             aria-current={show === tab.key ? "page" : undefined}
-            className={`shrink-0 rounded-full px-4 py-2 text-base font-semibold whitespace-nowrap transition-colors duration-150 ${
-              show === tab.key ? "bg-brand text-on-brand" : "text-ink hover:bg-brand-tint/70"
-            }`}
+            className="tab"
           >
             {tab.label}
           </Link>
@@ -80,7 +79,7 @@ export default async function RequestsPage({ searchParams }: PageProps<"/admin/r
       </nav>
 
       {rows.length === 0 ? (
-        <p className="panel text-base text-ink-soft">Nothing here.</p>
+        <EmptyState icon="inbox" title="Nothing here">There are no requests in this list.</EmptyState>
       ) : (
         <ul className="panel-flush flex flex-col divide-y divide-line">
           {rows.map((row) => (

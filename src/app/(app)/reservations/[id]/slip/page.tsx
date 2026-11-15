@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import Logo from "@/components/logo";
+import StatusBadge from "@/components/status-badge";
 import PrintButton from "@/components/print-button";
 import { requireRole } from "@/lib/auth";
 import { formatMoney } from "@/lib/money";
@@ -69,15 +71,15 @@ export default async function SlipPage({ params }: PageProps<"/reservations/[id]
         </Link>
       </div>
 
-      <article className="mx-auto max-w-md rounded-xl border border-line-strong bg-surface p-6 print:max-w-none print:border-0 print:p-0">
-        <header className="flex items-baseline justify-between gap-3 border-b border-line-strong pb-3">
-          <p className="text-xl font-bold tracking-tight text-brand">ReserBa</p>
-          <p className="text-sm font-semibold">Reservation slip</p>
+      <article className="mx-auto max-w-md rounded-2xl border border-line-strong bg-surface p-7 shadow-raised print:max-w-none print:border-0 print:p-0 print:shadow-none">
+        <header className="flex items-center justify-between gap-3 border-b border-dashed border-line-strong pb-4">
+          <Logo />
+          <p className="text-sm font-medium text-ink-soft">Reservation slip</p>
         </header>
 
         <p className="mt-5 text-sm text-ink-soft">Reference number</p>
-        <p className="font-mono text-4xl font-bold tracking-wider">{reservation.reference_no}</p>
-        <p className="mt-1 text-base font-semibold text-approved">Approved</p>
+        <p className="font-mono text-4xl font-semibold tracking-wider">{reservation.reference_no}</p>
+        <p className="mt-2"><StatusBadge status="approved" /></p>
 
         <dl className="number mt-5 flex flex-col text-base">
           {rows.map(([label, value], index) => (
