@@ -93,15 +93,16 @@ export default async function RequestPage({ params }: PageProps<"/admin/requests
 
   return (
     <>
-      <PageHeader title={displayNumber(reservation)} description={`Requested ${formatDateTime(reservation.created_at)}`}>
+      <PageHeader
+        title={displayNumber(reservation)}
+        description={`Requested ${formatDateTime(reservation.created_at)}`}
+        back={{ href: "/admin/requests", label: "Requests" }}
+      >
         {reservation.status === "approved" && (
           <Link href={`/reservations/${reservationId}/slip`} className="btn btn-primary">
             Open the slip
           </Link>
         )}
-        <Link href="/admin/requests" className="btn btn-quiet">
-          All requests
-        </Link>
       </PageHeader>
 
       <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
@@ -129,7 +130,7 @@ export default async function RequestPage({ params }: PageProps<"/admin/requests
               {reservation.reservation_equipment.map((line) => (
                 <div key={line.id} className="flex flex-col gap-2 border-t border-line pt-3 first:border-t-0 first:pt-0">
                   <p className="text-base font-semibold">
-                    {line.equipment?.name} x {line.quantity}
+                    {line.equipment?.name} &times; {line.quantity}
                   </p>
                   <p className="text-sm text-ink-soft">
                     {line.lent_at ? `Lent ${formatDateTime(line.lent_at)}.` : "Not yet handed out."}{" "}
@@ -162,7 +163,7 @@ export default async function RequestPage({ params }: PageProps<"/admin/requests
         <div className="contents lg:flex lg:flex-col lg:gap-6">
           {reservation.status === "pending" && (
             <section className="panel flex flex-col gap-4 max-lg:order-2">
-              <h2 className="text-base font-semibold">Decide this request</h2>
+              <h2 className="display text-2xl">Decide this request</h2>
               {blockedBy.length > 0 && (
                 <p className="notice notice-error">
                   A blocked date now covers this time ({blockedBy.map((block) => block.reason).join(", ")}).
@@ -174,8 +175,9 @@ export default async function RequestPage({ params }: PageProps<"/admin/requests
               )}
               <ActionForm
                 action={decideReservation}
-                submitLabel="Approve"
+                submitLabel="Approve this request"
                 pendingLabel="Checking and approving..."
+                buttonClass="btn btn-primary btn-large"
               >
                 <input type="hidden" name="reservation_id" value={reservationId} />
                 <input type="hidden" name="decision" value="approved" />

@@ -46,7 +46,7 @@ export default async function GuardPage({ searchParams }: PageProps<"/guard">) {
       <PageHeader title="Today at the gate" description={formatDate(new Date())} />
 
       <section className="panel mb-8">
-        <h2 className="mb-3 text-base font-semibold">Check a reference number</h2>
+        <h2 className="eyebrow mb-3">Check a reference number</h2>
         <form action="/guard" className="flex flex-col gap-3 sm:flex-row sm:items-end">
           <label className="label grow">
             <span className="sr-only">Reference number</span>
@@ -58,7 +58,7 @@ export default async function GuardPage({ searchParams }: PageProps<"/guard">) {
               autoCapitalize="characters"
               inputMode="text"
               placeholder="RB-0013 or just 13"
-              className="input min-h-14 font-mono text-xl tracking-wide uppercase"
+              className="input min-h-14 font-mono text-xl tracking-wide uppercase placeholder:font-sans placeholder:text-base placeholder:tracking-normal placeholder:normal-case"
             />
           </label>
           <button type="submit" className="btn btn-primary btn-large sm:min-w-32">
@@ -69,7 +69,7 @@ export default async function GuardPage({ searchParams }: PageProps<"/guard">) {
         {reference && <Verdict reference={reference} found={found} />}
       </section>
 
-      <h2 className="mb-3 text-sm font-semibold text-ink-soft">
+      <h2 className="eyebrow mb-3">
         Approved reservations today{today.length > 0 && ` (${today.length})`}
       </h2>
       {today.length === 0 ? (
@@ -77,7 +77,7 @@ export default async function GuardPage({ searchParams }: PageProps<"/guard">) {
           Approved reservations for today appear here, in time order.
         </EmptyState>
       ) : (
-        <ul className="divide-y divide-line overflow-hidden rounded-2xl border border-line bg-surface shadow-low">
+        <ul className="list-card">
           {today.map((row) => (
             <li key={row.reference_no} className="flex items-center justify-between gap-4 px-4 py-4 sm:px-5">
               <div className="min-w-0">
@@ -88,7 +88,7 @@ export default async function GuardPage({ searchParams }: PageProps<"/guard">) {
                   {row.amenity_name} · {row.booked_by}
                 </p>
               </div>
-              <p className="shrink-0 rounded-lg bg-ground px-2.5 py-1 font-mono text-base font-semibold tracking-wide">
+              <p className="shrink-0 rounded-lg bg-brand-tint px-2.5 py-1 font-mono text-base font-semibold tracking-wide text-brand">
                 {row.reference_no}
               </p>
             </li>
@@ -152,13 +152,13 @@ function Card({
   children: React.ReactNode;
 }) {
   return (
-    <div role="status" className={`mt-5 flex items-start gap-4 rounded-2xl border p-5 ${tones[tone].box}`}>
-      <span className={`flex size-12 shrink-0 items-center justify-center rounded-full text-on-brand ${tones[tone].dot}`}>
-        <Icon name={icon} className="size-6" />
+    <div role="status" className={`animate-pop mt-5 flex items-start gap-4 rounded-2xl border p-5 sm:p-6 ${tones[tone].box}`}>
+      <span className={`flex size-14 shrink-0 items-center justify-center rounded-full text-on-brand ${tones[tone].dot}`}>
+        <Icon name={icon} className="size-7" />
       </span>
       <div className="min-w-0">
-        <p className="text-xl font-semibold">{title}</p>
-        <p className="mt-1 text-[0.9375rem]">{children}</p>
+        <p className="display text-[1.875rem] font-semibold sm:text-[2.25rem]">{title}</p>
+        <p className="mt-1.5 text-base">{children}</p>
       </div>
     </div>
   );

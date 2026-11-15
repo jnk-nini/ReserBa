@@ -72,7 +72,7 @@ export default async function RequestsPage({ searchParams }: PageProps<"/admin/r
             : "No reservation matches this filter."}
         </EmptyState>
       ) : (
-        <ul className="divide-y divide-line overflow-hidden rounded-2xl border border-line bg-surface shadow-low">
+        <ul className="list-card">
           {rows.map((row) => (
             <li key={row.reservation_id}>
               <ReservationRow
