@@ -30,7 +30,7 @@ export default function PaymentList({ payments }: { payments: Payment[] }) {
                 href={proofLink("payment-proofs", payment.proof_url)}
                 target="_blank"
                 rel="noreferrer"
-                className="text-sm font-semibold text-brand underline underline-offset-4"
+                className="text-sm link"
               >
                 Open the proof
               </a>

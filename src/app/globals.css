@@ -1,63 +1,69 @@
 @import "tailwindcss";
 
 /* The look of ReserBa in one place. Screens use these names (bg-ground,
-   text-ink, bg-brand ...) so a colour is changed here once, not on every page. */
+   text-ink, bg-brand ...) so a colour is changed here once, not on every page.
+
+   The rules behind the look:
+   - one calm neutral canvas, white surfaces, hairline borders;
+   - one brand colour (green), used for the main action and for "this is yours";
+   - status colours only for status;
+   - one typeface family, one radius scale, one shadow. */
 @theme {
-  --color-ground: #fafafa;
+  --color-ground: #f6f7f6;
   --color-surface: #ffffff;
-  --color-ink: #051f20;
-  --color-ink-soft: #4d605a;
-  --color-line: #e3e8e4;
-  --color-line-strong: #c3cdc7;
+  --color-ink: #0e1512;
+  --color-ink-soft: #5b6560;
+  --color-line: #e6e9e7;
+  --color-line-strong: #d0d5d2;
 
-  /* The greens, darkest to lightest. */
-  --color-forest: #051f20;
-  --color-deep: #0b2b26;
-  --color-jade: #163832;
-  --color-pine: #235347;
-  --color-sage: #8eb69b;
-  --color-mint: #daf1de;
-
-  /* The warm accents. */
-  --color-stone: #e6d5b8;
-  --color-gold: #e0b46c;
-  --color-gold-strong: #e9c283;
-
-  --color-brand: #163832;
-  --color-brand-strong: #0b2b26;
-  --color-brand-tint: #e6f3e9;
+  --color-brand: #0b6b4d;
+  --color-brand-strong: #08563d;
+  --color-brand-tint: #e8f4ee;
   --color-on-brand: #ffffff;
 
   /* One colour per reservation state, used the same way everywhere. */
-  --color-approved: #17553c;
-  --color-approved-tint: #dcefe1;
-  --color-pending: #7a4a00;
-  --color-pending-tint: #fbebcb;
-  --color-refused: #8f2415;
-  --color-refused-tint: #f8ddd6;
-  --color-closed: #55625a;
-  --color-closed-tint: #e9ece9;
+  --color-approved: #0b6b4d;
+  --color-approved-tint: #e6f4ed;
+  --color-pending: #8a5a00;
+  --color-pending-tint: #fdf2d6;
+  --color-pending-fill: #e0a526;
+  --color-refused: #b3261e;
+  --color-refused-tint: #fdeceb;
+  --color-closed: #5b6560;
+  --color-closed-tint: #eceeed;
 
-  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 
-  --shadow-glass: inset 0 1px 0 rgb(255 255 255 / 0.7), 0 1px 2px rgb(5 31 32 / 0.04),
-    0 18px 40px -24px rgb(5 31 32 / 0.28);
-  --shadow-float: inset 0 1px 0 rgb(255 255 255 / 0.12), 0 30px 60px -20px rgb(0 0 0 / 0.55),
-    0 12px 24px -12px rgb(0 0 0 / 0.4);
+  /* One low shadow for panels that sit on the page, one higher for things that
+     float above it (menus, the sticky bar). Tinted with the ink colour. */
+  --shadow-low: 0 1px 2px rgb(14 21 18 / 0.04);
+  --shadow-high: 0 1px 2px rgb(14 21 18 / 0.06), 0 16px 40px -16px rgb(14 21 18 / 0.2);
 
-  --animate-sheet-up: sheet-up 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
-  --animate-rise: rise 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  /* Movement starts fast and settles, so the screen feels quick. */
+  --ease-settle: cubic-bezier(0.16, 1, 0.3, 1);
 
-  @keyframes sheet-up {
+  --animate-shimmer: shimmer 1.4s linear infinite;
+  --animate-pop: pop 0.28s var(--ease-settle) both;
+
+  @keyframes shimmer {
     from {
-      transform: translateY(100%);
+      background-position: 200% 0;
+    }
+    to {
+      background-position: -200% 0;
     }
   }
-  @keyframes rise {
+
+  @keyframes pop {
     from {
       opacity: 0;
-      transform: translateY(12px);
+      transform: translateY(6px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
     }
   }
 }
@@ -65,28 +71,29 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+    scrollbar-color: var(--color-line-strong) transparent;
+    -webkit-tap-highlight-color: transparent;
+    text-size-adjust: 100%;
   }
 
-  /* Soft green and stone light behind the page, so the frosted panels have
-     something to blur. */
   body {
-    background-color: var(--color-ground);
-    background-image:
-      radial-gradient(56rem 36rem at 105% -10%, rgb(142 182 155 / 0.22), transparent 62%),
-      radial-gradient(48rem 34rem at -12% 105%, rgb(230 213 184 / 0.34), transparent 62%);
-    background-attachment: fixed;
+    background: var(--color-ground);
     color: var(--color-ink);
     font-family: var(--font-sans);
+    line-height: 1.55;
+    font-feature-settings: "cv11", "ss01";
+    -webkit-font-smoothing: antialiased;
   }
 
   ::selection {
-    background: var(--color-jade);
+    background: var(--color-brand);
     color: var(--color-on-brand);
   }
 
   /* One visible focus ring for keyboard users, on every control. */
   :focus-visible {
-    outline: 2px solid var(--color-pine);
+    outline: 2px solid var(--color-brand);
     outline-offset: 2px;
   }
 
@@ -100,149 +107,106 @@
   h1,
   h2,
   h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.022em;
+    line-height: 1.15;
     text-wrap: balance;
-    letter-spacing: -0.02em;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  summary {
+    cursor: pointer;
+    list-style: none;
+  }
+  summary::-webkit-details-marker {
+    display: none;
   }
 }
 
 @layer components {
-  /* The deep green ground of the hero, the closing banner, and the menu. */
-  .emerald {
-    background-color: var(--color-forest);
-    background-image:
-      radial-gradient(60rem 34rem at 82% -8%, rgb(35 83 71 / 0.9), transparent 62%),
-      radial-gradient(40rem 28rem at -5% 108%, rgb(22 56 50 / 0.95), transparent 65%),
-      radial-gradient(26rem 18rem at 12% 4%, rgb(142 182 155 / 0.2), transparent 70%),
-      linear-gradient(160deg, var(--color-deep), var(--color-forest) 60%);
-    color: #ffffff;
-  }
-
-  /* Inside a dark area the usual colour names turn light, so the same parts
-     (day strip, labels, inputs, badges) can be used there unchanged. */
-  .on-dark {
-    --color-ink: #ffffff;
-    --color-ink-soft: rgb(218 241 222 / 0.72);
-    --color-surface: rgb(255 255 255 / 0.07);
-    --color-line: rgb(255 255 255 / 0.14);
-    --color-line-strong: rgb(255 255 255 / 0.24);
-    --color-brand: #daf1de;
-    --color-brand-strong: #ffffff;
-    --color-brand-tint: rgb(255 255 255 / 0.1);
-    --color-on-brand: #051f20;
-    --color-approved: #8eb69b;
-    --color-approved-tint: rgb(142 182 155 / 0.2);
-    --color-pending: #e0b46c;
-    --color-pending-tint: rgb(224 180 108 / 0.2);
-    --color-refused: #f0a493;
-    --color-refused-tint: rgb(240 164 147 / 0.16);
-    --color-closed: rgb(255 255 255 / 0.5);
-    --color-closed-tint: rgb(255 255 255 / 0.1);
-    color: var(--color-ink);
-  }
-  .on-dark :focus-visible {
-    outline-color: var(--color-gold);
-  }
-
-  /* Frosted glass. `glass` sits on the light page, `glass-dark` on green. */
-  .glass,
-  .panel,
-  .panel-flush,
-  .tile,
-  .table-wrap {
-    @apply rounded-2xl border border-white/70 bg-white/70 shadow-glass ring-1 ring-forest/5 backdrop-blur-xl;
-  }
-  .glass-dark {
-    @apply rounded-2xl border border-white/15 bg-black/20 backdrop-blur-md;
-  }
-  .glass-float {
-    @apply rounded-3xl border border-white/20 bg-white/[0.08] shadow-float backdrop-blur-xl;
-  }
-
+  /* ---- Buttons: one solid, one outlined, one for danger ---- */
   .btn {
-    @apply inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-full px-5 py-2 text-base font-semibold transition duration-200 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60;
+    @apply inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-[0.625rem] px-4 py-2 text-[0.9375rem] font-semibold transition-[background-color,border-color,color,transform,box-shadow] duration-150 select-none active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-55 disabled:active:scale-100;
+    touch-action: manipulation;
   }
   .btn-primary {
-    @apply bg-jade text-white shadow-[0_8px_20px_-10px_rgb(5_31_32/0.7)] hover:bg-deep;
-  }
-  /* The warm call to action. It glows a little when pointed at. */
-  .btn-gold {
-    @apply bg-gold text-forest hover:bg-gold-strong hover:shadow-[0_0_0_1px_rgb(233_194_131/0.5),0_10px_34px_-6px_rgb(224_180_108/0.65)];
+    @apply bg-brand text-on-brand hover:bg-brand-strong;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12), 0 1px 2px rgb(8 86 61 / 0.35);
   }
   .btn-quiet {
-    @apply border border-line-strong bg-white/70 text-ink backdrop-blur-md hover:bg-brand-tint;
-  }
-  .btn-ghost {
-    @apply border border-white/25 bg-white/5 text-white backdrop-blur-md hover:bg-white/15;
+    @apply border border-line-strong bg-surface text-ink hover:border-ink-soft/60 hover:bg-ground;
   }
   .btn-danger {
-    @apply border border-refused/60 bg-white/70 text-refused backdrop-blur-md hover:bg-refused-tint;
+    @apply border border-refused/35 bg-surface text-refused hover:bg-refused-tint;
   }
   .btn-small {
-    @apply min-h-9 px-3.5 py-1 text-sm;
+    @apply min-h-9 rounded-lg px-3 py-1 text-sm;
+  }
+  .btn-large {
+    @apply min-h-12 px-6 text-base;
   }
 
+  /* ---- Forms ---- */
   .label {
-    @apply flex flex-col gap-1.5 text-sm font-semibold text-ink;
+    @apply flex flex-col gap-1.5 text-sm font-medium text-ink;
   }
   .hint {
-    @apply text-sm font-normal text-ink-soft;
+    @apply text-[0.8125rem] font-normal text-ink-soft;
   }
   .input {
-    @apply min-h-11 w-full rounded-xl border border-line-strong bg-surface px-3.5 py-2 text-base font-normal text-ink transition-shadow duration-150 placeholder:text-ink-soft/70 focus:border-pine focus:shadow-[0_0_0_4px_rgb(142_182_155/0.28)] focus:outline-none;
-  }
-  .on-dark .input option {
-    color: #051f20;
+    @apply min-h-11 w-full rounded-[0.625rem] border border-line-strong bg-surface px-3 py-2 text-base font-normal text-ink transition-[border-color,box-shadow] duration-150 placeholder:text-ink-soft/65 hover:border-ink-soft/60 focus:border-brand focus:ring-4 focus:ring-brand/12 focus:outline-none;
   }
 
+  /* A choice made by tapping a box instead of opening a list: a time, a
+     length, an amenity. The chosen one has aria-pressed="true". */
+  .chip {
+    @apply inline-flex min-h-11 cursor-pointer items-center justify-center rounded-[0.625rem] border border-line-strong bg-surface px-3.5 text-[0.9375rem] font-medium text-ink transition-[background-color,border-color,color,transform] duration-150 select-none hover:border-ink-soft/60 active:scale-[0.97] disabled:cursor-not-allowed disabled:border-line disabled:bg-ground disabled:text-ink-soft/50 disabled:line-through disabled:active:scale-100;
+    touch-action: manipulation;
+  }
+  .chip[aria-pressed="true"] {
+    @apply border-brand bg-brand text-on-brand;
+  }
+
+  /* ---- Surfaces ---- */
   .panel {
-    @apply p-4 sm:p-6;
-  }
-  /* A frosted card whose rows reach its edges (lists of links). */
-  .panel-flush {
-    @apply overflow-hidden;
-  }
-  /* One tile of a bento grid. */
-  .tile {
-    @apply p-5 transition duration-200 sm:p-6;
-  }
-  a.tile:hover {
-    @apply -translate-y-0.5 bg-white/90;
-  }
-
-  .eyebrow {
-    @apply text-xs font-semibold tracking-[0.18em] uppercase;
+    @apply rounded-2xl border border-line bg-surface p-4 shadow-low sm:p-6;
   }
 
   .notice {
-    @apply rounded-2xl border px-4 py-3 text-base backdrop-blur-md;
+    @apply rounded-xl border px-4 py-3 text-[0.9375rem];
   }
   .notice-error {
-    @apply border-refused/30 bg-refused-tint/80 text-refused;
+    @apply border-refused/25 bg-refused-tint text-refused;
   }
   .notice-ok {
-    @apply border-approved/30 bg-approved-tint/80 text-approved;
+    @apply border-approved/25 bg-approved-tint text-approved;
   }
   .notice-info {
-    @apply border-pending/30 bg-pending-tint/80 text-pending;
+    @apply border-pending/25 bg-pending-tint text-pending;
   }
 
+  /* A status: a small dot and a word. The colour comes from status-badge. */
   .badge {
-    @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold whitespace-nowrap;
+    @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[0.8125rem] font-semibold whitespace-nowrap;
   }
   .badge::before {
     content: "";
     @apply size-1.5 rounded-full bg-current;
   }
 
-  /* Tables scroll sideways on a phone instead of breaking the page. */
+  /* ---- Tables: scroll sideways on a phone instead of breaking the page ---- */
   .table-wrap {
-    @apply overflow-x-auto;
+    @apply overflow-x-auto rounded-2xl border border-line bg-surface shadow-low;
   }
   .table {
     @apply w-full border-collapse text-left text-sm;
   }
   .table th {
-    @apply border-b border-line bg-brand-tint/70 px-4 py-3 text-xs font-semibold tracking-wide whitespace-nowrap text-ink-soft uppercase;
+    @apply border-b border-line bg-ground/70 px-4 py-2.5 text-xs font-semibold tracking-wide whitespace-nowrap text-ink-soft uppercase;
   }
   .table td {
     @apply border-b border-line px-4 py-3 align-top;
@@ -250,47 +214,34 @@
   .table tr:last-child td {
     @apply border-b-0;
   }
+  .table tbody tr {
+    @apply transition-colors duration-150 hover:bg-ground/60;
+  }
 
   .number {
     font-variant-numeric: tabular-nums;
   }
 
-  /* A row of cards that is swiped sideways on a phone, one card at a time. */
-  .swipe {
-    @apply -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-px-4 px-4 pb-4;
-    scrollbar-width: none;
-  }
-  .swipe::-webkit-scrollbar {
-    display: none;
-  }
-  .swipe > * {
-    @apply w-[82%] shrink-0 snap-start;
+  /* A link inside a sentence. */
+  .link {
+    @apply font-medium text-brand underline decoration-brand/30 underline-offset-4 transition-colors duration-150 hover:decoration-brand;
   }
 
-  /* A panel that slides up from the bottom of a phone screen. On a wider
-     screen it sits in the middle. */
-  .sheet {
-    @apply fixed inset-x-0 top-auto bottom-0 m-0 max-h-[88dvh] w-full max-w-none overflow-y-auto rounded-t-3xl border border-white/70 bg-white/90 p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] text-ink shadow-[0_-20px_60px_-20px_rgb(5_31_32/0.5)] backdrop-blur-xl;
-  }
-  .sheet[open] {
-    @apply animate-sheet-up;
-  }
-  .sheet::backdrop {
-    background: rgb(5 31 32 / 0.55);
-    backdrop-filter: blur(4px);
-  }
-  @media (width >= 40rem) {
-    .sheet {
-      @apply inset-0 m-auto h-fit max-w-lg rounded-3xl;
-    }
-    .sheet[open] {
-      @apply animate-rise;
-    }
+  /* A row in a list that opens something: soft hover, a chevron that nudges. */
+  .row-link {
+    @apply flex items-center gap-4 px-4 py-4 transition-colors duration-150 hover:bg-ground/70 active:bg-ground sm:px-5;
   }
 
-  /* The bar that keeps the main action in reach at the bottom of a phone. */
-  .action-bar {
-    @apply fixed inset-x-0 bottom-0 z-30 border-t border-white/60 bg-white/75 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-[0_-12px_30px_-18px_rgb(5_31_32/0.4)] backdrop-blur-xl;
+  /* A grey block that stands in for content while a page is loading. */
+  .skeleton {
+    @apply animate-shimmer rounded-lg;
+    background-image: linear-gradient(
+      90deg,
+      var(--color-closed-tint) 25%,
+      var(--color-ground) 50%,
+      var(--color-closed-tint) 75%
+    );
+    background-size: 200% 100%;
   }
 }
 
@@ -298,19 +249,24 @@
 .stripes {
   background-image: repeating-linear-gradient(
     135deg,
-    var(--color-closed) 0 2px,
-    var(--color-closed-tint) 2px 8px
+    var(--color-closed) 0 1.5px,
+    var(--color-closed-tint) 1.5px 7px
   );
+}
+
+/* Room under the bottom bar on a phone, and under the notch. */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 /* The calendar (FullCalendar) takes its colours from ReserBa's palette. */
 .calendar-frame {
-  --fc-classic-button: var(--color-brand);
-  --fc-classic-button-border: var(--color-brand);
-  --fc-classic-button-strong: var(--color-brand-strong);
-  --fc-classic-button-strong-border: var(--color-brand-strong);
+  --fc-classic-button: var(--color-surface);
+  --fc-classic-button-border: var(--color-line-strong);
+  --fc-classic-button-strong: var(--color-ground);
+  --fc-classic-button-strong-border: var(--color-line-strong);
   --fc-classic-button-outline: var(--color-brand);
-  --fc-classic-button-foreground: var(--color-on-brand);
+  --fc-classic-button-foreground: var(--color-ink);
   --fc-classic-primary: var(--color-brand);
   --fc-classic-primary-foreground: var(--color-on-brand);
   --fc-classic-highlight: var(--color-brand-tint);
@@ -331,11 +287,9 @@
   body {
     background: #ffffff;
   }
-  .glass,
   .panel,
-  .panel-flush {
+  .table-wrap {
     box-shadow: none;
-    backdrop-filter: none;
   }
 }
 

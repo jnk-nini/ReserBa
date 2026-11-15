@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import ActionForm from "@/components/action-form";
 import AuthFrame from "@/components/auth-frame";
+import PasswordInput from "@/components/password-input";
 import { setNewPassword } from "../auth-actions";
 
 export const metadata: Metadata = {
@@ -15,19 +16,12 @@ export default function ResetPasswordPage() {
       <ActionForm action={setNewPassword} submitLabel="Save the new password">
         <label className="label">
           New password
-          <input
-            name="password"
-            type="password"
-            required
-            minLength={8}
-            autoComplete="new-password"
-            className="input"
-          />
+          <PasswordInput name="password" required minLength={8} autoComplete="new-password" />
           <span className="hint">At least 8 characters.</span>
         </label>
         <label className="label">
           Type it again
-          <input name="confirm_password" type="password" required autoComplete="new-password" className="input" />
+          <PasswordInput name="confirm_password" required autoComplete="new-password" />
         </label>
       </ActionForm>
     </AuthFrame>

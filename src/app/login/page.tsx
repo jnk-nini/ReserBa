@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import ActionForm from "@/components/action-form";
 import AuthFrame from "@/components/auth-frame";
+import PasswordInput from "@/components/password-input";
 import { logIn } from "../auth-actions";
 
 export const metadata: Metadata = {
@@ -34,17 +35,17 @@ export default function LoginPage({ searchParams }: PageProps<"/login">) {
         </label>
         <label className="label">
           Password
-          <input name="password" type="password" required autoComplete="current-password" className="input" />
+          <PasswordInput name="password" required autoComplete="current-password" />
         </label>
       </ActionForm>
       <p className="text-base text-ink-soft">
-        <Link href="/forgot-password" className="font-semibold text-brand underline underline-offset-4">
+        <Link href="/forgot-password" className="link">
           Forgot your password?
         </Link>
       </p>
       <p className="text-base text-ink-soft">
         New resident?{" "}
-        <Link href="/signup" className="font-semibold text-brand underline underline-offset-4">
+        <Link href="/signup" className="link">
           Create an account
         </Link>
       </p>

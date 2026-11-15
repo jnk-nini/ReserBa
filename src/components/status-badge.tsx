@@ -1,5 +1,5 @@
-// A small coloured label for a status. The same word always gets the same
-// colour, on every screen.
+// A small coloured label for a status: a dot and a word. The same word always
+// gets the same colour, on every screen.
 
 const styles: Record<string, string> = {
   approved: "bg-approved-tint text-approved",
@@ -15,6 +15,7 @@ const styles: Record<string, string> = {
 const labels: Record<string, string> = {
   submitted: "To check",
   void: "Void",
+  pending: "Waiting",
 };
 
 export default function StatusBadge({ status }: { status: string }) {

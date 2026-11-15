@@ -1,3 +1,4 @@
+import EmptyState from "@/components/empty-state";
 import type { Metadata } from "next";
 import ActionForm from "@/components/action-form";
 import MonthPicker from "@/components/month-picker";
@@ -65,18 +66,18 @@ export default async function LedgerPage({ searchParams }: PageProps<"/admin/led
           ["Expenses", expense],
           ["Difference", income - expense],
         ].map(([label, amount]) => (
-          <div key={label} className="glass px-4 py-3">
+          <div key={label} className="rounded-2xl border border-line bg-surface p-5 shadow-low">
             <dt className="text-sm text-ink-soft">
               {label}, {formatMonth(month)}
             </dt>
-            <dd className="text-2xl font-bold">{formatMoney(amount as number)}</dd>
+            <dd className="mt-2 text-3xl font-semibold tracking-tight">{formatMoney(amount as number)}</dd>
           </div>
         ))}
       </dl>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_20rem] lg:items-start">
         {entries.length === 0 ? (
-          <p className="panel text-base text-ink-soft">No entry in {formatMonth(month)}.</p>
+          <EmptyState icon="book" title={`No entry in ${formatMonth(month)}`}>Income appears here when a fee payment is recorded. Add expenses on the right.</EmptyState>
         ) : (
           <div className="table-wrap">
             <table className="table number">
@@ -127,7 +128,7 @@ export default async function LedgerPage({ searchParams }: PageProps<"/admin/led
         )}
 
         <section className="panel">
-          <h2 className="mb-4 text-lg font-bold">Add an expense</h2>
+          <h2 className="mb-4 text-base font-semibold">Add an expense</h2>
           <ActionForm action={addExpense} submitLabel="Add expense">
             <label className="label">
               Date

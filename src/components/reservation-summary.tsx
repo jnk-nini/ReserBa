@@ -18,7 +18,7 @@ export default function ReservationSummary({ reservation }: { reservation: Reser
     <section className="panel">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="text-xl font-bold">{reservation.amenities?.name}</h2>
+          <h2 className="text-lg font-semibold">{reservation.amenities?.name}</h2>
           <p className="number mt-1 text-base">
             {formatDate(reservation.start_at)}
             <br />
@@ -31,7 +31,7 @@ export default function ReservationSummary({ reservation }: { reservation: Reser
       {reservation.reference_no && (
         <p className="mt-3 text-base">
           Reference number{" "}
-          <span className="font-mono text-lg font-bold tracking-wide">{reservation.reference_no}</span>
+          <span className="font-mono text-base font-semibold tracking-wide">{reservation.reference_no}</span>
         </p>
       )}
       {reservation.status === "rejected" && (
@@ -55,7 +55,7 @@ export default function ReservationSummary({ reservation }: { reservation: Reser
             <dd>{formatMoney(line.quantity * Number(line.equipment?.rate ?? 0))}</dd>
           </div>
         ))}
-        <div className="flex justify-between gap-3 font-bold">
+        <div className="flex justify-between gap-3 font-semibold">
           <dt>Fee</dt>
           <dd>{formatMoney(reservation.total_fee)}</dd>
         </div>

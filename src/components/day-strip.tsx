@@ -8,16 +8,18 @@ export type StripSegment = {
   // Minutes since midnight, Philippine time.
   from: number;
   to: number;
-  kind: "pending" | "approved" | "blocked" | "choice" | "buffer";
+  // "clash" is a chosen time that does not fit.
+  kind: "pending" | "approved" | "blocked" | "choice" | "buffer" | "clash";
   label?: string;
 };
 
 const fills: Record<StripSegment["kind"], string> = {
   approved: "bg-approved",
-  pending: "bg-pending",
+  pending: "bg-pending-fill",
   blocked: "stripes",
   choice: "bg-brand/25 ring-2 ring-brand ring-inset",
   buffer: "bg-brand/10 ring-1 ring-brand/40 ring-inset",
+  clash: "bg-refused/30 ring-2 ring-refused ring-inset",
 };
 
 export default function DayStrip({
@@ -49,10 +51,15 @@ export default function DayStrip({
         {segments.map((segment, index) => {
           const position = place(segment.from, segment.to);
           if (!position) return null;
+          // The chosen time keeps one key, so it slides to its new place
+          // instead of jumping when the person changes it.
+          const picked = segment.kind === "choice" || segment.kind === "clash";
+          const key = picked ? "picked" : segment.kind === "buffer" ? "picked-buffer" : index;
+          const moves = picked || segment.kind === "buffer";
           return (
             <div
-              key={index}
-              className={`absolute inset-y-0 ${fills[segment.kind]}`}
+              key={key}
+              className={`absolute inset-y-0 ${moves ? "transition-[left,width,background-color] duration-300 ease-settle" : ""} ${fills[segment.kind]}`}
               style={position}
               title={segment.label}
             />
@@ -63,7 +70,7 @@ export default function DayStrip({
         {ticks.map((minute) => (
           <span
             key={minute}
-            className="absolute -translate-x-1/2 whitespace-nowrap first:translate-x-0 last:-translate-x-full"
+            className="absolute -translate-x-1/2 whitespace-nowrap first:translate-x-0 last:-translate-x-full max-sm:nth-even:hidden"
             style={{ left: `${((minute - openMinutes) / span) * 100}%` }}
           >
             {formatClock(minutesToTime(minute)).replace(":00 ", "")}
@@ -84,7 +91,7 @@ export function StripLegend({
 }) {
   const items: Array<[string, string]> = [
     ["bg-approved", "Approved"],
-    ["bg-pending", "Waiting for approval"],
+    ["bg-pending-fill", "Waiting for approval"],
     ["stripes", "Blocked by the HOA"],
   ];
   if (showChoice) {

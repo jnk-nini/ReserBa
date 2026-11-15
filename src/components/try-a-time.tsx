@@ -1,30 +1,39 @@
 "use client";
 
+import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
-import DayStrip, { StripLegend, type StripSegment } from "@/components/day-strip";
+import DayStrip, { StripLegend, type StripSegment } from "./day-strip";
+import Icon from "./icon";
+import { formatMoney, previewFee } from "@/lib/money";
 import { formatClock, minutesToTime } from "@/lib/time";
 
-// The sample on the first page. A visitor picks a time and sees the same
-// answer the real booking form gives: free, taken, closed, or too close to
-// the booking before it. The day shown is made up; nothing is saved.
+// The box on the first page where a visitor tries a time and sees the answer
+// at once. It uses a made-up day, not the real database, so anyone can play
+// with it before signing up. The checks are the same ones the real system
+// makes: closing time, blocked hours, other bookings, and the buffer after
+// each booking.
 
-type SampleAmenity = {
+type Sample = {
   name: string;
   open: number;
   close: number;
-  buffer: number;
+  bufferMinutes: number;
+  rate: number;
+  deposit: number;
   taken: StripSegment[];
 };
 
-const amenities: SampleAmenity[] = [
+const samples: Sample[] = [
   {
     name: "Clubhouse",
     open: 480,
     close: 1320,
-    buffer: 30,
+    bufferMinutes: 60,
+    rate: 500,
+    deposit: 1000,
     taken: [
-      { from: 540, to: 720, kind: "blocked", label: "Blocked by the HOA" },
-      { from: 840, to: 1080, kind: "approved", label: "Approved" },
+      { from: 480, to: 600, kind: "blocked", label: "General cleaning" },
+      { from: 780, to: 1020, kind: "approved", label: "Birthday party" },
       { from: 1140, to: 1260, kind: "pending", label: "Waiting for approval" },
     ],
   },
@@ -32,85 +41,150 @@ const amenities: SampleAmenity[] = [
     name: "Basketball court",
     open: 360,
     close: 1320,
-    buffer: 15,
+    bufferMinutes: 0,
+    rate: 100,
+    deposit: 0,
     taken: [
-      { from: 420, to: 540, kind: "approved", label: "Approved" },
-      { from: 960, to: 1080, kind: "pending", label: "Waiting for approval" },
-      { from: 1140, to: 1260, kind: "approved", label: "Approved" },
+      { from: 360, to: 480, kind: "approved", label: "Morning league" },
+      { from: 960, to: 1080, kind: "approved", label: "Youth practice" },
+      { from: 1080, to: 1200, kind: "pending", label: "Waiting for approval" },
     ],
   },
   {
     name: "Swimming pool",
     open: 480,
     close: 1200,
-    buffer: 30,
+    bufferMinutes: 30,
+    rate: 300,
+    deposit: 500,
     taken: [
-      { from: 480, to: 600, kind: "blocked", label: "Blocked by the HOA" },
-      { from: 780, to: 960, kind: "approved", label: "Approved" },
+      { from: 600, to: 720, kind: "approved", label: "Swimming lessons" },
+      { from: 900, to: 1020, kind: "blocked", label: "Water treatment" },
     ],
   },
 ];
 
-const lengths = [60, 120, 180, 240];
+const durations = [1, 2, 3, 4];
 
-function answerFor(amenity: SampleAmenity, start: number, end: number) {
-  if (end > amenity.close) {
-    return { ok: false, text: `The ${amenity.name.toLowerCase()} closes at ${formatClock(minutesToTime(amenity.close))}.` };
+type Answer = { fits: boolean; title: string; detail: string };
+
+function check(sample: Sample, start: number, hours: number): Answer {
+  const end = start + hours * 60;
+  const range = `${formatClock(minutesToTime(start))} to ${formatClock(minutesToTime(end))}`;
+
+  if (end > sample.close) {
+    return {
+      fits: false,
+      title: "Past closing time",
+      detail: `The ${sample.name.toLowerCase()} closes at ${formatClock(minutesToTime(sample.close))}. Pick an earlier start or fewer hours.`,
+    };
   }
-  for (const taken of amenity.taken) {
-    // A booking holds its time plus the buffer after it.
-    const hold = taken.kind === "blocked" ? 0 : amenity.buffer;
-    if (start < taken.to && end > taken.from) {
+  for (const other of sample.taken) {
+    if (other.kind === "blocked" && start < other.to && end > other.from) {
       return {
-        ok: false,
-        text: taken.kind === "blocked" ? "The HOA blocked part of this time." : "This overlaps a booking. Two bookings cannot share a time.",
+        fits: false,
+        title: "Blocked by the HOA",
+        detail: `${other.label} runs until ${formatClock(minutesToTime(other.to))}. No one can book over it.`,
       };
     }
-    if (start < taken.to + hold && end > taken.from) {
-      return { ok: false, text: `Too close to the booking before it. ${amenity.buffer} minutes are kept free after each one.` };
-    }
-    if (end + amenity.buffer > taken.from && start < taken.from && taken.kind !== "blocked") {
-      return { ok: false, text: `Too close to the next booking. ${amenity.buffer} minutes are kept free after yours.` };
+  }
+  for (const other of sample.taken) {
+    if (other.kind === "blocked") continue;
+    // Each booking keeps the buffer after it free, for cleaning and turnover.
+    const clashes = start < other.to + sample.bufferMinutes && end + sample.bufferMinutes > other.from;
+    if (clashes) {
+      const overlaps = start < other.to && end > other.from;
+      return {
+        fits: false,
+        title: overlaps ? "That time is taken" : "Too close to another booking",
+        detail: overlaps
+          ? `It overlaps a booking from ${formatClock(minutesToTime(other.from))} to ${formatClock(minutesToTime(other.to))}. The system will not accept it.`
+          : `The ${sample.name.toLowerCase()} keeps ${sample.bufferMinutes} minutes free between bookings. Move it a little.`,
+      };
     }
   }
-  return { ok: true, text: "This time is free. A resident could send the request now." };
+  return {
+    fits: true,
+    title: "This time is free",
+    detail: `${range} fits. You could send this request right now.`,
+  };
 }
 
 export default function TryATime() {
   const [index, setIndex] = useState(0);
-  const [start, setStart] = useState(750);
-  const [length, setLength] = useState(60);
+  const [start, setStart] = useState(600);
+  const [hours, setHours] = useState(2);
 
-  const amenity = amenities[index];
+  const sample = samples[index];
+  // Keeps the start inside the opening hours when the amenity changes.
+  const safeStart = Math.min(Math.max(start, sample.open), sample.close - 60);
+  const end = safeStart + hours * 60;
+  const answer = check(sample, safeStart, hours);
+
   const starts: number[] = [];
-  for (let minute = amenity.open; minute < amenity.close; minute += 30) starts.push(minute);
-  // A start time that the newly picked amenity does not have falls back to its opening time.
-  const from = starts.includes(start) ? start : amenity.open;
-  const to = from + length;
-  const answer = answerFor(amenity, from, to);
+  for (let minute = sample.open; minute <= sample.close - 60; minute += 60) {
+    starts.push(minute);
+  }
 
   const segments: StripSegment[] = [
-    ...amenity.taken,
-    { from, to: Math.min(to, amenity.close), kind: "choice", label: "Your time" },
-    { from: to, to: Math.min(to + amenity.buffer, amenity.close), kind: "buffer", label: "Buffer" },
+    ...sample.taken,
+    { from: safeStart, to: end, kind: answer.fits ? "choice" : "clash" },
   ];
+  if (answer.fits && sample.bufferMinutes > 0) {
+    segments.push({ from: end, to: end + sample.bufferMinutes, kind: "buffer" });
+  }
+
+  const fee = previewFee(hours * 60, sample.rate, 0);
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="grid grid-cols-2 gap-3">
-        <label className="label col-span-2">
-          Amenity
-          <select className="input" value={index} onChange={(event) => setIndex(Number(event.target.value))}>
-            {amenities.map((item, position) => (
-              <option key={item.name} value={position}>
-                {item.name}
-              </option>
-            ))}
-          </select>
-        </label>
+    <div className="rounded-2xl border border-line bg-surface p-4 text-ink shadow-high sm:p-6">
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+        <h2 className="text-base font-semibold">Try a time</h2>
+        <p className="text-sm text-ink-soft">A sample Saturday. Nothing is saved.</p>
+      </div>
+
+      <div
+        role="group"
+        aria-label="Amenity"
+        className="mt-4 grid grid-cols-3 gap-1 rounded-xl bg-closed-tint p-1"
+      >
+        {samples.map((item, itemIndex) => (
+          <button
+            key={item.name}
+            type="button"
+            aria-pressed={itemIndex === index}
+            onClick={() => setIndex(itemIndex)}
+            className={`relative min-h-11 cursor-pointer rounded-lg px-2 py-1.5 text-sm leading-tight font-semibold transition-colors duration-150 sm:text-base ${
+              itemIndex === index ? "text-ink" : "text-ink-soft hover:text-ink"
+            }`}
+          >
+            {itemIndex === index && (
+              <motion.span
+                layoutId="try-amenity"
+                className="absolute inset-0 rounded-lg bg-surface shadow-low"
+                transition={{ type: "spring", stiffness: 420, damping: 36 }}
+              />
+            )}
+            <span className="relative">{item.name}</span>
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-5">
+        <DayStrip openMinutes={sample.open} closeMinutes={sample.close} segments={segments} />
+        <div className="mt-2">
+          <StripLegend showChoice choiceLabel="Your time" />
+        </div>
+      </div>
+
+      <div className="mt-5 grid gap-4 sm:grid-cols-2">
         <label className="label">
           Start
-          <select className="input" value={from} onChange={(event) => setStart(Number(event.target.value))}>
+          <select
+            className="input"
+            value={safeStart}
+            onChange={(event) => setStart(Number(event.target.value))}
+          >
             {starts.map((minute) => (
               <option key={minute} value={minute}>
                 {formatClock(minutesToTime(minute))}
@@ -118,38 +192,70 @@ export default function TryATime() {
             ))}
           </select>
         </label>
-        <label className="label">
-          How long
-          <select className="input" value={length} onChange={(event) => setLength(Number(event.target.value))}>
-            {lengths.map((minutes) => (
-              <option key={minutes} value={minutes}>
-                {minutes / 60} {minutes === 60 ? "hour" : "hours"}
-              </option>
+        <div className="label">
+          <span id="try-hours">How long</span>
+          <div role="group" aria-labelledby="try-hours" className="grid grid-cols-4 gap-1.5">
+            {durations.map((value) => (
+              <button
+                key={value}
+                type="button"
+                aria-pressed={value === hours}
+                onClick={() => setHours(value)}
+                className={`number min-h-11 cursor-pointer rounded-lg border text-base font-semibold transition-colors duration-150 ${
+                  value === hours
+                    ? "border-brand bg-brand text-on-brand"
+                    : "border-line-strong bg-surface text-ink hover:border-brand hover:bg-brand-tint"
+                }`}
+              >
+                {value} hr
+              </button>
             ))}
-          </select>
-        </label>
-      </div>
-
-      <div>
-        <DayStrip openMinutes={amenity.open} closeMinutes={amenity.close} segments={segments} />
-        <div className="mt-2">
-          <StripLegend showChoice />
+          </div>
         </div>
       </div>
 
-      <p
-        role="status"
-        className={`flex flex-col gap-0.5 rounded-2xl border px-4 py-3 text-base font-medium ${
-          answer.ok
-            ? "border-approved/30 bg-approved-tint text-approved"
-            : "border-pending/30 bg-pending-tint text-pending"
-        }`}
-      >
-        <span className="number shrink-0 font-semibold">
-          {formatClock(minutesToTime(from))} to {formatClock(minutesToTime(to))}
-        </span>
-        <span>{answer.text}</span>
-      </p>
+      <div role="status" className="mt-5 min-h-[5.5rem]">
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={answer.title + answer.detail}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.18 }}
+            className={`flex gap-3 rounded-xl border px-4 py-3 ${
+              answer.fits
+                ? "border-approved/30 bg-approved-tint text-approved"
+                : "border-refused/30 bg-refused-tint text-refused"
+            }`}
+          >
+            <span
+              className={`mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full text-on-brand ${
+                answer.fits ? "bg-approved" : "bg-refused"
+              }`}
+            >
+              <Icon name={answer.fits ? "check" : "lock"} className="size-3.5" />
+            </span>
+            <div>
+              <p className="font-bold">{answer.title}</p>
+              <p className="text-[0.9375rem]">{answer.detail}</p>
+            </div>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      <div className="number mt-4 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 text-sm text-ink-soft">
+        <dl className="flex flex-wrap gap-x-6 gap-y-1">
+          <div className="flex gap-1.5">
+            <dt>Fee</dt>
+            <dd className="font-semibold text-ink">{formatMoney(fee)}</dd>
+          </div>
+          <div className="flex gap-1.5">
+            <dt>Deposit</dt>
+            <dd className="font-semibold text-ink">{formatMoney(sample.deposit)}</dd>
+          </div>
+        </dl>
+        <p>Sample rates. Each HOA sets its own.</p>
+      </div>
     </div>
   );
 }

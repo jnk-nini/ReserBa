@@ -54,7 +54,7 @@ export default async function ReservationPage({ params }: PageProps<"/reservatio
 
           {reservation.status === "pending" && (
             <section className="panel">
-              <h2 className="text-lg font-bold">Waiting for approval</h2>
+              <h2 className="text-base font-semibold">Waiting for approval</h2>
               <p className="mt-1 mb-4 text-base text-ink-soft">
                 The HOA administrator will approve or reject this request. The time is held for you
                 until then. You can cancel it while it is waiting.
@@ -73,11 +73,11 @@ export default async function ReservationPage({ params }: PageProps<"/reservatio
         </div>
 
         <section className="panel flex flex-col gap-4">
-          <h2 className="text-lg font-bold">Payments</h2>
+          <h2 className="text-base font-semibold">Payments</h2>
           <PaymentList payments={reservation.payments} />
           {open && (
             <>
-              <h3 className="border-t border-line pt-4 text-base font-bold">Send a proof of payment</h3>
+              <h3 className="border-t border-line pt-4 text-base font-semibold">Send a proof of payment</h3>
               <p className="-mt-2 text-sm text-ink-soft">
                 Pay the HOA in cash or by e-wallet, then send the proof here. The administrator
                 confirms it.

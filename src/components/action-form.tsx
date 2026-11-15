@@ -15,6 +15,12 @@ type Props = {
   // Asked before sending, for actions that cannot be undone.
   confirmMessage?: string;
   className?: string;
+  // Keeps the button from being pressed, for example while the chosen time is not free.
+  disabled?: boolean;
+  // Something shown beside the button in a bar that stays at the bottom of a
+  // phone screen while the form scrolls, such as the total to pay.
+  bar?: React.ReactNode;
+  barClass?: string;
   children?: React.ReactNode;
 };
 
@@ -25,6 +31,9 @@ export default function ActionForm({
   buttonClass = "btn btn-primary",
   confirmMessage,
   className = "flex flex-col gap-4",
+  disabled = false,
+  bar,
+  barClass = "",
   children,
 }: Props) {
   const [state, formAction, pending] = useActionState(action, {});
@@ -50,9 +59,18 @@ export default function ActionForm({
           {state.ok}
         </p>
       )}
-      <button type="submit" disabled={pending} className={buttonClass}>
-        {pending ? pendingLabel : submitLabel}
-      </button>
+      {bar ? (
+        <div className={barClass}>
+          {bar}
+          <button type="submit" disabled={pending || disabled} className={buttonClass}>
+            {pending ? pendingLabel : submitLabel}
+          </button>
+        </div>
+      ) : (
+        <button type="submit" disabled={pending || disabled} className={buttonClass}>
+          {pending ? pendingLabel : submitLabel}
+        </button>
+      )}
     </form>
   );
 }

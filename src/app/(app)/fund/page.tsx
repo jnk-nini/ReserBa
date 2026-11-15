@@ -1,3 +1,4 @@
+import EmptyState from "@/components/empty-state";
 import type { Metadata } from "next";
 import PageHeader from "@/components/page-header";
 import { requireRole } from "@/lib/auth";
@@ -26,7 +27,7 @@ export default async function FundPage() {
         description="Money received from amenity fees and money spent on the amenities, by month. This is a monitoring summary and not the official books of the association."
       />
       {rows.length === 0 ? (
-        <p className="panel text-base text-ink-soft">Nothing has been recorded yet.</p>
+        <EmptyState icon="coins" title="Nothing recorded yet">Monthly totals appear here once the HOA records income or expenses.</EmptyState>
       ) : (
         <div className="table-wrap">
           <table className="table number">
