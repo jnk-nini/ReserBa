@@ -15,6 +15,18 @@
   --color-brand-tint: #e3efe8;
   --color-on-brand: #ffffff;
 
+  /* The dark green of the menu and of the wide bands on the first page, with
+     the two text colours that are readable on it. */
+  --color-deep: #10352a;
+  --color-deep-raised: #17463a;
+  --color-on-deep: #f6f3ec;
+  --color-on-deep-soft: #bcd3c6;
+
+  /* A warm gold used in small amounts: the mark on the current menu item and
+     the highlights on the dark bands. */
+  --color-accent: #e9b949;
+  --color-accent-strong: #c9952a;
+
   /* One colour per reservation state, used the same way everywhere. */
   --color-approved: #17553c;
   --color-approved-tint: #d9eedf;
@@ -26,14 +38,53 @@
   --color-closed-tint: #e8e3d8;
 
   --font-sans: var(--font-public-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-bricolage), var(--font-public-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  /* Two shadows only: a low one for panels and a higher one for things that
+     float above the page. Both are tinted with the ink colour, not plain grey. */
+  --shadow-low: 0 1px 2px rgb(28 42 35 / 0.05), 0 4px 12px -6px rgb(28 42 35 / 0.1);
+  --shadow-high: 0 2px 4px rgb(28 42 35 / 0.06), 0 24px 48px -20px rgb(28 42 35 / 0.28);
+
+  /* Movement starts fast and settles, so the screen feels quick. */
+  --ease-settle: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --animate-rise: rise 0.6s var(--ease-settle) both;
+  --animate-shimmer: shimmer 1.4s linear infinite;
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes shimmer {
+    from {
+      background-position: 200% 0;
+    }
+    to {
+      background-position: -200% 0;
+    }
+  }
 }
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+    scrollbar-color: var(--color-line-strong) transparent;
+  }
+
   body {
     background: var(--color-ground);
     color: var(--color-ink);
     font-family: var(--font-sans);
+    line-height: 1.6;
   }
 
   ::selection {
@@ -57,19 +108,36 @@
   h1,
   h2,
   h3 {
+    font-family: var(--font-display);
+    letter-spacing: -0.015em;
+    line-height: 1.15;
     text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* The small arrow of a question on the first page is drawn by us. */
+  summary {
+    cursor: pointer;
+    list-style: none;
+  }
+  summary::-webkit-details-marker {
+    display: none;
   }
 }
 
 @layer components {
   .btn {
-    @apply inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-lg px-4 py-2 text-base font-semibold transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-60;
+    @apply inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-lg px-4 py-2 text-base font-semibold transition-[background-color,border-color,box-shadow,transform] duration-150 select-none active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100;
+    touch-action: manipulation;
   }
   .btn-primary {
-    @apply bg-brand text-on-brand hover:bg-brand-strong;
+    @apply bg-brand text-on-brand shadow-low hover:bg-brand-strong;
   }
   .btn-quiet {
-    @apply border border-line-strong bg-surface text-ink hover:bg-brand-tint;
+    @apply border border-line-strong bg-surface text-ink hover:border-brand hover:bg-brand-tint;
   }
   .btn-danger {
     @apply border border-refused bg-surface text-refused hover:bg-refused-tint;
@@ -77,19 +145,29 @@
   .btn-small {
     @apply min-h-9 px-3 py-1 text-sm;
   }
+  .btn-large {
+    @apply min-h-12 px-6 text-lg;
+  }
+  /* For the dark bands: a gold button and a see-through one. */
+  .btn-accent {
+    @apply bg-accent text-deep hover:bg-accent-strong;
+  }
+  .btn-ghost {
+    @apply border border-on-deep/35 text-on-deep hover:border-on-deep/70 hover:bg-on-deep/10;
+  }
 
   .label {
-    @apply flex flex-col gap-1 text-sm font-semibold text-ink;
+    @apply flex flex-col gap-1.5 text-sm font-semibold text-ink;
   }
   .hint {
     @apply text-sm font-normal text-ink-soft;
   }
   .input {
-    @apply min-h-11 w-full rounded-lg border border-line-strong bg-surface px-3 py-2 text-base font-normal text-ink placeholder:text-ink-soft/70 focus:border-brand;
+    @apply min-h-11 w-full rounded-lg border border-line-strong bg-surface px-3 py-2 text-base font-normal text-ink transition-[border-color,box-shadow] duration-150 placeholder:text-ink-soft/70 hover:border-ink-soft focus:border-brand focus:ring-3 focus:ring-brand/15 focus:outline-none;
   }
 
   .panel {
-    @apply rounded-xl border border-line bg-surface p-4 sm:p-5;
+    @apply rounded-xl border border-line bg-surface p-4 shadow-low sm:p-5;
   }
 
   .notice {
@@ -111,23 +189,43 @@
 
   /* Tables scroll sideways on a phone instead of breaking the page. */
   .table-wrap {
-    @apply overflow-x-auto rounded-xl border border-line bg-surface;
+    @apply overflow-x-auto rounded-xl border border-line bg-surface shadow-low;
   }
   .table {
     @apply w-full border-collapse text-left text-sm;
   }
   .table th {
-    @apply border-b border-line bg-brand-tint px-3 py-2 font-semibold whitespace-nowrap text-ink;
+    @apply border-b border-line bg-brand-tint/60 px-3 py-2.5 font-semibold whitespace-nowrap text-ink;
   }
   .table td {
-    @apply border-b border-line px-3 py-2 align-top;
+    @apply border-b border-line px-3 py-2.5 align-top;
   }
   .table tr:last-child td {
     @apply border-b-0;
   }
+  .table tbody tr {
+    @apply transition-colors duration-150 hover:bg-brand-tint/35;
+  }
 
   .number {
     font-variant-numeric: tabular-nums;
+  }
+
+  /* A link inside a sentence. */
+  .link {
+    @apply font-semibold text-brand underline decoration-brand/40 underline-offset-4 transition-colors duration-150 hover:decoration-brand;
+  }
+
+  /* A grey block that stands in for content while a page is loading. */
+  .skeleton {
+    @apply animate-shimmer rounded-lg;
+    background-image: linear-gradient(
+      90deg,
+      var(--color-closed-tint) 25%,
+      var(--color-ground) 50%,
+      var(--color-closed-tint) 75%
+    );
+    background-size: 200% 100%;
   }
 }
 
@@ -138,6 +236,12 @@
     var(--color-closed) 0 2px,
     var(--color-closed-tint) 2px 8px
   );
+}
+
+/* A faint grid of dots behind the top of the first page, like a planner. */
+.dot-grid {
+  background-image: radial-gradient(rgb(246 243 236 / 0.09) 1px, transparent 1px);
+  background-size: 22px 22px;
 }
 
 /* The calendar (FullCalendar) takes its colours from ReserBa's palette. */
@@ -168,9 +272,16 @@
   body {
     background: #ffffff;
   }
+  .panel,
+  .table-wrap {
+    box-shadow: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
   * {
     transition-duration: 0s !important;
     animation-duration: 0s !important;
