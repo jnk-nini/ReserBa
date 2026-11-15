@@ -45,7 +45,7 @@ export default async function AmenitiesPage() {
                   <td>
                     <Link
                       href={`/admin/amenities/${amenity.amenity_id}`}
-                      className="font-semibold text-brand underline underline-offset-4"
+                      className="link"
                     >
                       {amenity.name}
                     </Link>
@@ -66,7 +66,7 @@ export default async function AmenitiesPage() {
       )}
 
       <section className="panel max-w-2xl">
-        <h2 className="mb-4 text-lg font-bold">Add an amenity</h2>
+        <h2 className="mb-4 text-base font-semibold">Add an amenity</h2>
         <AmenityForm />
       </section>
     </>

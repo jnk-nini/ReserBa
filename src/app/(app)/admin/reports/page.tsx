@@ -166,7 +166,7 @@ export default async function ReportsPage({ searchParams }: PageProps<"/admin/re
 
       <section className="mb-10 flex flex-col gap-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-xl font-bold">Booking report</h2>
+          <h2 className="text-lg font-semibold">Booking report</h2>
           <ExportButtons
             fileName={`reserba-bookings-${month}`}
             heading={`ReserBa booking report, ${formatMonth(month)}`}
@@ -180,7 +180,7 @@ export default async function ReportsPage({ searchParams }: PageProps<"/admin/re
 
       <section className="flex flex-col gap-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-xl font-bold">Income and expense report</h2>
+          <h2 className="text-lg font-semibold">Income and expense report</h2>
           <ExportButtons
             fileName={`reserba-income-expense-${month}`}
             heading={`ReserBa income and expense report, ${formatMonth(month)}`}
@@ -204,7 +204,7 @@ function ReportTableView({ table }: { table: ReportTable }) {
 
   return (
     <div>
-      <h3 className="mb-2 text-base font-bold">{table.title}</h3>
+      <h3 className="mb-2 text-base font-semibold">{table.title}</h3>
       {table.rows.length === 0 ? (
         <p className="panel text-base text-ink-soft">Nothing in this month.</p>
       ) : (
@@ -232,7 +232,7 @@ function ReportTableView({ table }: { table: ReportTable }) {
             </tbody>
             {table.totals && (
               <tfoot>
-                <tr className="bg-brand-tint font-bold">
+                <tr className="bg-brand-tint font-semibold">
                   {table.totals.map((value, column) => (
                     <td key={column} className={align(value)}>
                       {cell(value, column)}
