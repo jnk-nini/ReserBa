@@ -1,12 +1,14 @@
 import Link from "next/link";
 import { Suspense } from "react";
+import MobileAction from "@/components/mobile-action";
 import NavLinks, { type NavItem } from "@/components/nav-links";
 import { requireUser } from "@/lib/auth";
 import type { Role } from "@/lib/types";
 import { logOut } from "../auth-actions";
 
 // The frame around every signed-in screen: the green bar with the menu of the
-// person's role, and the page itself.
+// person's role, and the page itself. On a phone the main action of the role
+// stays at the bottom of the screen.
 
 const menus: Record<Role, NavItem[]> = {
   resident: [
@@ -44,23 +46,29 @@ const roleNames: Record<Role, string> = {
 async function Frame({ children }: { children: React.ReactNode }) {
   const user = await requireUser();
   const waiting = user.role === "resident" && user.residency_status !== "verified";
+  const action =
+    user.role === "admin"
+      ? { href: "/admin/walk-in", label: "Encode a walk-in" }
+      : user.role === "resident" && !waiting
+        ? { href: "/book", label: "Book now" }
+        : null;
 
   return (
     <div className="flex flex-1 flex-col lg:flex-row">
-      <aside className="no-print sticky top-0 z-20 bg-brand text-on-brand lg:h-screen lg:w-60 lg:shrink-0 lg:overflow-y-auto">
-        <div className="flex items-center justify-between gap-3 px-4 pt-3 lg:flex-col lg:items-start lg:pt-5">
-          <Link href="/home" className="text-xl font-bold tracking-tight">
+      <aside className="emerald no-print sticky top-0 z-20 border-b border-white/10 lg:h-screen lg:w-64 lg:shrink-0 lg:overflow-y-auto lg:border-r lg:border-b-0">
+        <div className="flex items-center justify-between gap-3 px-4 pt-3 lg:flex-col lg:items-start lg:px-5 lg:pt-6">
+          <Link href="/home" className="flex min-h-11 items-center text-xl font-extrabold tracking-tight">
             ReserBa
           </Link>
-          <div className="flex items-center gap-3 lg:w-full lg:flex-col lg:items-start lg:gap-2">
+          <div className="flex items-center gap-3 lg:w-full lg:flex-col lg:items-stretch lg:gap-3 lg:rounded-2xl lg:border lg:border-white/15 lg:bg-black/20 lg:p-3 lg:backdrop-blur-md">
             <p className="text-right text-sm leading-tight lg:text-left">
               <span className="block max-w-40 truncate font-semibold">{user.full_name}</span>
-              <span className="text-on-brand/80">{roleNames[user.role]}</span>
+              <span className="text-mint/75">{roleNames[user.role]}</span>
             </p>
             <form action={logOut}>
               <button
                 type="submit"
-                className="cursor-pointer rounded-lg border border-on-brand/50 px-3 py-1.5 text-sm font-semibold transition-colors duration-150 hover:bg-on-brand/15"
+                className="min-h-11 w-full cursor-pointer rounded-full border border-white/25 bg-white/5 px-4 text-sm font-semibold transition-colors duration-150 hover:bg-white/15 lg:min-h-9"
               >
                 Log out
               </button>
@@ -72,7 +80,9 @@ async function Frame({ children }: { children: React.ReactNode }) {
         </nav>
       </aside>
 
-      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6 sm:px-6 lg:py-8">
+      <main
+        className={`mx-auto w-full max-w-5xl flex-1 px-4 py-6 sm:px-6 lg:py-10 ${action ? "pb-28 lg:pb-10" : ""}`}
+      >
         {waiting && (
           <p className="notice notice-info no-print mb-6">
             {user.residency_status === "rejected"
@@ -89,6 +99,7 @@ async function Frame({ children }: { children: React.ReactNode }) {
         )}
         {children}
       </main>
+      {action && <MobileAction href={action.href} label={action.label} />}
     </div>
   );
 }
