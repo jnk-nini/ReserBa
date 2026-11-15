@@ -8,10 +8,11 @@ import type { Role, UserRow } from "./types";
 // "cache" makes several components on one page share a single lookup.
 export const getCurrentUser = cache(async (): Promise<UserRow | null> => {
   const supabase = await getServerSupabase();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) {
+  // The login is checked from its signature (see proxy.ts). The row itself
+  // is still read as that person, so the database decides what they may see.
+  const { data: login } = await supabase.auth.getClaims();
+  const userId = login?.claims?.sub;
+  if (!userId) {
     return null;
   }
   const { data } = await supabase
@@ -19,7 +20,7 @@ export const getCurrentUser = cache(async (): Promise<UserRow | null> => {
     .select(
       "user_id, full_name, email, contact_no, address, role, resident_type, residency_status, proof_of_residency_url, residency_note, created_at",
     )
-    .eq("user_id", user.id)
+    .eq("user_id", userId)
     .maybeSingle();
   return data as UserRow | null;
 });

@@ -38,10 +38,11 @@ export async function proxy(request: NextRequest) {
     },
   });
 
-  // Asking for the user is what refreshes an expired login.
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // Reading the login also refreshes it when it has expired. The login is
+  // checked from its own signature where the project allows it, so most
+  // requests do not need a trip to the Supabase server.
+  const { data } = await supabase.auth.getClaims();
+  const user = data?.claims ?? null;
 
   const { pathname } = request.nextUrl;
 
