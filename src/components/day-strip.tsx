@@ -15,7 +15,7 @@ export type StripSegment = {
 
 const fills: Record<StripSegment["kind"], string> = {
   approved: "bg-approved",
-  pending: "bg-pending",
+  pending: "bg-pending-fill",
   blocked: "stripes",
   choice: "bg-brand/25 ring-2 ring-brand ring-inset",
   buffer: "bg-brand/10 ring-1 ring-brand/40 ring-inset",
@@ -47,7 +47,7 @@ export default function DayStrip({
 
   return (
     <div>
-      <div className="relative h-11 overflow-hidden rounded-lg border border-line-strong bg-surface">
+      <div className="relative h-11 overflow-hidden rounded-xl border border-line-strong bg-surface">
         {segments.map((segment, index) => {
           const position = place(segment.from, segment.to);
           if (!position) return null;
@@ -91,7 +91,7 @@ export function StripLegend({
 }) {
   const items: Array<[string, string]> = [
     ["bg-approved", "Approved"],
-    ["bg-pending", "Waiting for approval"],
+    ["bg-pending-fill", "Waiting for approval"],
     ["stripes", "Blocked by the HOA"],
   ];
   if (showChoice) {

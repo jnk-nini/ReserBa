@@ -125,6 +125,15 @@ const paths = {
       <path d="M9.9 10.2a2.75 2.75 0 0 0 3.9 3.9" />
     </>
   ),
+  more: (
+    <>
+      <circle cx="5.5" cy="12" r="1.25" />
+      <circle cx="12" cy="12" r="1.25" />
+      <circle cx="18.5" cy="12" r="1.25" />
+    </>
+  ),
+  "chevron-right": <path d="m9.5 5.5 6.5 6.5-6.5 6.5" />,
+  close: <path d="M6 6l12 12M18 6 6 18" />,
 } as const;
 
 export type IconName = keyof typeof paths;

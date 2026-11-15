@@ -1,15 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { Bricolage_Grotesque, Public_Sans, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-const publicSans = Public_Sans({
-  variable: "--font-public-sans",
-  subsets: ["latin"],
-});
-
-// The typeface of the headings. The body text stays in Public Sans.
-const bricolage = Bricolage_Grotesque({
-  variable: "--font-bricolage",
+// One typeface family for the whole product. Headings use its heavier weights.
+const geist = Geist({
+  variable: "--font-geist",
   subsets: ["latin"],
 });
 
@@ -35,14 +30,15 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#10352a",
+  themeColor: "#ffffff",
+  viewportFit: "cover",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${publicSans.variable} ${bricolage.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geist.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">{children}</body>
     </html>

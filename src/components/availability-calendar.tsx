@@ -35,9 +35,9 @@ function fromManilaClock(value: Date) {
 }
 
 const eventLooks: Record<TakenRange["kind"], { title: string; color: string }> = {
-  approved: { title: "Approved", color: "#17553c" },
-  pending: { title: "Waiting for approval", color: "#a36400" },
-  blocked: { title: "Blocked by the HOA", color: "#55625a" },
+  approved: { title: "Approved", color: "#0b6b4d" },
+  pending: { title: "Waiting for approval", color: "#e0a526" },
+  blocked: { title: "Blocked by the HOA", color: "#5b6560" },
 };
 
 export default function AvailabilityCalendar({
@@ -90,7 +90,7 @@ export default function AvailabilityCalendar({
         </p>
       )}
 
-      <div className="calendar-frame rounded-xl border border-line bg-surface p-2 sm:p-3">
+      <div className="calendar-frame rounded-2xl border border-line bg-surface p-2 shadow-low sm:p-4">
         <FullCalendar
           // A new key redraws the calendar when another amenity is chosen.
           key={amenity.amenity_id}
