@@ -24,7 +24,7 @@ Before a pull request, run `npm run lint` and `npm run build`. Both must finish 
 
 | Folder | What is in it |
 |---|---|
-| `src/app` | The pages. Public pages (`login`, `signup`, password reset) sit at the top. Pages for signed-in people are in `(app)`: resident pages (`calendar`, `book`, `reservations`, `fund`, `account`), administrator pages (`admin/...`), and the guard page (`guard`). |
+| `src/app` | The pages. Public pages (`login`, `signup`, password reset) sit at the top. Pages for signed-in people are in `(app)`: resident pages (`home`, `calendar`, `book`, `reservations`, `fund`, `account`), administrator pages (`admin/...`), and the guard page (`guard`). |
 | `src/app/**/actions.ts` | Server actions: the code that saves a form. Each one checks who is signed in, sends the change to the database, and returns the database's reason if it refuses. |
 | `src/components` | Parts of screens used in more than one place (booking form, day strip, calendar, export buttons). |
 | `src/lib` | Helpers: the Supabase clients, dates in Philippine time, money, error messages. |
