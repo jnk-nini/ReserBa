@@ -46,7 +46,7 @@ Priority: **Must** modules first. **Optional** modules (add-ons) only after the 
 ## 5. Reports (T36, Must)
 **Who:** administrator. **Tables:** reads `reservations`, `payments`, and `ledger_entries` (if built).
 - Month picker. **Booking report:** reservations per amenity with status counts. **Income and expense report:** fee and deposit payments (not void) and, if the ledger exists, expenses.
-- Export to PDF (jsPDF) and Excel (SheetJS). Totals must equal the sum of the rows.
+- Export to PDF (jsPDF) and Excel (ExcelJS). Totals must equal the sum of the rows. Typed text that starts with = + - or @ gets an apostrophe in the Excel file so it is never read as a formula.
 - Done when: a report for one month opens in under 1 minute and both files open correctly.
 
 ## 6. Audit log screen (T37, Must)

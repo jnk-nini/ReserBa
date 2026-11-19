@@ -9,7 +9,7 @@ This repository is part of our Software Engineering group project.
 - Next.js (React) with Tailwind CSS
 - Supabase (PostgreSQL, authentication, storage)
 - Vercel (hosting and automatic deployment)
-- FullCalendar, jsPDF, SheetJS (the `xlsx` package)
+- FullCalendar, jsPDF, ExcelJS (Excel export)
 
 ## Getting started
 

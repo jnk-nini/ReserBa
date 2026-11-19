@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { safeCellText } from "@/lib/spreadsheet";
 
 // The PDF and Excel buttons of a report (FR-24, FR-25). A report is a list of
 // tables; each table has a title, column names, rows, and an optional totals
@@ -63,20 +64,45 @@ export default function ExportButtons({ fileName, heading, tables }: Props) {
     setBusy(null);
   }
 
+  // ExcelJS is used instead of the "xlsx" package: the npm copy of xlsx is
+  // stuck at 0.18.5, which has known security problems (CVE-2023-30533).
   async function exportExcel() {
     setBusy("excel");
     setFailed(false);
     try {
-      const XLSX = await import("xlsx");
-      const workbook = XLSX.utils.book_new();
+      const { Workbook } = await import("exceljs");
+      const workbook = new Workbook();
       for (const table of tables) {
-        const lines = [table.columns, ...table.rows];
-        if (table.totals) lines.push(table.totals);
-        const sheet = XLSX.utils.aoa_to_sheet(lines);
         // Sheet names cannot be longer than 31 characters.
-        XLSX.utils.book_append_sheet(workbook, sheet, table.title.slice(0, 31));
+        const sheet = workbook.addWorksheet(table.title.slice(0, 31));
+        const header = sheet.addRow(table.columns);
+        header.font = { bold: true };
+        for (const row of table.rows) sheet.addRow(row.map(safeCellText));
+        if (table.totals) sheet.addRow(table.totals.map(safeCellText)).font = { bold: true };
+        // Amounts stay numbers (so Excel can add them) but show two decimals.
+        for (const column of table.moneyColumns ?? []) {
+          sheet.getColumn(column + 1).numFmt = "#,##0.00";
+        }
+        sheet.columns.forEach((column, index) => {
+          const longest = Math.max(
+            table.columns[index].length,
+            ...table.rows.map((row) => String(row[index] ?? "").length),
+          );
+          column.width = Math.min(Math.max(longest + 2, 10), 50);
+        });
       }
-      XLSX.writeFile(workbook, `${fileName}.xlsx`);
+      const data = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([data], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${fileName}.xlsx`;
+      link.click();
+      // Some phone browsers start the download a moment later, so the link
+      // is freed after a short wait instead of at once.
+      setTimeout(() => URL.revokeObjectURL(url), 10_000);
     } catch {
       setFailed(true);
     }

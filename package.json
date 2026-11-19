@@ -12,6 +12,7 @@
     "@fullcalendar/react": "^7.1.5",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.119.0",
+    "exceljs": "^4.4.0",
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.9",
     "motion": "^14.14.0",
@@ -19,8 +20,7 @@
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "server-only": "^0.0.1",
-    "temporal-polyfill": "^1.0.8",
-    "xlsx": "^0.18.5"
+    "temporal-polyfill": "^1.0.8"
   },
   "devDependencies": {
     "@tailwindcss/turbopack": "^4",

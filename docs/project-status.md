@@ -75,7 +75,7 @@ Things in the system that are limits, not bugs:
 10. Lowering an equipment item's quantity below what is already requested is not checked.
 11. The administrator can approve a request without any payment recorded. This is on purpose: payment rules belong to the association.
 12. The password reset link must be opened in the same browser that asked for it.
-13. `npm audit` reports the `xlsx` package (SheetJS on npm, version 0.18.5). The reported problems are about reading untrusted spreadsheet files; ReserBa only writes files. SheetJS publishes fixed versions only on its own site (`npm i https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz`).
+13. Fixed (Nov 19): the Excel export now uses ExcelJS instead of the `xlsx` package (stuck at 0.18.5 on npm, CVE-2023-30533). Typed text that starts with = + - or @ (a resident name, a guest name, an expense note) gets an apostrophe in front so a spreadsheet program never reads it as a formula. `npm audit` no longer reports a high-severity problem; the one new moderate notice is for `uuid` functions ExcelJS does not call.
 14. The paper's Appendix C (Table 18) still needs the added columns, and now the `request_reservation` function (T18).
 
 ## Next steps
