@@ -1,6 +1,7 @@
 import "server-only";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { sessionCookieOptions } from "@/lib/cookie-options";
 
 // The client for code that runs on the server (pages and server actions).
 // It reads the login from the visitor's cookies, so every query runs as that
@@ -11,6 +12,7 @@ export async function getServerSupabase() {
     process.env.NEXT_PUBLIC_SUPABASE_URL as string,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string,
     {
+      cookieOptions: sessionCookieOptions,
       cookies: {
         getAll() {
           return cookieStore.getAll();

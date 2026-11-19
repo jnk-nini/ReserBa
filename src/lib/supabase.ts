@@ -1,4 +1,5 @@
 import { createBrowserClient } from "@supabase/ssr";
+import { sessionCookieOptions } from "./cookie-options";
 
 // Reads the project address and public key from .env.local (or Vercel settings).
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -15,5 +16,5 @@ export function getSupabase() {
   if (!supabaseUrl || !supabaseAnonKey) {
     throw new Error("Supabase keys are missing. Check .env.local.");
   }
-  return createBrowserClient(supabaseUrl, supabaseAnonKey);
+  return createBrowserClient(supabaseUrl, supabaseAnonKey, { cookieOptions: sessionCookieOptions });
 }
