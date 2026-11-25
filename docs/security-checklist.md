@@ -10,7 +10,7 @@ checking machine. For the live database, run `supabase/tests/security_check.sql`
 
 | # | Item | Result | Notes |
 |---|---|---|---|
-| 1 | Hash all passwords | ✅ | Supabase Auth stores passwords hashed. The app never stores them. **Dashboard:** set the minimum password length to 8 (the form asks for 8, but Supabase's own minimum is lower) and turn on leaked-password protection. |
+| 1 | Hash all passwords | ✅ | Supabase Auth stores passwords hashed. The app never stores them. **Dashboard:** set the minimum password length to 8 (the form asks for 8, but Supabase's own minimum is lower). Leaked-password protection is only on Supabase's Pro plan, so it cannot be turned on for this Free project; the Security Advisor will keep showing that warning. |
 | 2 | Force HTTPS | ✅ 🔧 | Vercel sends HTTP to HTTPS. Added a `Strict-Transport-Security` header so browsers always use HTTPS. |
 | 3 | Block XSS | ✅ | No raw HTML anywhere (`dangerouslySetInnerHTML` is not used); React shows user text as plain text. All links point inside the site. Excel export escapes formula-like text (T36). Added `X-Frame-Options: DENY` against click-jacking. |
 | 4 | Rate-limit login | ⚠️ | Supabase limits sign-ins to 30 per 5 minutes **per IP**. Login runs on the Vercel server, so Supabase sees Vercel's IP for everyone: all users share one limit. On survey day 30+ logins in 5 minutes could be refused. Choose one: (a) do the login call in the browser so each user has their own limit, (b) raise the limit in the dashboard for the survey, or (c) add CAPTCHA (Turnstile or hCaptcha). |
@@ -29,7 +29,7 @@ checking machine. For the live database, run `supabase/tests/security_check.sql`
   request every Saturday and block the calendar. Fix (Jenny, as a new migration): a hold expiry
   (for example 48 hours without proof of payment) and a cap on pending requests per resident.
 - **Dashboard tasks from `docs/project-status.md`** still to do: Site URL and redirect URLs, email
-  (SMTP or confirmation off), Vercel Deployment Protection off, leaked-password protection on, and
+  (SMTP or confirmation off), Vercel Deployment Protection off, minimum password length 8, and
   the unknown `rls_auto_enable` function (the security check SQL flags it).
 
 ## Related checks
